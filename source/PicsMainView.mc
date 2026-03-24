@@ -5,6 +5,8 @@
 
 import Toybox.Graphics;
 import Toybox.Lang;
+import Toybox.Math;
+import Toybox.Position;
 import Toybox.Time;
 import Toybox.Time.Gregorian;
 import Toybox.WatchUi;
@@ -49,10 +51,13 @@ class PicsMainView extends WatchUi.View {
     private const COLOR_NONE       = 0x455A64;  // 制御外 → グレー
 
     // ---- ステート ----
-    private var _lastFrame  as PicsFrame or Null = null;
-    private var _rxCount    as Lang.Long = 0l;
-    private var _scanning   as Lang.Boolean = false;
-    private var _blinkPhase as Lang.Boolean = false;  // 点滅アニメ用
+    private var _lastFrame        as PicsFrame or Null = null;
+    private var _rxCount          as Lang.Long = 0l;
+    private var _scanning         as Lang.Boolean = false;
+    private var _blinkPhase       as Lang.Boolean = false;  // 点滅アニメ用
+    private var _intersectionName as Lang.String = "";      // GPS解決済み交差点名
+    private var _intersectionLat  as Lang.Float  = 0.0f;   // 最近傍交差点の緯度
+    private var _intersectionLon  as Lang.Float  = 0.0f;   // 最近傍交差点の経度
 
     function initialize() {
         View.initialize();
@@ -63,9 +68,15 @@ class PicsMainView extends WatchUi.View {
     }
 
     //! 外部から呼ばれる：信号状態を更新して再描画を要求
-    function updateSignal(frame as PicsFrame, rxCount as Lang.Long) as Void {
-        _lastFrame = frame;
-        _rxCount   = rxCount;
+    function updateSignal(frame as PicsFrame, rxCount as Lang.Long,
+                          intersectionName as Lang.String,
+                          intersectionLat  as Lang.Float,
+                          intersectionLon  as Lang.Float) as Void {
+        _lastFrame        = frame;
+        _rxCount          = rxCount;
+        _intersectionName = intersectionName;
+        _intersectionLat  = intersectionLat;
+        _intersectionLon  = intersectionLon;
         WatchUi.requestUpdate();
     }
 
@@ -89,6 +100,7 @@ class PicsMainView extends WatchUi.View {
 
         drawHeader(dc);
         drawSignalPanels(dc);
+        drawGpsInfo(dc);
         drawFooter(dc);
     }
 
@@ -113,14 +125,21 @@ class PicsMainView extends WatchUi.View {
                     "高度化PICS モニタ",
                     Graphics.TEXT_JUSTIFY_CENTER);
 
-        // 交差点ID
-        var intersectionId = (_lastFrame != null)
-            ? _lastFrame.intersectionId
-            : "--------";
+        // 交差点名称（GPS解決済みなら名前、未解決なら16進ID）
+        var nameStr  as Lang.String;
+        var nameFont as Graphics.FontDefinition;
+        if (_intersectionName.length() > 0) {
+            nameStr  = _intersectionName;
+            nameFont = Graphics.FONT_XTINY;
+        } else {
+            var intersectionId = (_lastFrame != null)
+                ? _lastFrame.intersectionId
+                : "--------";
+            nameStr  = "交差点: " + intersectionId;
+            nameFont = Graphics.FONT_SMALL;
+        }
         dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 30, Graphics.FONT_SMALL,
-                    "交差点: " + intersectionId,
-                    Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(CX, 30, nameFont, nameStr, Graphics.TEXT_JUSTIFY_CENTER);
 
         // スキャン状態インジケータ
         var statusColor = _scanning ? COLOR_GREEN : COLOR_NONE;
@@ -141,7 +160,7 @@ class PicsMainView extends WatchUi.View {
     // ----------------------------------------------------------
     private function drawSignalPanels(dc as Graphics.Dc) as Void {
         var panelW  = (SCREEN_W - 24) / 2;  // 左右余白12px + 中央8px
-        var panelH  = 270;
+        var panelH  = 250;
         var panelY  = 80;
         var panelX0 = 8;
         var panelX1 = panelX0 + panelW + 8;
@@ -252,6 +271,73 @@ class PicsMainView extends WatchUi.View {
                         rssiStr,
                         Graphics.TEXT_JUSTIFY_CENTER);
         }
+    }
+
+    // ----------------------------------------------------------
+    //  GPS 情報（デバイス座標 / 交差点座標 / 距離・方位）
+    //  Y: 334 ～ 378
+    // ----------------------------------------------------------
+    private function drawGpsInfo(dc as Graphics.Dc) as Void {
+        var CX = SCREEN_W / 2;
+
+        // デバイスの現在GPS座標を取得
+        var devLat = 0.0f as Lang.Float;
+        var devLon = 0.0f as Lang.Float;
+        var hasFix = false;
+        var posInfo = Position.getInfo();
+        if (posInfo != null && posInfo.position != null) {
+            var coords = (posInfo.position as Position.Location).toDegrees();
+            devLat = coords[0].toFloat();
+            devLon = coords[1].toFloat();
+            hasFix = true;
+        }
+
+        var hasInt = (_intersectionName.length() > 0);
+
+        // ---- デバイス座標 ----
+        var devLatStr = hasFix ? (devLat.abs().format("%.4f") + (devLat >= 0.0f ? "N" : "S")) : "--";
+        var devLonStr = hasFix ? (devLon.abs().format("%.4f") + (devLon >= 0.0f ? "E" : "W")) : "--";
+        dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(CX, 336, Graphics.FONT_XTINY,
+                    "デバイス: " + devLatStr + " " + devLonStr,
+                    Graphics.TEXT_JUSTIFY_CENTER);
+
+        // ---- 交差点座標 ----
+        var intLatStr = hasInt ? (_intersectionLat.abs().format("%.4f") + (_intersectionLat >= 0.0f ? "N" : "S")) : "--";
+        var intLonStr = hasInt ? (_intersectionLon.abs().format("%.4f") + (_intersectionLon >= 0.0f ? "E" : "W")) : "--";
+        dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(CX, 352, Graphics.FONT_XTINY,
+                    "交差点:   " + intLatStr + " " + intLonStr,
+                    Graphics.TEXT_JUSTIFY_CENTER);
+
+        // ---- 距離・方位 ----
+        var distBrgStr = "--";
+        if (hasFix && hasInt) {
+            var R    = 6371000.0f;
+            var phi1 = devLat * (Math.PI / 180.0f);
+            var phi2 = _intersectionLat * (Math.PI / 180.0f);
+            var dPhi = (_intersectionLat - devLat) * (Math.PI / 180.0f);
+            var dLam = (_intersectionLon - devLon) * (Math.PI / 180.0f);
+            var sinH = Math.sin(dPhi / 2.0f);
+            var sinL = Math.sin(dLam / 2.0f);
+            var a    = sinH * sinH + Math.cos(phi1) * Math.cos(phi2) * sinL * sinL;
+            var dist = R * 2.0f * Math.atan2(Math.sqrt(a), Math.sqrt(1.0f - a));
+
+            var y    = Math.sin(dLam) * Math.cos(phi2);
+            var x    = Math.cos(phi1) * Math.sin(phi2)
+                     - Math.sin(phi1) * Math.cos(phi2) * Math.cos(dLam);
+            var brg  = Math.toDegrees(Math.atan2(y, x));
+            brg = ((brg + 360.0f) % 360.0f);
+
+            var cards = ["N","NE","E","SE","S","SW","W","NW"] as Array<String>;
+            var cidx  = ((brg + 22.5f) / 45.0f).toNumber() % 8;
+
+            distBrgStr = dist.format("%.0f") + "m  " + brg.format("%.0f") + "°(" + cards[cidx] + ")";
+        }
+        dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(CX, 368, Graphics.FONT_XTINY,
+                    "距離: " + distBrgStr,
+                    Graphics.TEXT_JUSTIFY_CENTER);
     }
 
     // ----------------------------------------------------------

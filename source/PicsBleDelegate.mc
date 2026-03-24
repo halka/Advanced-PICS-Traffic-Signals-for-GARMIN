@@ -27,12 +27,21 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
     //! 受信パケット総数（デバッグ用）
     var rxCount          as Lang.Long = 0l;
 
+    //! GPS座標から解決された最新の交差点名称（未解決時は空文字）
+    var currentIntersectionName as Lang.String = "";
+    //! 最近傍交差点の緯度・経度（未解決時は 0.0）
+    var currentIntersectionLat  as Lang.Float  = 0.0f;
+    var currentIntersectionLon  as Lang.Float  = 0.0f;
+
     //! UI 更新コールバック
-    private var _callback as PicsCallback or Null = null;
+    private var _callback       as PicsCallback or Null = null;
+    //! 交差点DB（GPS座標 → 名称ルックアップ）
+    private var _intersectionDb as PicsIntersectionDB or Null = null;
 
     function initialize(callback as PicsCallback or Null) {
         BleDelegate.initialize();
         _callback = callback;
+        _intersectionDb = new PicsIntersectionDB();
     }
 
     //! BLE スキャン結果コールバック（Connect IQ が自動的に呼ぶ）
@@ -68,6 +77,15 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
                 break;
             case PICS_MSG_TYPE_LOCATION:
                 lastLocFrame = frame;
+                if (_intersectionDb != null) {
+                    var entry = (_intersectionDb as PicsIntersectionDB)
+                        .findNearestEntry(frame.latitude, frame.longitude);
+                    if (entry != null) {
+                        currentIntersectionLat  = entry[0] as Lang.Float;
+                        currentIntersectionLon  = entry[1] as Lang.Float;
+                        currentIntersectionName = entry[2] as Lang.String;
+                    }
+                }
                 break;
             case PICS_MSG_TYPE_SIGNAL:
                 lastSignalFrame = frame;

@@ -58,6 +58,9 @@ class PicsFrame {
     var latitude       as Lang.Float = 0.0f;
     var longitude      as Lang.Float = 0.0f;
 
+    // Type 1 (位置情報) から引いた交差点名称（未解決の場合は空文字）
+    var intersectionName as Lang.String = "";
+
     // Type 2 (信号状態)  ―  PICS_SIGNAL_COUNT 個
     var signals        as Lang.Array = new PicsSignal[PICS_SIGNAL_COUNT];
 
@@ -145,5 +148,55 @@ class PicsParser {
         }
 
         return frame;
+    }
+}
+
+//! @brief 全国交差点DBを保持し、GPS座標から最近傍の交差点名を返す
+//!
+//! resources/data/intersections.json を Rez.JsonData 経由で読み込む。
+//! データ形式: [[lat_int, lon_int, "名称"], ...]  (lat/lon は度 × 1,000,000)
+class PicsIntersectionDB {
+
+    private var _entries as Lang.Array or Null = null;
+
+    function initialize() {
+        var json = Rez.JsonData.intersections;
+        if (json instanceof Lang.Array) {
+            _entries = json as Lang.Array;
+        }
+    }
+
+    //! GPS座標 (度) から最近傍の交差点名を返す。未解決時は空文字。
+    function findNearest(lat as Lang.Float, lon as Lang.Float) as Lang.String {
+        var entry = findNearestEntry(lat, lon);
+        return (entry != null) ? (entry[2] as Lang.String) : "";
+    }
+
+    //! GPS座標 (度) から最近傍エントリを [lat_float, lon_float, name] で返す。
+    //! エントリが空の場合は null を返す。
+    function findNearestEntry(lat as Lang.Float, lon as Lang.Float) as Lang.Array or Null {
+        if (_entries == null || (_entries as Lang.Array).size() == 0) {
+            return null;
+        }
+        var entries  = _entries as Lang.Array;
+        var bestLat  = 0.0f;
+        var bestLon  = 0.0f;
+        var bestName = "" as Lang.String;
+        var bestDist = 9.9e9f;
+        for (var i = 0; i < entries.size(); i++) {
+            var e    = entries[i] as Lang.Array;
+            var eLat = (e[0] as Lang.Number) / 1000000.0f;
+            var eLon = (e[1] as Lang.Number) / 1000000.0f;
+            var dLat = lat - eLat;
+            var dLon = lon - eLon;
+            var dist = dLat * dLat + dLon * dLon;
+            if (dist < bestDist) {
+                bestDist = dist;
+                bestLat  = eLat;
+                bestLon  = eLon;
+                bestName = e[2] as Lang.String;
+            }
+        }
+        return [bestLat, bestLon, bestName] as Lang.Array;
     }
 }
