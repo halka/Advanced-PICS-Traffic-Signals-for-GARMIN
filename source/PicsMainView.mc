@@ -126,8 +126,8 @@ class PicsMainView extends WatchUi.View {
                     Graphics.TEXT_JUSTIFY_CENTER);
 
         // 交差点名称（GPS解決済みなら名前、未解決なら16進ID）
-        var nameStr  as Lang.String;
-        var nameFont as Graphics.FontDefinition;
+        var nameStr  = "";
+        var nameFont = Graphics.FONT_SMALL;
         if (_intersectionName.length() > 0) {
             nameStr  = _intersectionName;
             nameFont = Graphics.FONT_XTINY;
@@ -136,7 +136,6 @@ class PicsMainView extends WatchUi.View {
                 ? _lastFrame.intersectionId
                 : "--------";
             nameStr  = "交差点: " + intersectionId;
-            nameFont = Graphics.FONT_SMALL;
         }
         dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
         dc.drawText(CX, 30, nameFont, nameStr, Graphics.TEXT_JUSTIFY_CENTER);

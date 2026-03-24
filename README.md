@@ -115,7 +115,7 @@ python3 tools/csv_to_resource.py /path/to/input.csv resources/data/intersections
 
 #### 4. Build
 ```bash
-monkeyc -d gpsmap_h1 -f monkey.jungle -o bin/pics-viewer.prg -y developer_key.der
+monkeyc -d gpsmaph1 -f monkey.jungle -o bin/pics-viewer.prg -y developer_key.der
 ```
 
 #### 5. Deploy to Device (USB Mass Storage)
@@ -250,7 +250,7 @@ python3 tools/csv_to_resource.py /path/to/input.csv resources/data/intersections
 
 ### ビルド手順
 ```bash
-monkeyc -d gpsmap_h1 -f monkey.jungle -o bin/pics-viewer.prg -y developer_key.der
+monkeyc -d gpsmaph1 -f monkey.jungle -o bin/pics-viewer.prg -y developer_key.der
 ```
 
 ### 実機転送（USBマスストレージ）
