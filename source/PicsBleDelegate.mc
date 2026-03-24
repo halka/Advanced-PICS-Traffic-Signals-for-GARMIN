@@ -55,14 +55,8 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
 
     //! 1件の ScanResult を処理する
     private function processScanResult(result as BluetoothLowEnergy.ScanResult) as Void {
-        // メーカー固有データを取得（Dictionary<Number, ByteArray>）
-        var mfgData = result.getManufacturerSpecificData();
-        if (mfgData == null) { return; }
-
-        // PICS の company ID が含まれているか確認
-        if (!mfgData.hasKey(PICS_MANUFACTURER_ID)) { return; }
-
-        var payload = mfgData[PICS_MANUFACTURER_ID] as Lang.ByteArray;
+        // メーカー固有データを取得（company ID を指定して ByteArray を直接取得）
+        var payload = result.getManufacturerSpecificData(PICS_MANUFACTURER_ID);
         if (payload == null) { return; }
 
         rxCount++;

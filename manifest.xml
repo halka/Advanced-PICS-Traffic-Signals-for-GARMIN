@@ -1,32 +1,27 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <iq:manifest xmlns:iq="http://www.garmin.com/xml/connectiq" version="3">
   <iq:application
     entry="PicsBleApp"
-    id="a0de30cc-0001-4ce0-b1e5-pics0000cafe"
+    id="a0de30cc00014ce0b1e591c50000cafe"
     minApiLevel="3.2.0"
+    launcherIcon="@Drawables.LauncherIcon"
     name="@Strings.AppName"
-    type="watchapp"
+    type="watch-app"
     version="1.0.0">
 
     <iq:products>
-      <iq:product id="gpsmap_h1"/>
-      <iq:product id="gpsmap_h1i_plus"/>
+      <iq:product id="gpsmaph1"/>
     </iq:products>
 
     <iq:permissions>
       <iq:uses-permission id="BluetoothLowEnergy"/>
+      <iq:uses-permission id="Positioning"/>
     </iq:permissions>
 
     <iq:languages>
       <iq:language>jpn</iq:language>
       <iq:language>eng</iq:language>
     </iq:languages>
-
-    <iq:background>
-      <iq:uses-background-conditions>
-        <iq:triggeredCondition condition="OnBleEvent"/>
-      </iq:uses-background-conditions>
-    </iq:background>
 
   </iq:application>
 </iq:manifest>
