@@ -129,6 +129,7 @@ monkeyc -d gpsmaph1 -f monkey.jungle -o bin/pics-viewer.prg -y developer_key.der
 ```
 
 #### 5. Deploy to Device (USB Mass Storage)
+**Ensure USB Mass Storage Mode**
 ```bash
 cp bin/pics-viewer.prg /GARMIN/APPS/
 ```
@@ -277,6 +278,7 @@ monkeyc -d gpsmaph1 -f monkey.jungle -o bin/pics-viewer.prg -y developer_key.der
 ```
 
 ### 実機転送（USBマスストレージ）
+**USBマスストレージモードにすること**
 ```bash
 cp bin/pics-viewer.prg /GARMIN/APPS/
 ```
