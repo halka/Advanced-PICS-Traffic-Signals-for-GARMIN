@@ -29,9 +29,9 @@ class PicsBleApp extends Application.AppBase {
     }
 
     //! アプリが初期化されたタイミング（最初のビューを返す）
-    function getInitialView() as Array<WatchUi.Views or WatchUi.InputDelegates> or Null {
+    function getInitialView() {
         _view = new PicsMainView();
-        return [_view, new PicsInputDelegate(_view)] as Array<WatchUi.Views or WatchUi.InputDelegates>;
+        return [_view, new PicsInputDelegate(_view)];
     }
 
     //! フォアグラウンド起動時

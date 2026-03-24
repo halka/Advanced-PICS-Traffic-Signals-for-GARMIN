@@ -1,12 +1,34 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <strings>
+  <!-- App -->
   <string id="AppName">PICS Viewer</string>
-  <string id="Scanning">スキャン中</string>
-  <string id="Stopped">停止中</string>
-  <string id="Waiting">受信待ち</string>
+  <string id="AppTitle">高度化PICS モニタ</string>
+
+  <!-- Header -->
+  <string id="IntersectionPrefix">交差点: </string>
+  <string id="ScanningIndicator">● スキャン中</string>
+  <string id="StoppedIndicator">○ 停止中</string>
+
+  <!-- Signal panels -->
+  <string id="EastWest">東西</string>
+  <string id="NorthSouth">南北</string>
+  <string id="RemainingPrefix">残り </string>
+
+  <!-- Signal states -->
   <string id="Red">赤</string>
   <string id="Green">青</string>
   <string id="BlinkGreen">青点滅</string>
-  <string id="NoSignal">信号なし</string>
+  <string id="NoSignal">---</string>
   <string id="ControlOut">制御外</string>
+
+  <!-- GPS info -->
+  <string id="DevicePrefix">デバイス: </string>
+  <string id="IntersectionCoordPrefix">交差点:   </string>
+  <string id="DistancePrefix">距離: </string>
+
+  <!-- Footer -->
+  <string id="WaitingDots">受信待ち...</string>
+  <string id="LastReceivedPrefix">最終受信: </string>
+  <string id="PacketCountPrefix">受信数: </string>
+  <string id="BackHint">BACK で終了</string>
 </strings>

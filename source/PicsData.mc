@@ -4,6 +4,7 @@
 // =============================================================
 
 import Toybox.Lang;
+import Toybox.System;
 import Toybox.Time;
 
 // ---- 信号状態定数 ----
@@ -36,14 +37,14 @@ class PicsSignal {
         remaining = remaining_;
     }
 
-    //! 表示用ラベル文字列を返す
-    function stateLabel() as Lang.String {
+    //! 表示用ラベル（Rez.Strings の ResourceId）を返す
+    function stateLabel() as Lang.ResourceId {
         switch (state) {
-            case SIGNAL_RED:         return "赤";
-            case SIGNAL_BLINK_GREEN: return "青点滅";
-            case SIGNAL_GREEN:       return "青";
-            case SIGNAL_NONE:        return "制御外";
-            default:                 return "---";
+            case SIGNAL_RED:         return Rez.Strings.Red;
+            case SIGNAL_BLINK_GREEN: return Rez.Strings.BlinkGreen;
+            case SIGNAL_GREEN:       return Rez.Strings.Green;
+            case SIGNAL_NONE:        return Rez.Strings.ControlOut;
+            default:                 return Rez.Strings.NoSignal;
         }
     }
 }
