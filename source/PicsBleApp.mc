@@ -72,7 +72,10 @@ class PicsBleApp extends Application.AppBase {
     function onPicsSignal(frame as PicsFrame, msgType as Lang.Number) as Void {
         if (_view == null || _delegate == null) { return; }
         if (msgType == PICS_MSG_TYPE_SIGNAL) {
-            _view.updateSignal(frame, _delegate.rxCount);
+            _view.updateSignal(frame, _delegate.rxCount,
+                _delegate.currentIntersectionName,
+                _delegate.currentIntersectionLat,
+                _delegate.currentIntersectionLon);
         }
     }
 
