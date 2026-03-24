@@ -142,7 +142,7 @@ The app automatically logs every received PICS packet (including millisecond pre
 - **BLE**: Central (scan-only) mode. No GATT connection is established.
 - **Foreground only**: BLE scanning may be throttled by the OS in background mode.
 - **Intersection database**: Built from the [e-Gov national intersection list](https://data.e-gov.go.jp/data/dataset/npa_20221124_0054/resource/6f7e83e1-be28-4030-961f-3b489c9f6ad8) (596 intersections). Re-run `csv_to_resource.py` to update.
-- **🤔Shift-JIS**: ~PICS Type 0 packets carry the intersection name in Shift-JIS encoding, which Connect IQ does not support. Names are resolved via GPS coordinate matching against the bundled database instead.~~
+- **Identification of traffic sings**: Need to Dump network telemetry of NIPPON SIGNAL's App.
 - **String resources**: All UI labels are defined in `resources/strings/strings.xml`. To add a language translation, create a locale-specific strings file (e.g. `resources-eng/strings/strings.xml`).
 - **Connect IQ SDK 8.x**: `ScanResult.getManufacturerSpecificData()` now requires the company ID as an argument and returns a `ByteArray` directly (no longer returns a `Dictionary`). This app targets SDK 8.x behaviour.
 - **Simulator**: The Connect IQ SDK 8.3.0 simulator may crash on macOS 26+ (Tahoe) in the `ant_main` thread when loading apps that use BLE. Deploy to actual hardware for testing until Garmin releases a compatible SDK update.
