@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<strings>
+  <string id="AppName">PICS Viewer</string>
+  <string id="Scanning">スキャン中</string>
+  <string id="Stopped">停止中</string>
+  <string id="Waiting">受信待ち</string>
+  <string id="Red">赤</string>
+  <string id="Green">青</string>
+  <string id="BlinkGreen">青点滅</string>
+  <string id="NoSignal">信号なし</string>
+  <string id="ControlOut">制御外</string>
+</strings>

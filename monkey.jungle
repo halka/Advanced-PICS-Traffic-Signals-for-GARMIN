@@ -1,0 +1,11 @@
+project.manifest = manifest.xml
+
+# ソースパス
+base.sourcePath = source
+
+# リソースパス
+base.resourcePath = resources
+
+# ターゲットデバイス別オーバーライド（必要に応じて追加）
+# gpsmap_h1.sourcePath = $(base.sourcePath);source/h1
+# gpsmap_h1i_plus.sourcePath = $(base.sourcePath);source/h1i
