@@ -15,6 +15,7 @@ A Connect IQ application that receives and displays BLE advertisements from Japa
 - Resolves intersection name from GPS coordinates using a pre-built national intersection database (596 intersections)
 - Displays device GPS coordinates, nearest intersection coordinates, and calculated distance + bearing
 - Works standalone on the GPSMAP H1i Plus without any companion app
+- SD Card logging: Record raw BLE payloads and packet data directly to the device's internal storage
 
 ### File Structure
 
@@ -133,6 +134,13 @@ monkeyc -d gpsmaph1 -f monkey.jungle -o bin/pics-viewer.prg -y developer_key.der
 cp bin/pics-viewer.prg /GARMIN/APPS/
 ```
 
+### SD Card Logging (Debug)
+
+The app automatically logs every received PICS packet (including millisecond precision timestamps and raw HEX payloads). However, Garmin OS discards these logs unless you manually create a text file to capture them:
+1. Connect your Garmin device via USB.
+2. In the `GARMIN/APPS/LOGS/` directory, create an empty text file named **exactly** the same as your app executable but with a `.txt` extension (e.g. `pics-viewer.txt`).
+3. Launch the app. All BLE traffic logs will be continuously appended to that text file.
+
 ### Notes & Limitations
 
 - **BLE**: Central (scan-only) mode. No GATT connection is established.
@@ -143,6 +151,9 @@ cp bin/pics-viewer.prg /GARMIN/APPS/
 - **Connect IQ SDK 8.x**: `ScanResult.getManufacturerSpecificData()` now requires the company ID as an argument and returns a `ByteArray` directly (no longer returns a `Dictionary`). This app targets SDK 8.x behaviour.
 - **Simulator**: The Connect IQ SDK 8.3.0 simulator may crash on macOS 26+ (Tahoe) in the `ant_main` thread when loading apps that use BLE. Deploy to actual hardware for testing until Garmin releases a compatible SDK update.
 - **Legal compliance**: PICS BLE advertisements are public-infrastructure transmissions broadcast to all. This app is receive-only and does not transmit or modify any signal. Reception is compliant with Japanese radio and telecommunications law.
+
+### Acknowledgments
+This project is deeply inspired by and based on the work of [yumu19/ble-pics-viewer](https://github.com/yumu19/ble-pics-viewer) (Python version). We express our sincere gratitude to the original author for making their packet analysis and implementation public, which made this Garmin port possible.
 
 ### References
 - [yumu19/ble-pics-viewer (Python version)](https://github.com/yumu19/ble-pics-viewer)
@@ -281,6 +292,14 @@ monkeyc -d gpsmaph1 -f monkey.jungle -o bin/pics-viewer.prg -y developer_key.der
 cp bin/pics-viewer.prg /GARMIN/APPS/
 ```
 
+### ログ保存機能 (SDカード記録)
+
+受信したPICSパケットの生データ（HEXダンプ）、信号状態、電波強度がミリ秒単位のタイムスタンプとともに記録されます。GarminのOS仕様上、以下の手順を実施しないとログはデバイスに保存されません。
+1. GarminデバイスをPCにUSB接続します。
+2. デバイス内の `/GARMIN/APPS/LOGS/` フォルダを開きます。
+3. アプリの実行ファイル名と同じ名前を持つ、空のテキストファイル（例: `pics-viewer.txt`）を作成します。
+4. アプリを起動すると、このテキストファイルに受信ログが追記され続けます（長時間の連続記録によるファイル容量肥大化にご注意ください）。
+
 ---
 
 ## 注意事項・制約
@@ -304,6 +323,9 @@ Connect IQ SDK 8.3.0 のシミュレーターは macOS 26 (Tahoe) 以降で `ant
 本アプリが受信するPICSのBLEアドバタイズは公共インフラから不特定多数に向けて送信される公開電波であり、電波法・電気通信事業法・個人情報保護法の「通信の秘密」には該当しません。本アプリは受信専用であり、信号の送信・改変は行いません。
 
 ---
+
+## 謝辞
+本プロジェクトは、[yumu19/ble-pics-viewer](https://github.com/yumu19/ble-pics-viewer) (Python版) の実装およびパケット解析手法を全面的に参考にし、その成果をGarminデバイス向けに移植したものです。貴重な知見とソースコードを公開してくださった原作者の方に、この場を借りて深く感謝申し上げます。
 
 ## 参考リンク
 - [yumu19/ble-pics-viewer (Python版)](https://github.com/yumu19/ble-pics-viewer)
