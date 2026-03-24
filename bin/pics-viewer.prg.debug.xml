@@ -1,0 +1,885 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<debugInfo>
+    <manifest filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/manifest.xml"/>
+    <pcToLineNum>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="1" lineNum="130" parent="globals" pc="268435460" symbol="getApp"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="1" lineNum="131" parent="globals" pc="268435470" symbol="getApp"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/bin/gen/006-B4552-00/source/Rez.mcgen" id="2" lineNum="7" parent="globals/Rez" pc="268435481" symbol="&lt;init&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="3" lineNum="21" parent="globals/PicsBleApp" pc="268435501" symbol="&lt;init&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="4" lineNum="110" parent="globals/PicsInputDelegate" pc="268435513" symbol="&lt;init&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="5" lineNum="66" parent="globals/PicsFrame" pc="268435525" symbol="&lt;init&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="6" lineNum="18" parent="globals/PicsBleDelegate" pc="268435536" symbol="&lt;init&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="7" lineNum="28" parent="globals/PicsMainView" pc="268435548" symbol="&lt;init&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="8" lineNum="32" parent="globals/PicsBleApp" pc="268435560" symbol="getInitialView"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="8" lineNum="33" parent="globals/PicsBleApp" pc="268435562" symbol="getInitialView"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="8" lineNum="34" parent="globals/PicsBleApp" pc="268435587" symbol="getInitialView"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="9" lineNum="98" parent="globals/PicsBleApp" pc="268435626" symbol="onBlinkTick"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="9" lineNum="99" parent="globals/PicsBleApp" pc="268435628" symbol="onBlinkTick"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="9" lineNum="100" parent="globals/PicsBleApp" pc="268435637" symbol="onBlinkTick"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="10" lineNum="38" parent="globals/PicsBleApp" pc="268435653" symbol="onStart"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="10" lineNum="39" parent="globals/PicsBleApp" pc="268435655" symbol="onStart"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="10" lineNum="40" parent="globals/PicsBleApp" pc="268435662" symbol="onStart"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="11" lineNum="64" parent="globals/PicsBleApp" pc="268435670" symbol="&lt;globals/PicsBleApp/&lt;&gt;stopBleScanning&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="11" lineNum="65" parent="globals/PicsBleApp" pc="268435672" symbol="&lt;globals/PicsBleApp/&lt;&gt;stopBleScanning&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="11" lineNum="66" parent="globals/PicsBleApp" pc="268435686" symbol="&lt;globals/PicsBleApp/&lt;&gt;stopBleScanning&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="11" lineNum="67" parent="globals/PicsBleApp" pc="268435695" symbol="&lt;globals/PicsBleApp/&lt;&gt;stopBleScanning&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="12" lineNum="91" parent="globals/PicsBleApp" pc="268435714" symbol="&lt;globals/PicsBleApp/&lt;&gt;stopBlinkTimer&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="12" lineNum="92" parent="globals/PicsBleApp" pc="268435716" symbol="&lt;globals/PicsBleApp/&lt;&gt;stopBlinkTimer&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="12" lineNum="93" parent="globals/PicsBleApp" pc="268435725" symbol="&lt;globals/PicsBleApp/&lt;&gt;stopBlinkTimer&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="12" lineNum="94" parent="globals/PicsBleApp" pc="268435737" symbol="&lt;globals/PicsBleApp/&lt;&gt;stopBlinkTimer&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="13" lineNum="27" parent="globals/PicsBleApp" pc="268435749" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="13" lineNum="28" parent="globals/PicsBleApp" pc="268435751" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="14" lineNum="72" parent="globals/PicsBleApp" pc="268435764" symbol="onPicsSignal"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="14" lineNum="73" parent="globals/PicsBleApp" pc="268435766" symbol="onPicsSignal"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="14" lineNum="73" parent="globals/PicsBleApp" pc="268435784" symbol="onPicsSignal"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="14" lineNum="74" parent="globals/PicsBleApp" pc="268435788" symbol="onPicsSignal"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="14" lineNum="75" parent="globals/PicsBleApp" pc="268435796" symbol="onPicsSignal"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="15" lineNum="86" parent="globals/PicsBleApp" pc="268435856" symbol="&lt;globals/PicsBleApp/&lt;&gt;startBlinkTimer&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="15" lineNum="87" parent="globals/PicsBleApp" pc="268435858" symbol="&lt;globals/PicsBleApp/&lt;&gt;startBlinkTimer&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="15" lineNum="88" parent="globals/PicsBleApp" pc="268435887" symbol="&lt;globals/PicsBleApp/&lt;&gt;startBlinkTimer&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="16" lineNum="53" parent="globals/PicsBleApp" pc="268435919" symbol="&lt;globals/PicsBleApp/&lt;&gt;startBleScanning&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="16" lineNum="55" parent="globals/PicsBleApp" pc="268435921" symbol="&lt;globals/PicsBleApp/&lt;&gt;startBleScanning&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="16" lineNum="56" parent="globals/PicsBleApp" pc="268435959" symbol="&lt;globals/PicsBleApp/&lt;&gt;startBleScanning&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="16" lineNum="57" parent="globals/PicsBleApp" pc="268435977" symbol="&lt;globals/PicsBleApp/&lt;&gt;startBleScanning&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="16" lineNum="59" parent="globals/PicsBleApp" pc="268435992" symbol="&lt;globals/PicsBleApp/&lt;&gt;startBleScanning&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="16" lineNum="60" parent="globals/PicsBleApp" pc="268436001" symbol="&lt;globals/PicsBleApp/&lt;&gt;startBleScanning&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="17" lineNum="44" parent="globals/PicsBleApp" pc="268436020" symbol="onStop"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="17" lineNum="45" parent="globals/PicsBleApp" pc="268436022" symbol="onStop"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="17" lineNum="46" parent="globals/PicsBleApp" pc="268436029" symbol="onStop"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="18" lineNum="21" parent="globals/SignalIndicator" pc="268436037" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="18" lineNum="22" parent="globals/SignalIndicator" pc="268436039" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="18" lineNum="23" parent="globals/SignalIndicator" pc="268436048" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="18" lineNum="24" parent="globals/SignalIndicator" pc="268436057" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="19" lineNum="118" parent="globals/PicsInputDelegate" pc="268436067" symbol="onBack"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="19" lineNum="119" parent="globals/PicsInputDelegate" pc="268436069" symbol="onBack"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="19" lineNum="120" parent="globals/PicsInputDelegate" pc="268436084" symbol="onBack"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="20" lineNum="113" parent="globals/PicsInputDelegate" pc="268436086" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="20" lineNum="114" parent="globals/PicsInputDelegate" pc="268436088" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="20" lineNum="115" parent="globals/PicsInputDelegate" pc="268436100" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="21" lineNum="124" parent="globals/PicsInputDelegate" pc="268436110" symbol="onSelect"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleApp.mc" id="21" lineNum="125" parent="globals/PicsInputDelegate" pc="268436112" symbol="onSelect"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="22" lineNum="72" parent="globals/PicsFrame" pc="268436114" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="22" lineNum="73" parent="globals/PicsFrame" pc="268436117" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="22" lineNum="74" parent="globals/PicsFrame" pc="268436128" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="23" lineNum="171" parent="globals/PicsIntersectionDB" pc="268436168" symbol="findNearest"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="23" lineNum="172" parent="globals/PicsIntersectionDB" pc="268436171" symbol="findNearest"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="23" lineNum="173" parent="globals/PicsIntersectionDB" pc="268436185" symbol="findNearest"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="178" parent="globals/PicsIntersectionDB" pc="268436205" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="179" parent="globals/PicsIntersectionDB" pc="268436208" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="180" parent="globals/PicsIntersectionDB" pc="268436233" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="182" parent="globals/PicsIntersectionDB" pc="268436238" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="183" parent="globals/PicsIntersectionDB" pc="268436245" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="184" parent="globals/PicsIntersectionDB" pc="268436248" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="185" parent="globals/PicsIntersectionDB" pc="268436251" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="186" parent="globals/PicsIntersectionDB" pc="268436258" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="187" parent="globals/PicsIntersectionDB" pc="268436265" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="188" parent="globals/PicsIntersectionDB" pc="268436281" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="189" parent="globals/PicsIntersectionDB" pc="268436288" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="190" parent="globals/PicsIntersectionDB" pc="268436300" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="191" parent="globals/PicsIntersectionDB" pc="268436313" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="192" parent="globals/PicsIntersectionDB" pc="268436320" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="193" parent="globals/PicsIntersectionDB" pc="268436327" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="194" parent="globals/PicsIntersectionDB" pc="268436340" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="195" parent="globals/PicsIntersectionDB" pc="268436348" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="196" parent="globals/PicsIntersectionDB" pc="268436352" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="197" parent="globals/PicsIntersectionDB" pc="268436356" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="198" parent="globals/PicsIntersectionDB" pc="268436360" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="24" lineNum="201" parent="globals/PicsIntersectionDB" pc="268436380" symbol="findNearestEntry"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="25" lineNum="163" parent="globals/PicsIntersectionDB" pc="268436400" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="25" lineNum="164" parent="globals/PicsIntersectionDB" pc="268436403" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="25" lineNum="165" parent="globals/PicsIntersectionDB" pc="268436424" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="25" lineNum="166" parent="globals/PicsIntersectionDB" pc="268436439" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="26" lineNum="41" parent="globals/PicsSignal" pc="268436452" symbol="stateLabel"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="26" lineNum="42" parent="globals/PicsSignal" pc="268436454" symbol="stateLabel"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="26" lineNum="43" parent="globals/PicsSignal" pc="268436459" symbol="stateLabel"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="26" lineNum="44" parent="globals/PicsSignal" pc="268436475" symbol="stateLabel"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="26" lineNum="45" parent="globals/PicsSignal" pc="268436491" symbol="stateLabel"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="26" lineNum="46" parent="globals/PicsSignal" pc="268436507" symbol="stateLabel"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="26" lineNum="47" parent="globals/PicsSignal" pc="268436523" symbol="stateLabel"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="26" lineNum="43" parent="globals/PicsSignal" pc="268436526" symbol="stateLabel"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="26" lineNum="44" parent="globals/PicsSignal" pc="268436546" symbol="stateLabel"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="26" lineNum="45" parent="globals/PicsSignal" pc="268436566" symbol="stateLabel"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="26" lineNum="46" parent="globals/PicsSignal" pc="268436586" symbol="stateLabel"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="26" lineNum="47" parent="globals/PicsSignal" pc="268436606" symbol="stateLabel"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="27" lineNum="35" parent="globals/PicsSignal" pc="268436628" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="27" lineNum="36" parent="globals/PicsSignal" pc="268436630" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="27" lineNum="37" parent="globals/PicsSignal" pc="268436639" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="57" parent="globals/PicsBleDelegate" pc="268436649" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="59" parent="globals/PicsBleDelegate" pc="268436652" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="60" parent="globals/PicsBleDelegate" pc="268436666" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="60" parent="globals/PicsBleDelegate" pc="268436672" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="62" parent="globals/PicsBleDelegate" pc="268436676" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="64" parent="globals/PicsBleDelegate" pc="268436691" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="65" parent="globals/PicsBleDelegate" pc="268436715" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="65" parent="globals/PicsBleDelegate" pc="268436721" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="68" parent="globals/PicsBleDelegate" pc="268436725" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="69" parent="globals/PicsBleDelegate" pc="268436731" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="72" parent="globals/PicsBleDelegate" pc="268436746" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="84" parent="globals/PicsBleDelegate" pc="268436762" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="70" parent="globals/PicsBleDelegate" pc="268436781" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="71" parent="globals/PicsBleDelegate" pc="268436790" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="73" parent="globals/PicsBleDelegate" pc="268436793" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="74" parent="globals/PicsBleDelegate" pc="268436802" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="75" parent="globals/PicsBleDelegate" pc="268436811" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="77" parent="globals/PicsBleDelegate" pc="268436838" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="78" parent="globals/PicsBleDelegate" pc="268436844" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="79" parent="globals/PicsBleDelegate" pc="268436855" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="80" parent="globals/PicsBleDelegate" pc="268436867" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="83" parent="globals/PicsBleDelegate" pc="268436885" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="85" parent="globals/PicsBleDelegate" pc="268436888" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="87" parent="globals/PicsBleDelegate" pc="268436897" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="88" parent="globals/PicsBleDelegate" pc="268436906" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="28" lineNum="90" parent="globals/PicsBleDelegate" pc="268436927" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="29" lineNum="111" parent="globals/PicsBleDelegate" pc="268436932" symbol="onConnectedStateChanged"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="30" lineNum="106" parent="globals/PicsBleDelegate" pc="268436935" symbol="hasLocation"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="30" lineNum="107" parent="globals/PicsBleDelegate" pc="268436937" symbol="hasLocation"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="31" lineNum="95" parent="globals/PicsBleDelegate" pc="268436944" symbol="getIntersectionId"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="31" lineNum="96" parent="globals/PicsBleDelegate" pc="268436946" symbol="getIntersectionId"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="31" lineNum="97" parent="globals/PicsBleDelegate" pc="268436955" symbol="getIntersectionId"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="31" lineNum="99" parent="globals/PicsBleDelegate" pc="268436969" symbol="getIntersectionId"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="31" lineNum="100" parent="globals/PicsBleDelegate" pc="268436978" symbol="getIntersectionId"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="31" lineNum="102" parent="globals/PicsBleDelegate" pc="268436992" symbol="getIntersectionId"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="32" lineNum="41" parent="globals/PicsBleDelegate" pc="268436998" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="32" lineNum="42" parent="globals/PicsBleDelegate" pc="268437000" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="32" lineNum="43" parent="globals/PicsBleDelegate" pc="268437012" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="32" lineNum="44" parent="globals/PicsBleDelegate" pc="268437021" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="33" lineNum="48" parent="globals/PicsBleDelegate" pc="268437047" symbol="onScanResults"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="33" lineNum="49" parent="globals/PicsBleDelegate" pc="268437050" symbol="onScanResults"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="33" lineNum="50" parent="globals/PicsBleDelegate" pc="268437059" symbol="onScanResults"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="33" lineNum="51" parent="globals/PicsBleDelegate" pc="268437065" symbol="onScanResults"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsBleDelegate.mc" id="33" lineNum="52" parent="globals/PicsBleDelegate" pc="268437076" symbol="onScanResults"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="259" parent="globals/PicsMainView" pc="268437089" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="260" parent="globals/PicsMainView" pc="268437092" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="262" parent="globals/PicsMainView" pc="268437097" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="263" parent="globals/PicsMainView" pc="268437100" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="264" parent="globals/PicsMainView" pc="268437103" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="265" parent="globals/PicsMainView" pc="268437106" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="266" parent="globals/PicsMainView" pc="268437118" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="267" parent="globals/PicsMainView" pc="268437135" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="268" parent="globals/PicsMainView" pc="268437150" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="269" parent="globals/PicsMainView" pc="268437162" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="270" parent="globals/PicsMainView" pc="268437175" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="273" parent="globals/PicsMainView" pc="268437181" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="276" parent="globals/PicsMainView" pc="268437196" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="277" parent="globals/PicsMainView" pc="268437252" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="278" parent="globals/PicsMainView" pc="268437308" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="279" parent="globals/PicsMainView" pc="268437324" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="284" parent="globals/PicsMainView" pc="268437385" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="285" parent="globals/PicsMainView" pc="268437448" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="286" parent="globals/PicsMainView" pc="268437511" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="287" parent="globals/PicsMainView" pc="268437527" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="292" parent="globals/PicsMainView" pc="268437588" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="293" parent="globals/PicsMainView" pc="268437595" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="294" parent="globals/PicsMainView" pc="268437605" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="295" parent="globals/PicsMainView" pc="268437612" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="296" parent="globals/PicsMainView" pc="268437622" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="297" parent="globals/PicsMainView" pc="268437635" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="298" parent="globals/PicsMainView" pc="268437651" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="299" parent="globals/PicsMainView" pc="268437667" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="300" parent="globals/PicsMainView" pc="268437689" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="301" parent="globals/PicsMainView" pc="268437711" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="302" parent="globals/PicsMainView" pc="268437754" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="304" parent="globals/PicsMainView" pc="268437811" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="305" parent="globals/PicsMainView" pc="268437842" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="307" parent="globals/PicsMainView" pc="268437918" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="308" parent="globals/PicsMainView" pc="268437954" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="309" parent="globals/PicsMainView" pc="268437964" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="309" parent="globals/PicsMainView" pc="268437975" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="311" parent="globals/PicsMainView" pc="268437988" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="312" parent="globals/PicsMainView" pc="268437995" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="314" parent="globals/PicsMainView" pc="268438020" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="316" parent="globals/PicsMainView" pc="268438078" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="34" lineNum="317" parent="globals/PicsMainView" pc="268438094" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="35" lineNum="67" parent="globals/PicsMainView" pc="268438147" symbol="updateSignal"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="35" lineNum="71" parent="globals/PicsMainView" pc="268438149" symbol="updateSignal"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="35" lineNum="72" parent="globals/PicsMainView" pc="268438158" symbol="updateSignal"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="35" lineNum="73" parent="globals/PicsMainView" pc="268438167" symbol="updateSignal"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="35" lineNum="74" parent="globals/PicsMainView" pc="268438176" symbol="updateSignal"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="35" lineNum="75" parent="globals/PicsMainView" pc="268438185" symbol="updateSignal"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="35" lineNum="76" parent="globals/PicsMainView" pc="268438194" symbol="updateSignal"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="36" lineNum="86" parent="globals/PicsMainView" pc="268438206" symbol="toggleBlinkPhase"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="36" lineNum="87" parent="globals/PicsMainView" pc="268438208" symbol="toggleBlinkPhase"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="36" lineNum="88" parent="globals/PicsMainView" pc="268438221" symbol="toggleBlinkPhase"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="36" lineNum="88" parent="globals/PicsMainView" pc="268438230" symbol="toggleBlinkPhase"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="37" lineNum="63" parent="globals/PicsMainView" pc="268438245" symbol="onLayout"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="38" lineNum="150" parent="globals/PicsMainView" pc="268438248" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSignalPanels&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="38" lineNum="151" parent="globals/PicsMainView" pc="268438251" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSignalPanels&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="38" lineNum="152" parent="globals/PicsMainView" pc="268438256" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSignalPanels&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="38" lineNum="153" parent="globals/PicsMainView" pc="268438261" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSignalPanels&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="38" lineNum="154" parent="globals/PicsMainView" pc="268438265" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSignalPanels&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="38" lineNum="155" parent="globals/PicsMainView" pc="268438269" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSignalPanels&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="38" lineNum="157" parent="globals/PicsMainView" pc="268438279" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSignalPanels&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="38" lineNum="159" parent="globals/PicsMainView" pc="268438329" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSignalPanels&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="38" lineNum="160" parent="globals/PicsMainView" pc="268438349" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSignalPanels&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="38" lineNum="161" parent="globals/PicsMainView" pc="268438359" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSignalPanels&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="38" lineNum="162" parent="globals/PicsMainView" pc="268438375" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSignalPanels&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="38" lineNum="164" parent="globals/PicsMainView" pc="268438382" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSignalPanels&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="38" lineNum="165" parent="globals/PicsMainView" pc="268438385" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSignalPanels&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="38" lineNum="166" parent="globals/PicsMainView" pc="268438410" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSignalPanels&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="38" lineNum="169" parent="globals/PicsMainView" pc="268438428" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSignalPanels&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="39" lineNum="80" parent="globals/PicsMainView" pc="268438462" symbol="setScanningState"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="39" lineNum="81" parent="globals/PicsMainView" pc="268438464" symbol="setScanningState"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="39" lineNum="82" parent="globals/PicsMainView" pc="268438473" symbol="setScanningState"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="105" parent="globals/PicsMainView" pc="268438485" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="106" parent="globals/PicsMainView" pc="268438488" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="108" parent="globals/PicsMainView" pc="268438493" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="109" parent="globals/PicsMainView" pc="268438511" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="111" parent="globals/PicsMainView" pc="268438528" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="112" parent="globals/PicsMainView" pc="268438546" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="115" parent="globals/PicsMainView" pc="268438563" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="116" parent="globals/PicsMainView" pc="268438579" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="121" parent="globals/PicsMainView" pc="268438615" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="122" parent="globals/PicsMainView" pc="268438619" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="123" parent="globals/PicsMainView" pc="268438626" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="124" parent="globals/PicsMainView" pc="268438642" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="125" parent="globals/PicsMainView" pc="268438649" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="127" parent="globals/PicsMainView" pc="268438655" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="130" parent="globals/PicsMainView" pc="268438684" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="132" parent="globals/PicsMainView" pc="268438720" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="133" parent="globals/PicsMainView" pc="268438737" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="136" parent="globals/PicsMainView" pc="268438757" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="137" parent="globals/PicsMainView" pc="268438778" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="138" parent="globals/PicsMainView" pc="268438829" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="139" parent="globals/PicsMainView" pc="268438843" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="143" parent="globals/PicsMainView" pc="268438862" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="40" lineNum="144" parent="globals/PicsMainView" pc="268438880" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="174" parent="globals/PicsMainView" pc="268438899" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="183" parent="globals/PicsMainView" pc="268438902" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="185" parent="globals/PicsMainView" pc="268438912" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="186" parent="globals/PicsMainView" pc="268438930" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="187" parent="globals/PicsMainView" pc="268438948" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="188" parent="globals/PicsMainView" pc="268438966" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="190" parent="globals/PicsMainView" pc="268438984" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="191" parent="globals/PicsMainView" pc="268439000" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="195" parent="globals/PicsMainView" pc="268439023" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="196" parent="globals/PicsMainView" pc="268439027" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="198" parent="globals/PicsMainView" pc="268439034" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="199" parent="globals/PicsMainView" pc="268439040" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="200" parent="globals/PicsMainView" pc="268439061" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="202" parent="globals/PicsMainView" pc="268439068" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="203" parent="globals/PicsMainView" pc="268439074" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="204" parent="globals/PicsMainView" pc="268439084" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="208" parent="globals/PicsMainView" pc="268439125" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="209" parent="globals/PicsMainView" pc="268439132" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="212" parent="globals/PicsMainView" pc="268439148" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="215" parent="globals/PicsMainView" pc="268439164" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="218" parent="globals/PicsMainView" pc="268439180" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="221" parent="globals/PicsMainView" pc="268439196" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="210" parent="globals/PicsMainView" pc="268439199" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="211" parent="globals/PicsMainView" pc="268439206" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="213" parent="globals/PicsMainView" pc="268439209" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="214" parent="globals/PicsMainView" pc="268439215" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="216" parent="globals/PicsMainView" pc="268439218" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="217" parent="globals/PicsMainView" pc="268439240" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="219" parent="globals/PicsMainView" pc="268439243" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="220" parent="globals/PicsMainView" pc="268439249" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="222" parent="globals/PicsMainView" pc="268439252" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="223" parent="globals/PicsMainView" pc="268439258" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="227" parent="globals/PicsMainView" pc="268439265" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="228" parent="globals/PicsMainView" pc="268439283" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="229" parent="globals/PicsMainView" pc="268439302" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="232" parent="globals/PicsMainView" pc="268439324" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="233" parent="globals/PicsMainView" pc="268439338" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="235" parent="globals/PicsMainView" pc="268439354" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="236" parent="globals/PicsMainView" pc="268439370" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="238" parent="globals/PicsMainView" pc="268439395" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="239" parent="globals/PicsMainView" pc="268439412" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="243" parent="globals/PicsMainView" pc="268439436" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="244" parent="globals/PicsMainView" pc="268439452" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="248" parent="globals/PicsMainView" pc="268439507" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="249" parent="globals/PicsMainView" pc="268439522" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="41" lineNum="250" parent="globals/PicsMainView" pc="268439538" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="42" lineNum="59" parent="globals/PicsMainView" pc="268439591" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="42" lineNum="60" parent="globals/PicsMainView" pc="268439593" symbol="initialize"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="43" lineNum="325" parent="globals/PicsMainView" pc="268439606" symbol="&lt;globals/PicsMainView/&lt;&gt;drawFooter&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="43" lineNum="326" parent="globals/PicsMainView" pc="268439609" symbol="&lt;globals/PicsMainView/&lt;&gt;drawFooter&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="43" lineNum="328" parent="globals/PicsMainView" pc="268439614" symbol="&lt;globals/PicsMainView/&lt;&gt;drawFooter&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="43" lineNum="329" parent="globals/PicsMainView" pc="268439632" symbol="&lt;globals/PicsMainView/&lt;&gt;drawFooter&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="43" lineNum="331" parent="globals/PicsMainView" pc="268439651" symbol="&lt;globals/PicsMainView/&lt;&gt;drawFooter&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="43" lineNum="332" parent="globals/PicsMainView" pc="268439669" symbol="&lt;globals/PicsMainView/&lt;&gt;drawFooter&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="43" lineNum="335" parent="globals/PicsMainView" pc="268439688" symbol="&lt;globals/PicsMainView/&lt;&gt;drawFooter&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="43" lineNum="336" parent="globals/PicsMainView" pc="268439721" symbol="&lt;globals/PicsMainView/&lt;&gt;drawFooter&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="43" lineNum="337" parent="globals/PicsMainView" pc="268439730" symbol="&lt;globals/PicsMainView/&lt;&gt;drawFooter&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="43" lineNum="338" parent="globals/PicsMainView" pc="268439755" symbol="&lt;globals/PicsMainView/&lt;&gt;drawFooter&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="43" lineNum="343" parent="globals/PicsMainView" pc="268439831" symbol="&lt;globals/PicsMainView/&lt;&gt;drawFooter&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="43" lineNum="344" parent="globals/PicsMainView" pc="268439848" symbol="&lt;globals/PicsMainView/&lt;&gt;drawFooter&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="43" lineNum="348" parent="globals/PicsMainView" pc="268439900" symbol="&lt;globals/PicsMainView/&lt;&gt;drawFooter&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="43" lineNum="349" parent="globals/PicsMainView" pc="268439916" symbol="&lt;globals/PicsMainView/&lt;&gt;drawFooter&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="43" lineNum="353" parent="globals/PicsMainView" pc="268439983" symbol="&lt;globals/PicsMainView/&lt;&gt;drawFooter&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="43" lineNum="354" parent="globals/PicsMainView" pc="268439999" symbol="&lt;globals/PicsMainView/&lt;&gt;drawFooter&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="43" lineNum="358" parent="globals/PicsMainView" pc="268440036" symbol="&lt;globals/PicsMainView/&lt;&gt;drawFooter&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="43" lineNum="359" parent="globals/PicsMainView" pc="268440054" symbol="&lt;globals/PicsMainView/&lt;&gt;drawFooter&gt;"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="44" lineNum="92" parent="globals/PicsMainView" pc="268440074" symbol="onUpdate"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="44" lineNum="93" parent="globals/PicsMainView" pc="268440076" symbol="onUpdate"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="44" lineNum="94" parent="globals/PicsMainView" pc="268440094" symbol="onUpdate"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="44" lineNum="96" parent="globals/PicsMainView" pc="268440102" symbol="onUpdate"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="44" lineNum="97" parent="globals/PicsMainView" pc="268440113" symbol="onUpdate"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="44" lineNum="98" parent="globals/PicsMainView" pc="268440124" symbol="onUpdate"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsMainView.mc" id="44" lineNum="99" parent="globals/PicsMainView" pc="268440135" symbol="onUpdate"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="92" parent="globals/PicsParser" pc="268440147" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="93" parent="globals/PicsParser" pc="268440150" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="94" parent="globals/PicsParser" pc="268440170" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="97" parent="globals/PicsParser" pc="268440175" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="98" parent="globals/PicsParser" pc="268440195" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="99" parent="globals/PicsParser" pc="268440205" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="100" parent="globals/PicsParser" pc="268440229" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="101" parent="globals/PicsParser" pc="268440242" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="104" parent="globals/PicsParser" pc="268440255" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="105" parent="globals/PicsParser" pc="268440268" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="106" parent="globals/PicsParser" pc="268440275" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="107" parent="globals/PicsParser" pc="268440287" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="109" parent="globals/PicsParser" pc="268440320" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="113" parent="globals/PicsParser" pc="268440333" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="115" parent="globals/PicsParser" pc="268440339" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="120" parent="globals/PicsParser" pc="268440354" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="132" parent="globals/PicsParser" pc="268440370" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="146" parent="globals/PicsParser" pc="268440386" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="118" parent="globals/PicsParser" pc="268440389" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="121" parent="globals/PicsParser" pc="268440392" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="123" parent="globals/PicsParser" pc="268440405" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="125" parent="globals/PicsParser" pc="268440439" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="127" parent="globals/PicsParser" pc="268440473" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="128" parent="globals/PicsParser" pc="268440489" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="130" parent="globals/PicsParser" pc="268440508" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="133" parent="globals/PicsParser" pc="268440511" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="134" parent="globals/PicsParser" pc="268440522" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="135" parent="globals/PicsParser" pc="268440529" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="135" parent="globals/PicsParser" pc="268440542" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="136" parent="globals/PicsParser" pc="268440548" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="137" parent="globals/PicsParser" pc="268440555" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="138" parent="globals/PicsParser" pc="268440565" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="139" parent="globals/PicsParser" pc="268440572" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="144" parent="globals/PicsParser" pc="268440629" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="148" parent="globals/PicsParser" pc="268440632" symbol="parse"/>
+        <entry filename="/Users/halka/Documents/GitHub/Advanced-PICS-Traffic-Signals-for-GARMIN/source/PicsData.mc" id="46" lineNum="151" parent="globals/PicsParser" pc="268440636" symbol="parse"/>
+    </pcToLineNum>
+    <symbolTable>
+        <entry id="58" method="true" symbol="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;"/>
+        <entry id="8388639" module="true" symbol="Graphics"/>
+        <entry id="57" method="true" symbol="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;"/>
+        <entry field="true" id="31" symbol="&lt;globals/PicsIntersectionDB/&lt;&gt;_entries&gt;"/>
+        <entry field="true" id="28" symbol="msgId"/>
+        <entry field="true" id="37" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;_intersectionDb&gt;"/>
+        <entry id="8388632" method="true" symbol="&lt;init&gt;"/>
+        <entry id="60" method="true" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;"/>
+        <entry id="9" object="true" symbol="PicsFrame"/>
+        <entry id="7" object="true" symbol="PicsBleApp"/>
+        <entry id="47" symbol="rxCount"/>
+        <entry field="true" id="55" symbol="&lt;globals/PicsMainView/&lt;&gt;_scanning&gt;"/>
+        <entry field="true" id="40" symbol="currentIntersectionName"/>
+        <entry id="19" method="true" symbol="onBlinkTick"/>
+        <entry field="true" id="8389250" symbol="timestamp"/>
+        <entry field="true" id="49" symbol="&lt;globals/PicsMainView/&lt;&gt;_blinkPhase&gt;"/>
+        <entry id="8388924" module="true" symbol="Gregorian"/>
+        <entry id="62" method="true" symbol="toggleBlinkPhase"/>
+        <entry field="true" id="8388611" module="true" symbol="Toybox"/>
+        <entry id="8391256" method="true" symbol="onScanResults"/>
+        <entry id="24" method="true" symbol="&lt;globals/PicsBleApp/&lt;&gt;stopBlinkTimer&gt;"/>
+        <entry id="63" method="true" symbol="updateSignal"/>
+        <entry field="true" id="65" symbol="AppName"/>
+        <entry id="20" method="true" symbol="onPicsSignal"/>
+        <entry id="33" method="true" symbol="findNearestEntry"/>
+        <entry id="6" module="true" symbol="globals/Rez/Strings"/>
+        <entry id="2" module="true" symbol="globals/PicsParser/&lt;statics&gt;"/>
+        <entry id="8388648" module="true" symbol="WatchUi"/>
+        <entry field="true" id="70" symbol="DevicePrefix"/>
+        <entry id="8389081" method="true" symbol="onBack"/>
+        <entry field="true" id="8389138" symbol="label"/>
+        <entry field="true" id="51" symbol="&lt;globals/PicsMainView/&lt;&gt;_intersectionLon&gt;"/>
+        <entry id="12" object="true" symbol="PicsMainView"/>
+        <entry id="3" module="true" symbol="globals/Rez"/>
+        <entry id="32" method="true" symbol="findNearest"/>
+        <entry id="8389124" method="true" symbol="onUpdate"/>
+        <entry id="8" object="true" symbol="PicsBleDelegate"/>
+        <entry id="8389299" method="true" symbol="parse"/>
+        <entry id="8388771" module="true" object="true" symbol="Drawables"/>
+        <entry field="true" id="8389314" symbol="latitude"/>
+        <entry field="true" id="25" symbol="&lt;globals/PicsInputDelegate/&lt;&gt;_view&gt;"/>
+        <entry id="8391258" method="true" symbol="onConnectedStateChanged"/>
+        <entry field="true" id="85" symbol="intersections"/>
+        <entry id="8389275" method="true" symbol="getApp"/>
+        <entry field="true" id="82" symbol="ScanningIndicator"/>
+        <entry id="42" method="true" symbol="hasLocation"/>
+        <entry field="true" id="45" symbol="lastSignalFrame"/>
+        <entry id="8389122" method="true" symbol="onLayout"/>
+        <entry field="true" id="71" symbol="DistancePrefix"/>
+        <entry field="true" id="17" symbol="&lt;globals/PicsBleApp/&lt;&gt;_timer&gt;"/>
+        <entry id="15" object="true" symbol="SignalIndicator"/>
+        <entry id="61" method="true" symbol="setScanningState"/>
+        <entry field="true" id="50" symbol="&lt;globals/PicsMainView/&lt;&gt;_intersectionLat&gt;"/>
+        <entry id="11" object="true" symbol="PicsIntersectionDB"/>
+        <entry id="5" module="true" symbol="globals/Rez/JsonData"/>
+        <entry id="41" method="true" symbol="getIntersectionId"/>
+        <entry field="true" id="81" symbol="RemainingPrefix"/>
+        <entry id="4" module="true" symbol="globals/Rez/Drawables"/>
+        <entry field="true" id="74" symbol="IntersectionCoordPrefix"/>
+        <entry field="true" id="8389248" symbol="rssi"/>
+        <entry field="true" id="43" symbol="lastIdFrame"/>
+        <entry field="true" id="72" symbol="EastWest"/>
+        <entry id="46" method="true" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;"/>
+        <entry field="true" id="84" symbol="WaitingDots"/>
+        <entry id="8388644" module="true" symbol="System"/>
+        <entry field="true" id="8389315" symbol="longitude"/>
+        <entry id="59" method="true" symbol="&lt;globals/PicsMainView/&lt;&gt;drawSignalPanels&gt;"/>
+        <entry id="8389619" method="true" symbol="onSelect"/>
+        <entry id="8388645" module="true" symbol="Time"/>
+        <entry id="8388769" module="true" object="true" symbol="Rez"/>
+        <entry field="true" id="80" symbol="Red"/>
+        <entry field="true" id="77" symbol="NoSignal"/>
+        <entry field="true" id="69" symbol="ControlOut"/>
+        <entry field="true" id="67" symbol="BackHint"/>
+        <entry id="13" object="true" symbol="PicsParser"/>
+        <entry id="48" symbol="&lt;globals/PicsMainView/&lt;&gt;DISPLAY_CHANNELS&gt;"/>
+        <entry field="true" id="76" symbol="LastReceivedPrefix"/>
+        <entry id="8388640" module="true" symbol="Lang"/>
+        <entry id="54" symbol="&lt;globals/PicsMainView/&lt;&gt;_rxCount&gt;"/>
+        <entry id="8390088" module="true" object="true" symbol="JsonData"/>
+        <entry field="true" id="34" symbol="remaining"/>
+        <entry field="true" id="64" symbol="LauncherIcon"/>
+        <entry id="8388610" symbol="statics"/>
+        <entry field="true" id="30" symbol="signals"/>
+        <entry field="true" id="27" symbol="intersectionName"/>
+        <entry id="35" method="true" symbol="stateLabel"/>
+        <entry id="10" object="true" symbol="PicsInputDelegate"/>
+        <entry field="true" id="36" symbol="&lt;globals/PicsBleDelegate/&lt;&gt;_callback&gt;"/>
+        <entry id="8389350" module="true" symbol="globals"/>
+        <entry id="8388770" module="true" object="true" symbol="Strings"/>
+        <entry id="14" object="true" symbol="PicsSignal"/>
+        <entry field="true" id="68" symbol="BlinkGreen"/>
+        <entry id="8391193" module="true" symbol="BluetoothLowEnergy"/>
+        <entry field="true" id="83" symbol="StoppedIndicator"/>
+        <entry id="8388702" method="true" symbol="initialize"/>
+        <entry id="8389279" method="true" symbol="onStart"/>
+        <entry id="8388641" module="true" symbol="Math"/>
+        <entry id="21" method="true" symbol="&lt;globals/PicsBleApp/&lt;&gt;startBleScanning&gt;"/>
+        <entry field="true" id="53" symbol="&lt;globals/PicsMainView/&lt;&gt;_lastFrame&gt;"/>
+        <entry id="23" method="true" symbol="&lt;globals/PicsBleApp/&lt;&gt;stopBleScanning&gt;"/>
+        <entry field="true" id="78" symbol="NorthSouth"/>
+        <entry field="true" id="39" symbol="currentIntersectionLon"/>
+        <entry id="8389280" method="true" symbol="getInitialView"/>
+        <entry id="8389281" method="true" symbol="onStop"/>
+        <entry field="true" id="16" symbol="&lt;globals/PicsBleApp/&lt;&gt;_delegate&gt;"/>
+        <entry field="true" id="73" symbol="Green"/>
+        <entry field="true" id="18" symbol="&lt;globals/PicsBleApp/&lt;&gt;_view&gt;"/>
+        <entry id="8388646" module="true" object="true" symbol="Timer"/>
+        <entry field="true" id="8389487" symbol="state"/>
+        <entry field="true" id="38" symbol="currentIntersectionLat"/>
+        <entry id="56" method="true" symbol="&lt;globals/PicsMainView/&lt;&gt;drawFooter&gt;"/>
+        <entry id="8388642" module="true" symbol="Position"/>
+        <entry field="true" id="66" symbol="AppTitle"/>
+        <entry field="true" id="44" symbol="lastLocFrame"/>
+        <entry id="22" method="true" symbol="&lt;globals/PicsBleApp/&lt;&gt;startBlinkTimer&gt;"/>
+        <entry field="true" id="52" symbol="&lt;globals/PicsMainView/&lt;&gt;_intersectionName&gt;"/>
+        <entry field="true" id="29" symbol="msgType"/>
+        <entry id="8388635" module="true" symbol="Application"/>
+        <entry field="true" id="8390079" symbol="y"/>
+        <entry field="true" id="8390078" symbol="x"/>
+        <entry field="true" id="75" symbol="IntersectionPrefix"/>
+        <entry field="true" id="26" symbol="intersectionId"/>
+        <entry field="true" id="79" symbol="PacketCountPrefix"/>
+    </symbolTable>
+    <localVars>
+        <entry arg="true" endPc="268435669" name="state" stackId="1" startPc="268435653"/>
+        <entry arg="true" endPc="268435855" name="frame" stackId="1" startPc="268435764"/>
+        <entry arg="true" endPc="268435855" name="msgType" stackId="2" startPc="268435764"/>
+        <entry arg="true" endPc="268436036" name="state" stackId="1" startPc="268436020"/>
+        <entry arg="true" endPc="268436066" name="x_" stackId="1" startPc="268436037"/>
+        <entry arg="true" endPc="268436066" name="y_" stackId="2" startPc="268436037"/>
+        <entry arg="true" endPc="268436066" name="label_" stackId="3" startPc="268436037"/>
+        <entry arg="true" endPc="268436109" name="view" stackId="1" startPc="268436086"/>
+        <entry endPc="268436166" name="i" stackId="1" startPc="268436128"/>
+        <entry arg="true" endPc="268436204" name="lat" stackId="1" startPc="268436168"/>
+        <entry arg="true" endPc="268436204" name="lon" stackId="2" startPc="268436168"/>
+        <entry endPc="268436204" name="entry" stackId="3" startPc="268436171"/>
+        <entry arg="true" endPc="268436399" name="lat" stackId="1" startPc="268436205"/>
+        <entry arg="true" endPc="268436399" name="lon" stackId="2" startPc="268436205"/>
+        <entry endPc="268436399" name="entries" stackId="3" startPc="268436208"/>
+        <entry endPc="268436399" name="bestLat" stackId="4" startPc="268436208"/>
+        <entry endPc="268436399" name="bestLon" stackId="5" startPc="268436208"/>
+        <entry endPc="268436399" name="bestName" stackId="6" startPc="268436208"/>
+        <entry endPc="268436399" name="bestDist" stackId="7" startPc="268436208"/>
+        <entry endPc="268436379" name="i" stackId="8" startPc="268436281"/>
+        <entry endPc="268436369" name="e" stackId="9" startPc="268436281"/>
+        <entry endPc="268436369" name="eLat" stackId="10" startPc="268436281"/>
+        <entry endPc="268436369" name="eLon" stackId="11" startPc="268436281"/>
+        <entry endPc="268436369" name="dLat" stackId="12" startPc="268436281"/>
+        <entry endPc="268436369" name="dLon" stackId="13" startPc="268436281"/>
+        <entry endPc="268436369" name="dist" stackId="14" startPc="268436281"/>
+        <entry endPc="268436450" name="json" stackId="1" startPc="268436403"/>
+        <entry arg="true" endPc="268436648" name="state_" stackId="1" startPc="268436628"/>
+        <entry arg="true" endPc="268436648" name="remaining_" stackId="2" startPc="268436628"/>
+        <entry arg="true" endPc="268436931" name="result" stackId="1" startPc="268436649"/>
+        <entry endPc="268436930" name="payload" stackId="2" startPc="268436652"/>
+        <entry endPc="268436930" name="frame" stackId="3" startPc="268436652"/>
+        <entry endPc="268436881" name="entry" stackId="4" startPc="268436811"/>
+        <entry arg="true" endPc="268437046" name="callback" stackId="1" startPc="268436998"/>
+        <entry arg="true" endPc="268437088" name="scanResults" stackId="1" startPc="268437047"/>
+        <entry endPc="268437087" name="result" stackId="2" startPc="268437050"/>
+        <entry arg="true" endPc="268438146" name="dc" stackId="1" startPc="268437089"/>
+        <entry endPc="268438145" name="CX" stackId="2" startPc="268437092"/>
+        <entry endPc="268438145" name="devLat" stackId="3" startPc="268437092"/>
+        <entry endPc="268438145" name="devLon" stackId="4" startPc="268437092"/>
+        <entry endPc="268438145" name="hasFix" stackId="5" startPc="268437092"/>
+        <entry endPc="268438145" name="posInfo" stackId="6" startPc="268437092"/>
+        <entry endPc="268437177" name="coords" stackId="7" startPc="268437135"/>
+        <entry endPc="268438145" name="hasInt" stackId="8" startPc="268437092"/>
+        <entry endPc="268438145" name="devLatStr" stackId="9" startPc="268437092"/>
+        <entry endPc="268438145" name="devLonStr" stackId="10" startPc="268437092"/>
+        <entry endPc="268438145" name="intLatStr" stackId="11" startPc="268437092"/>
+        <entry endPc="268438145" name="intLonStr" stackId="12" startPc="268437092"/>
+        <entry endPc="268438145" name="distBrgStr" stackId="13" startPc="268437092"/>
+        <entry endPc="268438074" name="R" stackId="14" startPc="268437605"/>
+        <entry endPc="268438074" name="phi1" stackId="15" startPc="268437605"/>
+        <entry endPc="268438074" name="phi2" stackId="16" startPc="268437605"/>
+        <entry endPc="268438074" name="dPhi" stackId="17" startPc="268437605"/>
+        <entry endPc="268438074" name="dLam" stackId="18" startPc="268437605"/>
+        <entry endPc="268438074" name="sinH" stackId="19" startPc="268437605"/>
+        <entry endPc="268438074" name="sinL" stackId="20" startPc="268437605"/>
+        <entry endPc="268438074" name="a" stackId="21" startPc="268437605"/>
+        <entry endPc="268438074" name="dist" stackId="22" startPc="268437605"/>
+        <entry endPc="268438074" name="vy" stackId="23" startPc="268437605"/>
+        <entry endPc="268438074" name="vx" stackId="24" startPc="268437605"/>
+        <entry endPc="268438074" name="brg" stackId="25" startPc="268437605"/>
+        <entry endPc="268438074" name="cards" stackId="26" startPc="268437605"/>
+        <entry endPc="268438074" name="cidx" stackId="27" startPc="268437605"/>
+        <entry arg="true" endPc="268438205" name="frame" stackId="1" startPc="268438147"/>
+        <entry arg="true" endPc="268438205" name="rxCount" stackId="2" startPc="268438147"/>
+        <entry arg="true" endPc="268438205" name="intersectionName" stackId="3" startPc="268438147"/>
+        <entry arg="true" endPc="268438205" name="intersectionLat" stackId="4" startPc="268438147"/>
+        <entry arg="true" endPc="268438205" name="intersectionLon" stackId="5" startPc="268438147"/>
+        <entry arg="true" endPc="268438461" name="dc" stackId="1" startPc="268438248"/>
+        <entry endPc="268438460" name="panelW" stackId="2" startPc="268438251"/>
+        <entry endPc="268438460" name="panelH" stackId="3" startPc="268438251"/>
+        <entry endPc="268438460" name="panelY" stackId="4" startPc="268438251"/>
+        <entry endPc="268438460" name="panelX0" stackId="5" startPc="268438251"/>
+        <entry endPc="268438460" name="panelX1" stackId="6" startPc="268438251"/>
+        <entry endPc="268438460" name="channelLabels" stackId="7" startPc="268438251"/>
+        <entry endPc="268438460" name="c" stackId="8" startPc="268438349"/>
+        <entry endPc="268438450" name="ch" stackId="9" startPc="268438349"/>
+        <entry endPc="268438450" name="px" stackId="10" startPc="268438349"/>
+        <entry endPc="268438450" name="label" stackId="11" startPc="268438349"/>
+        <entry endPc="268438450" name="signal" stackId="12" startPc="268438349"/>
+        <entry arg="true" endPc="268438484" name="scanning" stackId="1" startPc="268438462"/>
+        <entry arg="true" endPc="268438898" name="dc" stackId="1" startPc="268438485"/>
+        <entry endPc="268438897" name="CX" stackId="2" startPc="268438488"/>
+        <entry endPc="268438897" name="nameFont" stackId="3" startPc="268438488"/>
+        <entry endPc="268438897" name="nameStr" stackId="4" startPc="268438488"/>
+        <entry endPc="268438719" name="intersectionId" stackId="5" startPc="268438655"/>
+        <entry endPc="268438897" name="statusColor" stackId="6" startPc="268438488"/>
+        <entry endPc="268438897" name="statusLabel" stackId="7" startPc="268438488"/>
+        <entry arg="true" endPc="268439590" name="dc" stackId="1" startPc="268438899"/>
+        <entry arg="true" endPc="268439590" name="x" stackId="2" startPc="268438899"/>
+        <entry arg="true" endPc="268439590" name="y" stackId="3" startPc="268438899"/>
+        <entry arg="true" endPc="268439590" name="w" stackId="4" startPc="268438899"/>
+        <entry arg="true" endPc="268439590" name="h" stackId="5" startPc="268438899"/>
+        <entry arg="true" endPc="268439590" name="label" stackId="6" startPc="268438899"/>
+        <entry arg="true" endPc="268439590" name="signal" stackId="7" startPc="268438899"/>
+        <entry endPc="268439589" name="cx" stackId="8" startPc="268438902"/>
+        <entry endPc="268439589" name="lampR" stackId="9" startPc="268438902"/>
+        <entry endPc="268439589" name="lampCY" stackId="10" startPc="268438902"/>
+        <entry endPc="268439589" name="sigColor" stackId="11" startPc="268438902"/>
+        <entry endPc="268439589" name="stateText" stackId="12" startPc="268438902"/>
+        <entry endPc="268439589" name="remText" stackId="13" startPc="268438902"/>
+        <entry arg="true" endPc="268440073" name="dc" stackId="1" startPc="268439606"/>
+        <entry endPc="268440072" name="CX" stackId="2" startPc="268439609"/>
+        <entry endPc="268440072" name="timeStr" stackId="3" startPc="268439609"/>
+        <entry endPc="268439827" name="now" stackId="4" startPc="268439730"/>
+        <entry arg="true" endPc="268440146" name="dc" stackId="1" startPc="268440074"/>
+        <entry arg="true" endPc="268440638" name="data" stackId="1" startPc="268440147"/>
+        <entry arg="true" endPc="268440638" name="rssi" stackId="2" startPc="268440147"/>
+        <entry endPc="268440638" name="frame" stackId="3" startPc="268440150"/>
+        <entry endPc="268440329" name="idStr" stackId="4" startPc="268440268"/>
+        <entry endPc="268440319" name="i" stackId="5" startPc="268440287"/>
+        <entry endPc="268440504" name="lat" stackId="6" startPc="268440405"/>
+        <entry endPc="268440504" name="lon" stackId="7" startPc="268440405"/>
+        <entry endPc="268440628" name="i" stackId="8" startPc="268440522"/>
+        <entry endPc="268440618" name="idx" stackId="9" startPc="268440522"/>
+        <entry endPc="268440618" name="b" stackId="10" startPc="268440522"/>
+        <entry endPc="268440618" name="rem" stackId="11" startPc="268440522"/>
+        <entry endPc="268440618" name="state" stackId="12" startPc="268440522"/>
+    </localVars>
+    <deviceInfo deviceVersion="fc71d5c8587c8925e91d8e4534b19dac012f5c73" partNumber="006-B4552-00"/>
+    <annotations>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="LastReceivedPrefix"/>
+        <annotationEntry annotation="initialized" class="Drawables" module="globals/Rez" symbol="LauncherIcon"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="AppTitle"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="IntersectionPrefix"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="StoppedIndicator"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="BackHint"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="AppName"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="NoSignal"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="Green"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="Red"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="ScanningIndicator"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="ControlOut"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="DistancePrefix"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="DevicePrefix"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="NorthSouth"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="PacketCountPrefix"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="RemainingPrefix"/>
+        <annotationEntry annotation="initialized" class="JsonData" module="globals/Rez" symbol="intersections"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="IntersectionCoordPrefix"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="EastWest"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="WaitingDots"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="BlinkGreen"/>
+    </annotations>
+    <dataEntryOffsetMappings>
+        <dataEntry label="globals" offset="67" parentId="" symbolId="globals" type="module"/>
+        <dataEntry label="globals/Rez" offset="197" parentId="globals" symbolId="Rez" type="module"/>
+        <dataEntry label="globals/PicsBleApp" offset="250" parentId="globals" symbolId="PicsBleApp" type="class"/>
+        <dataEntry label="globals/SignalIndicator" offset="402" parentId="globals" symbolId="SignalIndicator" type="class"/>
+        <dataEntry label="globals/PicsInputDelegate" offset="473" parentId="globals" symbolId="PicsInputDelegate" type="class"/>
+        <dataEntry label="globals/PicsFrame" offset="544" parentId="globals" symbolId="PicsFrame" type="class"/>
+        <dataEntry label="globals/PicsIntersectionDB" offset="669" parentId="globals" symbolId="PicsIntersectionDB" type="class"/>
+        <dataEntry label="globals/PicsSignal" offset="740" parentId="globals" symbolId="PicsSignal" type="class"/>
+        <dataEntry label="globals/PicsBleDelegate" offset="811" parentId="globals" symbolId="PicsBleDelegate" type="class"/>
+        <dataEntry label="globals/PicsMainView" offset="981" parentId="globals" symbolId="PicsMainView" type="class"/>
+        <dataEntry label="globals/PicsParser" offset="1187" parentId="globals" symbolId="PicsParser" type="class"/>
+        <dataEntry label="globals/PicsParser/&lt;statics&gt;" offset="1235" parentId="PicsParser" symbolId="&lt;statics&gt;" type="module"/>
+        <dataEntry label="globals/Rez/Drawables" offset="1266" parentId="Rez" symbolId="Drawables" type="module"/>
+        <dataEntry label="globals/Rez/Strings" offset="1301" parentId="Rez" symbolId="Strings" type="module"/>
+        <dataEntry label="globals/Rez/JsonData" offset="1507" parentId="Rez" symbolId="JsonData" type="module"/>
+    </dataEntryOffsetMappings>
+    <functions>
+        <functionEntry accessMode="public" endPc="268435480" name="getApp" startPc="268435460">
+            <documentation>
+                <![CDATA[<div class="description"> Connect IQ が呼び出すアプリケーションファクトリ<br/></div>]]>
+            </documentation>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435500" name="&lt;init&gt;" parent="Rez" startPc="268435481">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435512" name="&lt;init&gt;" parent="PicsBleApp" startPc="268435501">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" name="&lt;init&gt;" parent="SignalIndicator">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435524" name="&lt;init&gt;" parent="PicsInputDelegate" startPc="268435513">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435535" name="&lt;init&gt;" parent="PicsFrame" startPc="268435525">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" name="&lt;init&gt;" parent="PicsIntersectionDB">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" name="&lt;init&gt;" parent="PicsSignal">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435547" name="&lt;init&gt;" parent="PicsBleDelegate" startPc="268435536">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435559" name="&lt;init&gt;" parent="PicsMainView" startPc="268435548">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" name="&lt;init&gt;" parent="PicsParser">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" name="&lt;init&gt;" parent="globals/PicsParser">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" name="&lt;init&gt;" parent="Drawables">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" name="&lt;init&gt;" parent="Strings">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" name="&lt;init&gt;" parent="JsonData">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435625" name="getInitialView" parent="PicsBleApp" startPc="268435560">
+            <documentation>
+                <![CDATA[<div class="description"> アプリが初期化されたタイミング（最初のビューを返す）<br/></div>]]>
+            </documentation>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435652" name="onBlinkTick" parent="PicsBleApp" startPc="268435626">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435669" name="onStart" parent="PicsBleApp" startPc="268435653">
+            <param id="state"/>
+            <documentation>
+                <![CDATA[<div class="description"> フォアグラウンド起動時<br/></div>]]>
+            </documentation>
+        </functionEntry>
+        <functionEntry accessMode="private" endPc="268435713" name="&lt;globals/PicsBleApp/&lt;&gt;stopBleScanning&gt;" parent="PicsBleApp" startPc="268435670">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="private" endPc="268435748" name="&lt;globals/PicsBleApp/&lt;&gt;stopBlinkTimer&gt;" parent="PicsBleApp" startPc="268435714">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435763" name="initialize" parent="PicsBleApp" startPc="268435749">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435855" name="onPicsSignal" parent="PicsBleApp" startPc="268435764">
+            <param id="frame"/>
+            <param id="msgType"/>
+            <documentation>
+                <![CDATA[<div class="description"> BleDelegate からの Type2 コールバック<br/></div>]]>
+            </documentation>
+        </functionEntry>
+        <functionEntry accessMode="private" endPc="268435918" name="&lt;globals/PicsBleApp/&lt;&gt;startBlinkTimer&gt;" parent="PicsBleApp" startPc="268435856">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="private" endPc="268436019" name="&lt;globals/PicsBleApp/&lt;&gt;startBleScanning&gt;" parent="PicsBleApp" startPc="268435919">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436036" name="onStop" parent="PicsBleApp" startPc="268436020">
+            <param id="state"/>
+            <documentation>
+                <![CDATA[<div class="description"> バックグラウンド / 終了時<br/></div>]]>
+            </documentation>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436066" name="initialize" parent="SignalIndicator" startPc="268436037">
+            <param id="x_"/>
+            <param id="y_"/>
+            <param id="label_"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436085" name="onBack" parent="PicsInputDelegate" startPc="268436067">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436109" name="initialize" parent="PicsInputDelegate" startPc="268436086">
+            <param id="view"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436113" name="onSelect" parent="PicsInputDelegate" startPc="268436110">
+            <documentation>
+                <![CDATA[<div class="description"> ENTER キーでスキャン ON/OFF トグル（将来拡張用）<br/></div>]]>
+            </documentation>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436167" name="initialize" parent="PicsFrame" startPc="268436114">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436204" name="findNearest" parent="PicsIntersectionDB" startPc="268436168">
+            <param id="lat"/>
+            <param id="lon"/>
+            <documentation>
+                <![CDATA[<div class="description"> GPS座標 (度) から最近傍の交差点名を返す。未解決時は空文字。<br/></div>]]>
+            </documentation>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436399" name="findNearestEntry" parent="PicsIntersectionDB" startPc="268436205">
+            <param id="lat"/>
+            <param id="lon"/>
+            <documentation>
+                <![CDATA[<div class="description"> GPS座標 (度) から最近傍エントリを [lat_float, lon_float, name] で返す。<br/> エントリが空の場合は null を返す。<br/></div>]]>
+            </documentation>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436451" name="initialize" parent="PicsIntersectionDB" startPc="268436400">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436627" name="stateLabel" parent="PicsSignal" startPc="268436452">
+            <documentation>
+                <![CDATA[<div class="description"> 表示用ラベル（Rez.Strings の ResourceId）を返す<br/></div>]]>
+            </documentation>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436648" name="initialize" parent="PicsSignal" startPc="268436628">
+            <param id="state_"/>
+            <param id="remaining_"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="private" endPc="268436931" name="&lt;globals/PicsBleDelegate/&lt;&gt;processScanResult&gt;" parent="PicsBleDelegate" startPc="268436649">
+            <param id="result"/>
+            <documentation>
+                <![CDATA[<div class="description"> 1件の ScanResult を処理する<br/></div>]]>
+            </documentation>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436934" name="onConnectedStateChanged" parent="PicsBleDelegate" startPc="268436932">
+            <param id="device"/>
+            <param id="state"/>
+            <documentation>
+                <![CDATA[<div class="description"> 使用する BLE 接続なし（スキャンのみ）なので接続コールバックは空実装<br/></div>]]>
+            </documentation>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436943" name="hasLocation" parent="PicsBleDelegate" startPc="268436935">
+            <documentation>
+                <![CDATA[<div class="description"> 位置情報が利用可能か<br/></div>]]>
+            </documentation>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436997" name="getIntersectionId" parent="PicsBleDelegate" startPc="268436944">
+            <documentation>
+                <![CDATA[<div class="description"> 交差点 ID を返す（Type 0/2 いずれかから取得）<br/></div>]]>
+            </documentation>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268437046" name="initialize" parent="PicsBleDelegate" startPc="268436998">
+            <param id="callback"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268437088" name="onScanResults" parent="PicsBleDelegate" startPc="268437047">
+            <param id="scanResults"/>
+            <documentation>
+                <![CDATA[<div class="description"> BLE スキャン結果コールバック（Connect IQ が自動的に呼ぶ）<br/></div>]]>
+            </documentation>
+        </functionEntry>
+        <functionEntry accessMode="private" endPc="268438146" name="&lt;globals/PicsMainView/&lt;&gt;drawGpsInfo&gt;" parent="PicsMainView" startPc="268437089">
+            <param id="dc"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268438205" name="updateSignal" parent="PicsMainView" startPc="268438147">
+            <param id="frame"/>
+            <param id="rxCount"/>
+            <param id="intersectionName"/>
+            <param id="intersectionLat"/>
+            <param id="intersectionLon"/>
+            <documentation>
+                <![CDATA[<div class="description"> 外部から呼ばれる：信号状態を更新して再描画を要求<br/></div>]]>
+            </documentation>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268438244" name="toggleBlinkPhase" parent="PicsMainView" startPc="268438206">
+            <documentation>
+                <![CDATA[<div class="description"> 点滅フェーズを外部タイマーから更新（500ms 間隔想定）<br/></div>]]>
+            </documentation>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268438247" name="onLayout" parent="PicsMainView" startPc="268438245">
+            <param id="dc"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="private" endPc="268438461" name="&lt;globals/PicsMainView/&lt;&gt;drawSignalPanels&gt;" parent="PicsMainView" startPc="268438248">
+            <param id="dc"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268438484" name="setScanningState" parent="PicsMainView" startPc="268438462">
+            <param id="scanning"/>
+            <documentation>
+                <![CDATA[<div class="description"> スキャン状態を反映<br/></div>]]>
+            </documentation>
+        </functionEntry>
+        <functionEntry accessMode="private" endPc="268438898" name="&lt;globals/PicsMainView/&lt;&gt;drawHeader&gt;" parent="PicsMainView" startPc="268438485">
+            <param id="dc"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="private" endPc="268439590" name="&lt;globals/PicsMainView/&lt;&gt;drawSinglePanel&gt;" parent="PicsMainView" startPc="268438899">
+            <param id="dc"/>
+            <param id="x"/>
+            <param id="y"/>
+            <param id="w"/>
+            <param id="h"/>
+            <param id="label"/>
+            <param id="signal"/>
+            <documentation>
+                <![CDATA[<div class="description"> 1チャンネル分のパネルを描画<br/></div>]]>
+            </documentation>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268439605" name="initialize" parent="PicsMainView" startPc="268439591">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="private" endPc="268440073" name="&lt;globals/PicsMainView/&lt;&gt;drawFooter&gt;" parent="PicsMainView" startPc="268439606">
+            <param id="dc"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440146" name="onUpdate" parent="PicsMainView" startPc="268440074">
+            <param id="dc"/>
+            <documentation>
+                <![CDATA[<div class="description"> 画面全体を描画する<br/></div>]]>
+            </documentation>
+        </functionEntry>
+        <functionEntry accessMode="public" name="initialize" parent="PicsParser">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440638" name="parse" parent="PicsParser" startPc="268440147">
+            <param id="data"/>
+            <param id="rssi"/>
+            <documentation/>
+        </functionEntry>
+    </functions>
+</debugInfo>
