@@ -142,7 +142,7 @@ The app automatically logs every received PICS packet (including millisecond pre
 - **BLE**: Central (scan-only) mode. No GATT connection is established.
 - **Foreground only**: BLE scanning may be throttled by the OS in background mode.
 - **Intersection database**: Built from the [e-Gov national intersection list](https://data.e-gov.go.jp/data/dataset/npa_20221124_0054/resource/6f7e83e1-be28-4030-961f-3b489c9f6ad8) (596 intersections). Re-run `csv_to_resource.py` to update.
-- **Identification of traffic sings**: Need to Dump network telemetry of NIPPON SIGNAL's App.
+- **Identification of traffic signs**: Need to dump network telemetry of NIPPON SIGNAL's App. [ref.](https://qiita.com/kitazaki/items/ef2d8710d1656705f307)
 - **String resources**: All UI labels are defined in `resources/strings/strings.xml`. To add a language translation, create a locale-specific strings file (e.g. `resources-eng/strings/strings.xml`).
 - **Connect IQ SDK 8.x**: `ScanResult.getManufacturerSpecificData()` now requires the company ID as an argument and returns a `ByteArray` directly (no longer returns a `Dictionary`). This app targets SDK 8.x behaviour.
 - **Simulator**: The Connect IQ SDK 8.3.0 simulator may crash on macOS 26+ (Tahoe) in the `ant_main` thread when loading apps that use BLE. Deploy to actual hardware for testing until Garmin releases a compatible SDK update.
@@ -156,3 +156,4 @@ This project is deeply inspired by and based on the work of [yumu19/ble-pics-vie
 - [Garmin Connect IQ API — BluetoothLowEnergy](https://developer.garmin.com/connect-iq/api-docs/Toybox/BluetoothLowEnergy.html)
 - [Advanced PICS intersection list (e-Gov)](https://data.e-gov.go.jp/data/dataset/npa_20221124_0054/resource/6f7e83e1-be28-4030-961f-3b489c9f6ad8)
 - [信号の時刻表をつくる 2025 (デイリーポータルZ)](https://dailyportalz.jp/kiji/shingo-jikokuhyo2025)
+- [信GO!アプリの解析 (私の自由研究 2025) #Android - Qiita](https://qiita.com/kitazaki/items/ef2d8710d1656705f307)
