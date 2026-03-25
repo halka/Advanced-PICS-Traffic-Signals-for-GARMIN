@@ -6,7 +6,7 @@
     minApiLevel="3.2.0"
     launcherIcon="@Drawables.LauncherIcon"
     name="@Strings.AppName"
-    type="watch-app"
+    type="widget"
     version="1.0.0">
 
     <iq:products>
