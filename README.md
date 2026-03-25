@@ -10,6 +10,8 @@ A Connect IQ application that receives and displays BLE advertisements from Japa
 - Resolves intersection name from GPS coordinates using a pre-built national intersection database (596 intersections)
 - Displays device GPS coordinates, nearest intersection coordinates, and calculated distance + bearing
 - Works standalone on the GPSMAP H1i Plus without any companion app
+- Menu button: intersection list (nearest 30, sorted by distance) with full detail view (lat/lon, distance, bearing)
+- Screenshot capture on device via menu
 - SD Card logging: Record raw BLE payloads and packet data directly to the device's internal storage
 
 ### File Structure
@@ -19,10 +21,11 @@ Advanced-PICS-Traffic-Signals-for-GARMIN/
 ├── manifest.xml                     ← App definition, permissions (BLE + Positioning)
 ├── monkey.jungle                    ← Project build configuration
 ├── source/
-│   ├── PicsBleApp.mc                ← App entry point & lifecycle
+│   ├── PicsBleApp.mc                ← App entry point, lifecycle, menu handling
 │   ├── PicsBleDelegate.mc           ← BLE scanning & packet reception
 │   ├── PicsData.mc                  ← Data models, PICS parser, intersection DB
-│   └── PicsMainView.mc              ← Screen rendering (282×470 px)
+│   ├── PicsMainView.mc              ← Screen rendering (282×470 px)
+│   └── PicsIntersectionListView.mc  ← Intersection list & detail views
 ├── resources/
 │   ├── data/
 │   │   ├── intersections.json       ← Intersection database (auto-generated)
@@ -140,7 +143,8 @@ The app automatically logs every received PICS packet (including millisecond pre
 ### Notes & Limitations
 
 - **BLE**: Central (scan-only) mode. No GATT connection is established.
-- **Foreground only**: BLE scanning may be throttled by the OS in background mode.
+- **Widget type**: The app runs as a Connect IQ widget, accessible via the PAGE button on the device. BLE scanning runs continuously while the widget is active.
+- **Widget vs watch-app**: As a `widget`, the app is launched directly from the widget glance view (PAGE button) rather than navigating to Main Menu → Connect IQ → Apps.
 - **Intersection database**: Built from the [e-Gov national intersection list](https://data.e-gov.go.jp/data/dataset/npa_20221124_0054/resource/6f7e83e1-be28-4030-961f-3b489c9f6ad8) (596 intersections). Re-run `csv_to_resource.py` to update.
 - **Identification of traffic signs**: Need to dump network telemetry of NIPPON SIGNAL's App. [ref.](https://qiita.com/kitazaki/items/ef2d8710d1656705f307)
 - **String resources**: All UI labels are defined in `resources/strings/strings.xml`. To add a language translation, create a locale-specific strings file (e.g. `resources-eng/strings/strings.xml`).
