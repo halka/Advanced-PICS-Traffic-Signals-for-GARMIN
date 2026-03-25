@@ -60,3 +60,4 @@ developer_key.der
 *.mir
 *.mbc
 *.mcgen
+bin/pics-viewer.prg.debug.xml
