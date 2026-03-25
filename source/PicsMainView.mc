@@ -197,13 +197,13 @@ class PicsMainView extends WatchUi.View {
 
         var sigColor  = COLOR_NONE;
         var stateText = Rez.Strings.NoSignal as Lang.ResourceId;
-        var remText   = "--";
+        var remText   = "" as Lang.String;
 
         if (signal != null) {
             stateText = signal.stateLabel();
             remText   = (signal.remaining > 0)
                 ? signal.remaining.toString() + "s"
-                : "--";
+                : "";
 
             switch (signal.state) {
                 case SIGNAL_RED:
@@ -213,7 +213,7 @@ class PicsMainView extends WatchUi.View {
                     sigColor = COLOR_GREEN;
                     break;
                 case SIGNAL_BLINK_GREEN:
-                    sigColor = _blinkPhase ? COLOR_BLINK_G : COLOR_NONE;
+                    sigColor = _blinkPhase ? COLOR_GREEN : COLOR_NONE;
                     break;
                 case SIGNAL_NONE:
                     sigColor = COLOR_NONE;
@@ -232,18 +232,19 @@ class PicsMainView extends WatchUi.View {
         dc.setColor(sigColor, Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(cx, lampCY, lampR);
 
-        dc.setColor(0xFFFFFF, Graphics.COLOR_TRANSPARENT);
-        dc.fillCircle(cx - 8, lampCY - 10, lampR / 3);
+        // ランプ内ハイライト円は削除（意味が不明瞭なため）
 
         dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, y + 152, Graphics.FONT_MEDIUM,
                     WatchUi.loadResource(stateText) as Lang.String,
                     Graphics.TEXT_JUSTIFY_CENTER);
 
-        dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, y + 182, Graphics.FONT_SMALL,
-                    WatchUi.loadResource(Rez.Strings.RemainingPrefix) + remText,
-                    Graphics.TEXT_JUSTIFY_CENTER);
+        if (remText.length() > 0) {
+            dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(cx, y + 182, Graphics.FONT_SMALL,
+                        WatchUi.loadResource(Rez.Strings.RemainingPrefix) + remText,
+                        Graphics.TEXT_JUSTIFY_CENTER);
+        }
 
         if (signal != null && _lastFrame != null) {
             dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
