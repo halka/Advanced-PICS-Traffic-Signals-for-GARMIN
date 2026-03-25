@@ -4,6 +4,7 @@
 // =============================================================
 
 import Toybox.Lang;
+import Toybox.Math;
 import Toybox.System;
 import Toybox.Time;
 
@@ -173,6 +174,11 @@ class PicsIntersectionDB {
         return (entry != null) ? (entry[2] as Lang.String) : "";
     }
 
+    //! 全エントリを返す（生データ: [[lat_micro, lon_micro, name], ...]）
+    function getAllEntries() as Lang.Array or Null {
+        return _entries;
+    }
+
     //! GPS座標 (度) から最近傍エントリを [lat_float, lon_float, name] で返す。
     //! エントリが空の場合は null を返す。
     function findNearestEntry(lat as Lang.Float, lon as Lang.Float) as Lang.Array or Null {
@@ -200,4 +206,27 @@ class PicsIntersectionDB {
         }
         return [bestLat, bestLon, bestName] as Lang.Array;
     }
+}
+
+//! 2点間の距離(m)と方位(度)を計算する [Haversine + atan2]
+//! @return [dist_m as Float, bearing_deg as Float]
+function calcDistBrg(lat1 as Lang.Float, lon1 as Lang.Float,
+                     lat2 as Lang.Float, lon2 as Lang.Float) as Lang.Array {
+    var R    = 6371000.0f;
+    var toR  = Math.PI.toFloat() / 180.0f;
+    var phi1 = lat1 * toR;
+    var phi2 = lat2 * toR;
+    var dPhi = (lat2 - lat1) * toR;
+    var dLam = (lon2 - lon1) * toR;
+    var sh   = Math.sin(dPhi / 2.0f);
+    var sl   = Math.sin(dLam / 2.0f);
+    var a    = sh * sh + Math.cos(phi1) * Math.cos(phi2) * sl * sl;
+    var dist = (R * 2.0f * Math.atan2(Math.sqrt(a), Math.sqrt(1.0f - a))).toFloat();
+    var vy   = (Math.sin(dLam) * Math.cos(phi2)).toFloat();
+    var vx   = (Math.cos(phi1) * Math.sin(phi2)
+              - Math.sin(phi1) * Math.cos(phi2) * Math.cos(dLam)).toFloat();
+    var brg  = Math.toDegrees(Math.atan2(vy, vx)).toFloat();
+    brg += 360.0f;
+    if (brg >= 360.0f) { brg -= 360.0f; }
+    return [dist, brg] as Lang.Array;
 }

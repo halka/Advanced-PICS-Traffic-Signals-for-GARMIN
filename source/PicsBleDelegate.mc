@@ -121,6 +121,11 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
         }
     }
 
+    //! 交差点 DB を返す
+    function getIntersectionDb() as PicsIntersectionDB or Null {
+        return _intersectionDb;
+    }
+
     //! 交差点 ID を返す（Type 0/2 いずれかから取得）
     function getIntersectionId() as Lang.String {
         if (lastSignalFrame != null) {
