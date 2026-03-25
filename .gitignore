@@ -60,3 +60,5 @@ developer_key.der
 *.mir
 *.mcgen
 *.mbc
+*.mbc
+*.mcgen

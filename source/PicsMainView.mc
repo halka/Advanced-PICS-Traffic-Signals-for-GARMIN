@@ -35,17 +35,17 @@ class PicsMainView extends WatchUi.View {
     private const DISPLAY_CHANNELS = [0, 1] as Array<Number>;
 
     // ---- カラーパレット ----
-    private const COLOR_BG         = 0x1A1A2E;
-    private const COLOR_PANEL      = 0x16213E;
-    private const COLOR_BORDER     = 0x0F3460;
-    private const COLOR_ACCENT     = 0x00D4FF;
-    private const COLOR_TEXT_MAIN  = 0xECECEC;
-    private const COLOR_TEXT_SUB   = 0x7A8BA0;
+    private const COLOR_BG         = 0xFFFFFF; // White
+    private const COLOR_PANEL      = 0xF0F0F0; // Light Gray
+    private const COLOR_BORDER     = 0xCCCCCC; // Gray
+    private const COLOR_ACCENT     = 0x0055AA; // Blue
+    private const COLOR_TEXT_MAIN  = 0x000000; // Black
+    private const COLOR_TEXT_SUB   = 0x333333; // Dark Gray
 
-    private const COLOR_RED        = 0xFF2D2D;
-    private const COLOR_GREEN      = 0x00E676;
-    private const COLOR_BLINK_G    = 0xFFEA00;
-    private const COLOR_NONE       = 0x455A64;
+    private const COLOR_RED        = 0xFF0000; // Bright Red
+    private const COLOR_GREEN      = 0x00CC00; // Bright Green
+    private const COLOR_BLINK_G    = 0xDDDD00; // Yellow
+    private const COLOR_NONE       = 0xAAAAAA; // Gray
 
     // ---- ステート ----
     private var _lastFrame        as PicsFrame or Null = null;
@@ -100,29 +100,29 @@ class PicsMainView extends WatchUi.View {
     }
 
     // ----------------------------------------------------------
-    //  ヘッダー部  Y: 0 ～ 72
+    //  ヘッダー部  Y: 0 ～ 76
     // ----------------------------------------------------------
     private function drawHeader(dc as Graphics.Dc) as Void {
         var CX = SCREEN_W / 2;
 
         dc.setColor(COLOR_PANEL, COLOR_PANEL);
-        dc.fillRectangle(0, 0, SCREEN_W, 72);
+        dc.fillRectangle(0, 0, SCREEN_W, 76);
 
         dc.setColor(COLOR_ACCENT, COLOR_ACCENT);
         dc.fillRectangle(0, 0, SCREEN_W, 3);
 
         // アプリタイトル
         dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 10, Graphics.FONT_XTINY,
-                    Rez.Strings.AppTitle,
+        dc.drawText(CX, 10, Graphics.FONT_TINY,
+                    WatchUi.loadResource(Rez.Strings.AppTitle) as Lang.String,
                     Graphics.TEXT_JUSTIFY_CENTER);
 
         // 交差点名称
-        var nameFont = Graphics.FONT_SMALL;
+        var nameFont = Graphics.FONT_MEDIUM;
         var nameStr  = "";
         if (_intersectionName.length() > 0) {
             nameStr  = _intersectionName;
-            nameFont = Graphics.FONT_XTINY;
+            nameFont = Graphics.FONT_SMALL;
         } else {
             var intersectionId = (_lastFrame != null)
                 ? _lastFrame.intersectionId
@@ -130,18 +130,18 @@ class PicsMainView extends WatchUi.View {
             nameStr = WatchUi.loadResource(Rez.Strings.IntersectionPrefix) + intersectionId;
         }
         dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 30, nameFont, nameStr, Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(CX, 32, nameFont, nameStr, Graphics.TEXT_JUSTIFY_CENTER);
 
         // スキャン状態
         var statusColor = _scanning ? COLOR_GREEN : COLOR_NONE;
         var statusLabel = _scanning ? Rez.Strings.ScanningIndicator : Rez.Strings.StoppedIndicator;
         dc.setColor(statusColor, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 52, Graphics.FONT_XTINY,
-                    statusLabel,
+        dc.drawText(CX, 55, Graphics.FONT_TINY,
+                    WatchUi.loadResource(statusLabel) as Lang.String,
                     Graphics.TEXT_JUSTIFY_CENTER);
 
         dc.setColor(COLOR_BORDER, COLOR_BORDER);
-        dc.fillRectangle(0, 72, SCREEN_W, 2);
+        dc.fillRectangle(0, 76, SCREEN_W, 2);
     }
 
     // ----------------------------------------------------------
@@ -177,7 +177,7 @@ class PicsMainView extends WatchUi.View {
         y      as Lang.Number,
         w      as Lang.Number,
         h      as Lang.Number,
-        label  as Lang.Object,
+        label  as Lang.ResourceId,
         signal as PicsSignal or Null
     ) as Void {
         var cx = x + w / 2;
@@ -188,22 +188,22 @@ class PicsMainView extends WatchUi.View {
         dc.drawRectangle(x, y, w, h);
 
         dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, y + 10, Graphics.FONT_SMALL,
-                    label,
+        dc.drawText(cx, y + 6, Graphics.FONT_MEDIUM,
+                    WatchUi.loadResource(label) as Lang.String,
                     Graphics.TEXT_JUSTIFY_CENTER);
 
         var lampR  = 44;
-        var lampCY = y + 100;
+        var lampCY = y + 96;
 
         var sigColor  = COLOR_NONE;
-        var stateText = Rez.Strings.NoSignal as Lang.Object;
-        var remText   = "--";
+        var stateText = Rez.Strings.NoSignal as Lang.ResourceId;
+        var remText   = "" as Lang.String;
 
         if (signal != null) {
             stateText = signal.stateLabel();
             remText   = (signal.remaining > 0)
                 ? signal.remaining.toString() + "s"
-                : "--";
+                : "";
 
             switch (signal.state) {
                 case SIGNAL_RED:
@@ -213,7 +213,7 @@ class PicsMainView extends WatchUi.View {
                     sigColor = COLOR_GREEN;
                     break;
                 case SIGNAL_BLINK_GREEN:
-                    sigColor = _blinkPhase ? COLOR_BLINK_G : COLOR_NONE;
+                    sigColor = _blinkPhase ? COLOR_GREEN : COLOR_NONE;
                     break;
                 case SIGNAL_NONE:
                     sigColor = COLOR_NONE;
@@ -232,22 +232,23 @@ class PicsMainView extends WatchUi.View {
         dc.setColor(sigColor, Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(cx, lampCY, lampR);
 
-        dc.setColor(0xFFFFFF & 0x303030, Graphics.COLOR_TRANSPARENT);
-        dc.fillCircle(cx - 8, lampCY - 10, lampR / 3);
+        // ランプ内ハイライト円は削除（意味が不明瞭なため）
 
         dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, y + 160, Graphics.FONT_SMALL,
-                    stateText,
+        dc.drawText(cx, y + 152, Graphics.FONT_MEDIUM,
+                    WatchUi.loadResource(stateText) as Lang.String,
                     Graphics.TEXT_JUSTIFY_CENTER);
 
-        dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, y + 185, Graphics.FONT_XTINY,
-                    WatchUi.loadResource(Rez.Strings.RemainingPrefix) + remText,
-                    Graphics.TEXT_JUSTIFY_CENTER);
+        if (remText.length() > 0) {
+            dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(cx, y + 182, Graphics.FONT_SMALL,
+                        WatchUi.loadResource(Rez.Strings.RemainingPrefix) + remText,
+                        Graphics.TEXT_JUSTIFY_CENTER);
+        }
 
         if (signal != null && _lastFrame != null) {
             dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(cx, y + 210, Graphics.FONT_XTINY,
+            dc.drawText(cx, y + 212, Graphics.FONT_TINY,
                         "RSSI: " + _lastFrame.rssi.toString() + " dBm",
                         Graphics.TEXT_JUSTIFY_CENTER);
         }
@@ -276,7 +277,7 @@ class PicsMainView extends WatchUi.View {
         var devLatStr = hasFix ? (devLat.abs().format("%.4f") + (devLat >= 0.0f ? "N" : "S")) : "--";
         var devLonStr = hasFix ? (devLon.abs().format("%.4f") + (devLon >= 0.0f ? "E" : "W")) : "--";
         dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 336, Graphics.FONT_XTINY,
+        dc.drawText(CX, 332, Graphics.FONT_TINY,
                     WatchUi.loadResource(Rez.Strings.DevicePrefix) + devLatStr + " " + devLonStr,
                     Graphics.TEXT_JUSTIFY_CENTER);
 
@@ -284,7 +285,7 @@ class PicsMainView extends WatchUi.View {
         var intLatStr = hasInt ? (_intersectionLat.abs().format("%.4f") + (_intersectionLat >= 0.0f ? "N" : "S")) : "--";
         var intLonStr = hasInt ? (_intersectionLon.abs().format("%.4f") + (_intersectionLon >= 0.0f ? "E" : "W")) : "--";
         dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 352, Graphics.FONT_XTINY,
+        dc.drawText(CX, 348, Graphics.FONT_TINY,
                     WatchUi.loadResource(Rez.Strings.IntersectionCoordPrefix) + intLatStr + " " + intLonStr,
                     Graphics.TEXT_JUSTIFY_CENTER);
 
@@ -314,7 +315,7 @@ class PicsMainView extends WatchUi.View {
             distBrgStr = dist.format("%.0f") + "m  " + brg.format("%.0f") + "(" + cards[cidx] + ")";
         }
         dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 368, Graphics.FONT_XTINY,
+        dc.drawText(CX, 364, Graphics.FONT_TINY,
                     WatchUi.loadResource(Rez.Strings.DistancePrefix) + distBrgStr,
                     Graphics.TEXT_JUSTIFY_CENTER);
     }
@@ -341,18 +342,18 @@ class PicsMainView extends WatchUi.View {
         }
 
         dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 390, Graphics.FONT_XTINY,
+        dc.drawText(CX, 388, Graphics.FONT_TINY,
                     WatchUi.loadResource(Rez.Strings.LastReceivedPrefix) + timeStr,
                     Graphics.TEXT_JUSTIFY_CENTER);
 
         dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 412, Graphics.FONT_XTINY,
+        dc.drawText(CX, 412, Graphics.FONT_TINY,
                     WatchUi.loadResource(Rez.Strings.PacketCountPrefix) + _rxCount.toString() + " pkt",
                     Graphics.TEXT_JUSTIFY_CENTER);
 
         dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 440, Graphics.FONT_XTINY,
-                    Rez.Strings.BackHint,
+        dc.drawText(CX, 442, Graphics.FONT_TINY,
+                    WatchUi.loadResource(Rez.Strings.BackHint) as Lang.String,
                     Graphics.TEXT_JUSTIFY_CENTER);
 
         dc.setColor(COLOR_ACCENT, COLOR_ACCENT);

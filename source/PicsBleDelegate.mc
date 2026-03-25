@@ -6,6 +6,8 @@
 import Toybox.BluetoothLowEnergy;
 import Toybox.Lang;
 import Toybox.System;
+import Toybox.Time;
+import Toybox.Time.Gregorian;
 
 //! @brief PICS アドバタイズを受信したときに呼ばれるコールバック型
 typedef PicsCallback as Method(frame as PicsFrame, msgType as Lang.Number) as Void;
@@ -64,12 +66,33 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
         var frame = PicsParser.parse(payload, result.getRssi());
         if (frame == null) { return; }
 
-        // タイプ別にキャッシュを更新
+        // ---- ログ出力用タイムスタンプ生成 (yyyy-MM-dd HH:mm:ss.SSS) ----
+        var info = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
+        var ms   = System.getTimer() % 1000;
+        var timeStr = info.year.format("%04d") + "-" +
+                      info.month.format("%02d") + "-" +
+                      info.day.format("%02d") + " " +
+                      info.hour.format("%02d") + ":" +
+                      info.min.format("%02d") + ":" +
+                      info.sec.format("%02d") + "." +
+                      ms.format("%03d");
+
+        // ---- 受信したHEXダンプを生成 ----
+        var hexStr = "";
+        for (var i = 0; i < payload.size(); i++) {
+            hexStr += (payload[i] & 0xFF).format("%02X");
+        }
+
+        var logPrefix = timeStr + " [PICS]" + " RSSI:" + frame.rssi + " Type:" + frame.msgType + " ID:" + frame.intersectionId + " HEX:" + hexStr;
+
+        // タイプ別にキャッシュを更新 & ログ出力
         switch (frame.msgType) {
             case PICS_MSG_TYPE_IDENTIFIER:
+                System.println(logPrefix);
                 lastIdFrame = frame;
                 break;
             case PICS_MSG_TYPE_LOCATION:
+                System.println(logPrefix + " Lat:" + frame.latitude.format("%.6f") + " Lon:" + frame.longitude.format("%.6f"));
                 lastLocFrame = frame;
                 if (_intersectionDb != null) {
                     var entry = (_intersectionDb as PicsIntersectionDB)
@@ -82,6 +105,13 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
                 }
                 break;
             case PICS_MSG_TYPE_SIGNAL:
+                var sigStr = "";
+                for (var i = 0; i < 6; i++) {
+                    var s = frame.signals[i] as PicsSignal;
+                    sigStr += "[" + s.state + "," + s.remaining + "]";
+                }
+                System.println(logPrefix + " Sig:" + sigStr);
+                
                 lastSignalFrame = frame;
                 // UI 通知は Type 2 のときのみ
                 if (_callback != null) {
@@ -89,6 +119,11 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
                 }
                 break;
         }
+    }
+
+    //! 交差点 DB を返す
+    function getIntersectionDb() as PicsIntersectionDB or Null {
+        return _intersectionDb;
     }
 
     //! 交差点 ID を返す（Type 0/2 いずれかから取得）
