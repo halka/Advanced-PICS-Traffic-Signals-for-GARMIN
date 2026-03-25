@@ -58,5 +58,7 @@ dkms.conf
 developer_key.pem
 developer_key.der
 *.mir
+*.mcgen
+*.mbc
 *.mbc
 *.mcgen
