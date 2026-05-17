@@ -6,7 +6,7 @@ A Connect IQ application that receives and displays BLE advertisements from Japa
 ### Features
 
 - Real-time reception of PICS BLE advertisements (company ID `0x01CE`)
-- Displays signal state (Red / Green / Blinking Green / Uncontrolled) for East-West and North-South pedestrian channels
+- Displays signal state (Red / Green / Blinking Green / Uncontrolled) for all six pedestrian channels without assuming East-West / North-South geometry
 - Resolves intersection name from GPS coordinates using a pre-built national intersection database (596 intersections)
 - Displays device GPS coordinates, nearest intersection coordinates, and calculated distance + bearing
 - Works standalone on the GPSMAP H1i Plus without any companion app
@@ -83,13 +83,9 @@ Advanced-PICS-Traffic-Signals-for-GARMIN/
 │  北５条通り札幌駅前交差点         │         Intersection name (or hex ID)
 │       ● スキャン中             │         Scan status
 ├─────────────────────────────┤
-│     東西          南北       │
-│                              │
-│    [● RED]      [● GRN]     │  ← Signal lamps (Ø88 px)
-│                              │
-│      赤            青        │  ← State label
-│    残り 5s       残り 3s     │  ← Remaining seconds
-│  RSSI:-65dBm  RSSI:-65dBm   │
+│  系統1 赤       系統2 青     │
+│  系統3 ---      系統4 赤     │  ← Six pedestrian signal channels
+│  系統5 青点滅   系統6 ---    │
 ├─────────────────────────────┤
 │ デバイス: 35.1234N 139.1234E │  ← GPS info: device coordinates
 │ 交差点:   35.1234N 139.1234E │             intersection coordinates

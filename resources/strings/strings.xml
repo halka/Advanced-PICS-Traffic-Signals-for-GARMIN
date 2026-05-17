@@ -12,6 +12,7 @@
   <!-- Signal panels -->
   <string id="EastWest">東西</string>
   <string id="NorthSouth">南北</string>
+  <string id="ChannelPrefix">系統</string>
   <string id="RemainingPrefix">残り </string>
 
   <!-- Signal states -->

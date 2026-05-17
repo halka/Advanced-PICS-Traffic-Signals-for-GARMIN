@@ -18,13 +18,17 @@ import Toybox.System;
 //!    onStart()
 //!      → BleDelegate 登録
 //!      → SCAN_STATE_SCANNING 開始
-//!      → 500ms タイマー開始（点滅アニメ用）
+//!      → 100ms タイマー開始（リアルタイム表示更新 + 点滅アニメ用）
 //!      → PicsMainView を push
 class PicsBleApp extends Application.AppBase {
 
     private var _delegate as PicsBleDelegate or Null = null;
     private var _view     as PicsMainView    or Null = null;
     private var _timer    as Timer.Timer     or Null = null;
+    private var _timerTickCount as Lang.Number = 0;
+
+    private const UI_POLL_INTERVAL_MS = 100;
+    private const BLINK_INTERVAL_TICKS = 5; // 100ms × 5 = 500ms
 
     function initialize() {
         AppBase.initialize();
@@ -82,12 +86,13 @@ class PicsBleApp extends Application.AppBase {
     }
 
     // ----------------------------------------------------------
-    //  500ms タイマー（青点滅アニメーション用）
+    //  100ms タイマー（リアルタイム表示更新 + 青点滅アニメーション用）
     // ----------------------------------------------------------
 
     private function startBlinkTimer() as Void {
         _timer = new Timer.Timer();
-        _timer.start(method(:onBlinkTick), 500, true);
+        _timerTickCount = 0;
+        _timer.start(method(:onUiPollTick), UI_POLL_INTERVAL_MS, true);
     }
 
     private function stopBlinkTimer() as Void {
@@ -97,9 +102,15 @@ class PicsBleApp extends Application.AppBase {
         }
     }
 
-    function onBlinkTick() as Void {
-        if (_view != null) {
+    function onUiPollTick() as Void {
+        if (_view == null) { return; }
+
+        _timerTickCount++;
+        if (_timerTickCount >= BLINK_INTERVAL_TICKS) {
+            _timerTickCount = 0;
             _view.toggleBlinkPhase();
+        } else {
+            _view.refreshRealtime();
         }
     }
 

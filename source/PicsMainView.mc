@@ -32,7 +32,7 @@ class PicsMainView extends WatchUi.View {
     private const SCREEN_H = 470;
 
     // ---- 表示チャンネル設定 ----
-    private const DISPLAY_CHANNELS = [0, 1] as Array<Number>;
+    private const DISPLAY_CHANNELS = [0, 1, 2, 3, 4, 5] as Array<Number>;
 
     // ---- カラーパレット ----
     private const COLOR_BG         = 0xFFFFFF; // White
@@ -86,6 +86,11 @@ class PicsMainView extends WatchUi.View {
     function toggleBlinkPhase() as Void {
         _blinkPhase = !_blinkPhase;
         if (_lastFrame != null) { WatchUi.requestUpdate(); }
+    }
+
+    //! 受信時刻やGPSなど時間依存表示を短周期で更新
+    function refreshRealtime() as Void {
+        if (_scanning || _lastFrame != null) { WatchUi.requestUpdate(); }
     }
 
     //! 画面全体を描画する
@@ -148,25 +153,26 @@ class PicsMainView extends WatchUi.View {
     //  信号パネル  Y: 80 ～ 330
     // ----------------------------------------------------------
     private function drawSignalPanels(dc as Graphics.Dc) as Void {
-        var panelW  = (SCREEN_W - 24) / 2;
-        var panelH  = 250;
-        var panelY  = 80;
-        var panelX0 = 8;
-        var panelX1 = panelX0 + panelW + 8;
-
-        var channelLabels = [Rez.Strings.EastWest, Rez.Strings.NorthSouth] as Array;
+        var panelW = (SCREEN_W - 24) / 2;
+        var panelH = 78;
+        var gapX   = 8;
+        var gapY   = 8;
+        var startX = 8;
+        var startY = 80;
 
         for (var c = 0; c < DISPLAY_CHANNELS.size(); c++) {
-            var ch    = DISPLAY_CHANNELS[c];
-            var px    = (c == 0) ? panelX0 : panelX1;
-            var label = channelLabels[c];
+            var ch  = DISPLAY_CHANNELS[c];
+            var col = c % 2;
+            var row = c / 2;
+            var px  = startX + col * (panelW + gapX);
+            var py  = startY + row * (panelH + gapY);
 
             var signal = null as PicsSignal or Null;
             if (_lastFrame != null && _lastFrame.msgType == PICS_MSG_TYPE_SIGNAL) {
                 signal = _lastFrame.signals[ch] as PicsSignal;
             }
 
-            drawSinglePanel(dc, px, panelY, panelW, panelH, label, signal);
+            drawSinglePanel(dc, px, py, panelW, panelH, ch, signal);
         }
     }
 
@@ -177,23 +183,29 @@ class PicsMainView extends WatchUi.View {
         y      as Lang.Number,
         w      as Lang.Number,
         h      as Lang.Number,
-        label  as Lang.ResourceId,
+        channel as Lang.Number,
         signal as PicsSignal or Null
     ) as Void {
-        var cx = x + w / 2;
-
         dc.setColor(COLOR_PANEL, COLOR_PANEL);
         dc.fillRectangle(x, y, w, h);
         dc.setColor(COLOR_BORDER, COLOR_BORDER);
         dc.drawRectangle(x, y, w, h);
 
         dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, y + 6, Graphics.FONT_MEDIUM,
-                    WatchUi.loadResource(label) as Lang.String,
-                    Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(x + 6, y + 4, Graphics.FONT_TINY,
+                    WatchUi.loadResource(Rez.Strings.ChannelPrefix) + (channel + 1).toString(),
+                    Graphics.TEXT_JUSTIFY_LEFT);
 
-        var lampR  = 44;
-        var lampCY = y + 96;
+        if (signal != null && _lastFrame != null) {
+            dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(x + w - 6, y + 4, Graphics.FONT_TINY,
+                        _lastFrame.rssi.toString() + "dBm",
+                        Graphics.TEXT_JUSTIFY_RIGHT);
+        }
+
+        var lampR  = 16;
+        var lampCY = y + 42;
+        var lampCX = x + 28;
 
         var sigColor  = COLOR_NONE;
         var stateText = Rez.Strings.NoSignal as Lang.ResourceId;
@@ -226,31 +238,22 @@ class PicsMainView extends WatchUi.View {
 
         if (signal != null && signal.state != SIGNAL_NO_SIGNAL) {
             dc.setColor(sigColor & 0x3F3F3F, Graphics.COLOR_TRANSPARENT);
-            dc.fillCircle(cx, lampCY, lampR + 6);
+            dc.fillCircle(lampCX, lampCY, lampR + 3);
         }
 
         dc.setColor(sigColor, Graphics.COLOR_TRANSPARENT);
-        dc.fillCircle(cx, lampCY, lampR);
-
-        // ランプ内ハイライト円は削除（意味が不明瞭なため）
+        dc.fillCircle(lampCX, lampCY, lampR);
 
         dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, y + 152, Graphics.FONT_MEDIUM,
+        dc.drawText(x + 52, y + 28, Graphics.FONT_SMALL,
                     WatchUi.loadResource(stateText) as Lang.String,
-                    Graphics.TEXT_JUSTIFY_CENTER);
+                    Graphics.TEXT_JUSTIFY_LEFT);
 
         if (remText.length() > 0) {
             dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(cx, y + 182, Graphics.FONT_SMALL,
+            dc.drawText(x + 52, y + 52, Graphics.FONT_TINY,
                         WatchUi.loadResource(Rez.Strings.RemainingPrefix) + remText,
-                        Graphics.TEXT_JUSTIFY_CENTER);
-        }
-
-        if (signal != null && _lastFrame != null) {
-            dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(cx, y + 212, Graphics.FONT_TINY,
-                        "RSSI: " + _lastFrame.rssi.toString() + " dBm",
-                        Graphics.TEXT_JUSTIFY_CENTER);
+                        Graphics.TEXT_JUSTIFY_LEFT);
         }
     }
 
