@@ -1,12 +1,13 @@
 // =============================================================
 // PicsData.mc  ―  高度化PICS データモデル
-// GPSMAP H1i Plus / Connect IQ 3.2.0+
+// GPSMAP H1i Plus / Connect IQ SDK 9.1.0
 // =============================================================
 
 import Toybox.Lang;
 import Toybox.Math;
 import Toybox.System;
 import Toybox.Time;
+import Toybox.WatchUi;
 
 // ---- 信号状態定数 ----
 const SIGNAL_NO_SIGNAL  = 0;    // 信号なし（無線区間外）
@@ -18,8 +19,8 @@ const SIGNAL_NONE       = 4;    // 制御外
 // ---- メーカーID (0x01CE) ----
 const PICS_MANUFACTURER_ID = 0x01CE;
 
-// ---- 歩行者信号チャンネル数（PICS仕様: 最大6系統） ----
-const PICS_SIGNAL_COUNT = 6;
+// ---- 歩行者信号チャンネル数（PICS仕様: 最大6系統、将来拡張・複数対応のため16に拡張） ----
+const PICS_SIGNAL_COUNT = 16;
 
 // ---- メッセージタイプ ----
 const PICS_MSG_TYPE_IDENTIFIER = 0;  // 交差点識別子
@@ -30,7 +31,7 @@ const PICS_MSG_TYPE_SIGNAL     = 2;  // 信号状態
 class PicsSignal {
     //! 信号状態 (SIGNAL_* 定数)
     var state   as Lang.Number = SIGNAL_NO_SIGNAL;
-    //! 残り時間（秒）。不明な場合は -1
+    //! 残り表示値（PICS の s 値）。不明な場合は -1
     var remaining as Lang.Number = -1;
 
     function initialize(state_ as Lang.Number, remaining_ as Lang.Number) {
@@ -55,6 +56,7 @@ class PicsFrame {
     var msgType        as Lang.Number = -1;
     var msgId          as Lang.Number = -1;
     var intersectionId as Lang.String = "--------";
+    var transmitterId  as Lang.String = "--------";
 
     // Type 1 (位置情報)
     var latitude       as Lang.Float = 0.0f;
@@ -108,6 +110,7 @@ class PicsParser {
                 idStr += data[i].format("%02X");
             }
             frame.intersectionId = idStr;
+            frame.transmitterId = idStr;
         }
 
         // タイプ別ペイロード解析
@@ -162,9 +165,9 @@ class PicsIntersectionDB {
     private var _entries as Lang.Array or Null = null;
 
     function initialize() {
-        var json = Rez.JsonData.intersections;
-        if (json instanceof Lang.Array) {
-            _entries = json as Lang.Array;
+        var json = WatchUi.loadResource(Rez.JsonData.intersections) as Lang.Array or Null;
+        if (json != null) {
+            _entries = json;
         }
     }
 
@@ -174,37 +177,84 @@ class PicsIntersectionDB {
         return (entry != null) ? (entry[2] as Lang.String) : "";
     }
 
-    //! 全エントリを返す（生データ: [[lat_micro, lon_micro, name], ...]）
+    //! 全エントリを返す
     function getAllEntries() as Lang.Array or Null {
         return _entries;
     }
 
-    //! GPS座標 (度) から最近傍エントリを [lat_float, lon_float, name] で返す。
+    //! GPS座標 (度) から最近傍エントリを返す。
     //! エントリが空の場合は null を返す。
     function findNearestEntry(lat as Lang.Float, lon as Lang.Float) as Lang.Array or Null {
         if (_entries == null || (_entries as Lang.Array).size() == 0) {
             return null;
         }
         var entries  = _entries as Lang.Array;
-        var bestLat  = 0.0f;
-        var bestLon  = 0.0f;
-        var bestName = "" as Lang.String;
+        var bestEntry = null;
         var bestDist = 9.9e9f;
         for (var i = 0; i < entries.size(); i++) {
             var e    = entries[i] as Lang.Array;
-            var eLat = (e[0] as Lang.Number) / 1000000.0f;
-            var eLon = (e[1] as Lang.Number) / 1000000.0f;
+            var eLat = e[0].toFloat();
+            var eLon = e[1].toFloat();
             var dLat = lat - eLat;
             var dLon = lon - eLon;
             var dist = dLat * dLat + dLon * dLon;
             if (dist < bestDist) {
                 bestDist = dist;
-                bestLat  = eLat;
-                bestLon  = eLon;
-                bestName = e[2] as Lang.String;
+                bestEntry = e;
             }
         }
-        return [bestLat, bestLon, bestName] as Lang.Array;
+        return bestEntry;
+    }
+
+    //! 上位 limit 件の近い交差点を取得する (O(N) 挿入ソート)
+    //! 戻り値: [ { "entry": dict, "dist": float, "brg": float }, ... ]
+    function getTopN(lat as Lang.Float, lon as Lang.Float, limit as Lang.Number) as Lang.Array {
+        var top = [] as Lang.Array;
+        if (_entries == null || (_entries as Lang.Array).size() == 0) {
+            return top;
+        }
+        var entries = _entries as Lang.Array;
+        for (var i = 0; i < entries.size(); i++) {
+            var e = entries[i] as Lang.Array;
+            var eLat = e[0].toFloat();
+            var eLon = e[1].toFloat();
+            
+            // 非常に高速なバウンディングボックスによるプレフィルタ（約15km以内）
+            var dLat = lat - eLat;
+            if (dLat < 0) { dLat = -dLat; }
+            if (dLat > 0.15f) { continue; }
+            
+            var dLon = lon - eLon;
+            if (dLon < 0) { dLon = -dLon; }
+            if (dLon > 0.15f) { continue; }
+
+            var db = calcDistBrg(lat, lon, eLat, eLon);
+            var dist = db[0] as Lang.Float;
+            var brg  = db[1] as Lang.Float;
+            
+            var item = {
+                "entry" => e,
+                "dist"  => dist,
+                "brg"   => brg
+            };
+
+            var inserted = false;
+            for (var j = 0; j < top.size(); j++) {
+                if (dist < (top[j] as Lang.Dictionary)["dist"] as Lang.Float) {
+                    var newTop = [] as Lang.Array;
+                    for(var k=0; k<j; k++) { newTop.add(top[k]); }
+                    newTop.add(item);
+                    for(var k=j; k<top.size() && newTop.size() < limit; k++) { newTop.add(top[k]); }
+                    top = newTop;
+                    inserted = true;
+                    break;
+                }
+            }
+            if (!inserted && top.size() < limit) {
+                top.add(item);
+            }
+        }
+        return top;
     }
 }
 
@@ -221,6 +271,7 @@ function calcDistBrg(lat1 as Lang.Float, lon1 as Lang.Float,
     var sh   = Math.sin(dPhi / 2.0f);
     var sl   = Math.sin(dLam / 2.0f);
     var a    = sh * sh + Math.cos(phi1) * Math.cos(phi2) * sl * sl;
+    if (a > 1.0f) { a = 1.0f; } else if (a < 0.0f) { a = 0.0f; }
     var dist = (R * 2.0f * Math.atan2(Math.sqrt(a), Math.sqrt(1.0f - a))).toFloat();
     var vy   = (Math.sin(dLam) * Math.cos(phi2)).toFloat();
     var vx   = (Math.cos(phi1) * Math.sin(phi2)

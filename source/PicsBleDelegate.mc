@@ -1,10 +1,11 @@
 // =============================================================
 // PicsBleDelegate.mc  ―  BLE スキャン + PICS パケット解析
-// GPSMAP H1i Plus / Connect IQ 3.2.0+
+// GPSMAP H1i Plus / Connect IQ SDK 9.1.0
 // =============================================================
 
 import Toybox.BluetoothLowEnergy;
 import Toybox.Lang;
+import Toybox.Position;
 import Toybox.System;
 import Toybox.Time;
 import Toybox.Time.Gregorian;
@@ -31,6 +32,8 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
 
     //! GPS座標から解決された最新の交差点名称（未解決時は空文字）
     var currentIntersectionName as Lang.String = "";
+    //! Type1/識別子側から取得した発信器ID（BLEデバイス名）
+    var currentTransmitterId as Lang.String = "";
     //! 最近傍交差点の緯度・経度（未解決時は 0.0）
     var currentIntersectionLat  as Lang.Float  = 0.0f;
     var currentIntersectionLon  as Lang.Float  = 0.0f;
@@ -58,13 +61,17 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
     //! 1件の ScanResult を処理する
     private function processScanResult(result as BluetoothLowEnergy.ScanResult) as Void {
         // メーカー固有データを取得（company ID を指定して ByteArray を直接取得）
-        var payload = result.getManufacturerSpecificData(PICS_MANUFACTURER_ID);
+        var payload = result.getManufacturerSpecificData(PICS_MANUFACTURER_ID) as Toybox.Lang.ByteArray or Null;
         if (payload == null) { return; }
 
         rxCount++;
 
         var frame = PicsParser.parse(payload, result.getRssi());
         if (frame == null) { return; }
+        var deviceName = result.getDeviceName();
+        if (deviceName != null && (deviceName as Lang.String).length() > 0) {
+            frame.transmitterId = deviceName as Lang.String;
+        }
 
         // ---- ログ出力用タイムスタンプ生成 (yyyy-MM-dd HH:mm:ss.SSS) ----
         var info = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
@@ -94,12 +101,13 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
             case PICS_MSG_TYPE_LOCATION:
                 System.println(logPrefix + " Lat:" + frame.latitude.format("%.6f") + " Lon:" + frame.longitude.format("%.6f"));
                 lastLocFrame = frame;
+                currentTransmitterId = frame.transmitterId;
                 if (_intersectionDb != null) {
                     var entry = (_intersectionDb as PicsIntersectionDB)
                         .findNearestEntry(frame.latitude, frame.longitude);
                     if (entry != null) {
-                        currentIntersectionLat  = entry[0] as Lang.Float;
-                        currentIntersectionLon  = entry[1] as Lang.Float;
+                        currentIntersectionLat  = entry[0].toFloat();
+                        currentIntersectionLon  = entry[1].toFloat();
                         currentIntersectionName = entry[2] as Lang.String;
                     }
                 }
@@ -113,11 +121,36 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
                 System.println(logPrefix + " Sig:" + sigStr);
                 
                 lastSignalFrame = frame;
+                if (currentTransmitterId.length() > 0 && frame.transmitterId.equals(frame.intersectionId)) {
+                    frame.transmitterId = currentTransmitterId;
+                }
+                resolveNearestFromDeviceLocation();
                 // UI 通知は Type 2 のときのみ
                 if (_callback != null) {
                     _callback.invoke(frame, PICS_MSG_TYPE_SIGNAL);
                 }
                 break;
+        }
+    }
+
+    //! Type1 位置情報が来ないビーコンでも、現在地から最近傍交差点名を補完する
+    private function resolveNearestFromDeviceLocation() as Void {
+        if (_intersectionDb == null || currentIntersectionName.length() > 0) {
+            return;
+        }
+
+        var posInfo = Position.getInfo();
+        if (posInfo == null || posInfo.position == null) {
+            return;
+        }
+
+        var coords = (posInfo.position as Position.Location).toDegrees();
+        var entry = (_intersectionDb as PicsIntersectionDB)
+            .findNearestEntry(coords[0].toFloat(), coords[1].toFloat());
+        if (entry != null) {
+            currentIntersectionLat  = entry[0].toFloat();
+            currentIntersectionLon  = entry[1].toFloat();
+            currentIntersectionName = entry[2] as Lang.String;
         }
     }
 

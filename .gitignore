@@ -1,65 +1,33 @@
-# Prerequisites
-*.d
-
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
-
-# Linker output
-*.ilk
-*.map
-*.exp
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
-
-# debug information files
-*.dwo
-/{source,resources
+# macOS
 .DS_Store
-developer_key.pem
+
+# Build artifacts
+*.prg
+*.prg.debug.xml
+gen/
+mir/
+internal-mir/
+external-mir/
+
+# Generated test manifests
+manifest_test_*.xml
+
+# Python
+.venv/
+pyvenv.cfg
+lib/
+include/
+__pycache__/
+
+# Developer keys
 developer_key.der
-*.mir
-*.mcgen
-*.mbc
-*.mbc
-*.mcgen
-/bin/pics-viewer.prg.debug.xml
+developer_key.pem
+
+# IDE / editor
+.vscode/
+.claude/
+
+# Allow tracked build output in bin/
+!bin/
+!bin/pics-viewer.prg
+!bin/pics-viewer.prg.debug.xml
