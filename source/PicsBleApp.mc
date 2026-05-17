@@ -26,7 +26,10 @@ class PicsBleApp extends Application.AppBase {
     private var _view     as PicsMainView    or Null = null;
     private var _timer    as Timer.Timer     or Null = null;
     private var _timerTickCount as Lang.Number = 0;
+    private var _bleScanningStarted as Lang.Boolean = false;
 
+    // シミュレータ確認時だけ true にする。実機では BLE を起動する。
+    private const EMULATOR_UI_ONLY = false;
     private const UI_POLL_INTERVAL_MS = 100;
     private const BLINK_INTERVAL_TICKS = 5; // 100ms × 5 = 500ms
 
@@ -37,12 +40,19 @@ class PicsBleApp extends Application.AppBase {
     //! アプリが初期化されたタイミング（最初のビューを返す）
     function getInitialView() {
         _view = new PicsMainView();
+        if (EMULATOR_UI_ONLY) {
+            startEmulatorUiOnlyMode();
+        }
         return [_view, new PicsInputDelegate(_view)];
     }
 
     //! フォアグラウンド起動時
     function onStart(state as Lang.Dictionary or Null) as Void {
-        startBleScanning();
+        if (EMULATOR_UI_ONLY) {
+            startEmulatorUiOnlyMode();
+        } else {
+            startBleScanning();
+        }
         startBlinkTimer();
     }
 
@@ -61,6 +71,7 @@ class PicsBleApp extends Application.AppBase {
         _delegate = new PicsBleDelegate(method(:onPicsSignal));
         BluetoothLowEnergy.setDelegate(_delegate);
         BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_SCANNING);
+        _bleScanningStarted = true;
 
         if (_view != null) {
             _view.setScanningState(true);
@@ -68,7 +79,9 @@ class PicsBleApp extends Application.AppBase {
     }
 
     private function stopBleScanning() as Void {
+        if (!_bleScanningStarted) { return; }
         BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_OFF);
+        _bleScanningStarted = false;
         if (_view != null) {
             _view.setScanningState(false);
         }
@@ -83,6 +96,30 @@ class PicsBleApp extends Application.AppBase {
                 _delegate.currentIntersectionLat,
                 _delegate.currentIntersectionLon);
         }
+    }
+
+    // ----------------------------------------------------------
+    //  シミュレータ確認モード
+    // ----------------------------------------------------------
+
+    private function startEmulatorUiOnlyMode() as Void {
+        if (_view == null) { return; }
+
+        var frame = new PicsFrame();
+        frame.msgType = PICS_MSG_TYPE_SIGNAL;
+        frame.msgId = 1;
+        frame.intersectionId = "SIM00001";
+        frame.rssi = -62;
+        frame.timestamp = System.getTimer().toLong();
+        frame.signals[0] = new PicsSignal(SIGNAL_RED, 7);
+        frame.signals[1] = new PicsSignal(SIGNAL_GREEN, 12);
+        frame.signals[2] = new PicsSignal(SIGNAL_NO_SIGNAL, -1);
+        frame.signals[3] = new PicsSignal(SIGNAL_RED, 3);
+        frame.signals[4] = new PicsSignal(SIGNAL_BLINK_GREEN, 5);
+        frame.signals[5] = new PicsSignal(SIGNAL_NONE, -1);
+
+        _view.setScanningState(false);
+        _view.updateSignal(frame, 1l, "エミュレータ確認", 35.6812f, 139.7671f);
     }
 
     // ----------------------------------------------------------

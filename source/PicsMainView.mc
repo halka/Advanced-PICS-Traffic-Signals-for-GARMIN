@@ -95,26 +95,29 @@ class PicsMainView extends WatchUi.View {
 
     //! 画面全体を描画する
     function onUpdate(dc as Graphics.Dc) as Void {
+        var screenW = dc.getWidth();
+        var screenH = dc.getHeight();
+
         dc.setColor(COLOR_BG, COLOR_BG);
         dc.clear();
 
-        drawHeader(dc);
-        drawSignalPanels(dc);
-        drawGpsInfo(dc);
-        drawFooter(dc);
+        drawHeader(dc, screenW);
+        drawSignalPanels(dc, screenW);
+        drawGpsInfo(dc, screenW);
+        drawFooter(dc, screenW, screenH);
     }
 
     // ----------------------------------------------------------
     //  ヘッダー部  Y: 0 ～ 76
     // ----------------------------------------------------------
-    private function drawHeader(dc as Graphics.Dc) as Void {
-        var CX = SCREEN_W / 2;
+    private function drawHeader(dc as Graphics.Dc, screenW as Lang.Number) as Void {
+        var CX = screenW / 2;
 
         dc.setColor(COLOR_PANEL, COLOR_PANEL);
-        dc.fillRectangle(0, 0, SCREEN_W, 76);
+        dc.fillRectangle(0, 0, screenW, 76);
 
         dc.setColor(COLOR_ACCENT, COLOR_ACCENT);
-        dc.fillRectangle(0, 0, SCREEN_W, 3);
+        dc.fillRectangle(0, 0, screenW, 3);
 
         // アプリタイトル
         dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
@@ -146,14 +149,14 @@ class PicsMainView extends WatchUi.View {
                     Graphics.TEXT_JUSTIFY_CENTER);
 
         dc.setColor(COLOR_BORDER, COLOR_BORDER);
-        dc.fillRectangle(0, 76, SCREEN_W, 2);
+        dc.fillRectangle(0, 76, screenW, 2);
     }
 
     // ----------------------------------------------------------
     //  信号パネル  Y: 80 ～ 330
     // ----------------------------------------------------------
-    private function drawSignalPanels(dc as Graphics.Dc) as Void {
-        var panelW = (SCREEN_W - 24) / 2;
+    private function drawSignalPanels(dc as Graphics.Dc, screenW as Lang.Number) as Void {
+        var panelW = (screenW - 24) / 2;
         var panelH = 78;
         var gapX   = 8;
         var gapY   = 8;
@@ -260,8 +263,8 @@ class PicsMainView extends WatchUi.View {
     // ----------------------------------------------------------
     //  GPS 情報  Y: 334 ～ 378
     // ----------------------------------------------------------
-    private function drawGpsInfo(dc as Graphics.Dc) as Void {
-        var CX = SCREEN_W / 2;
+    private function drawGpsInfo(dc as Graphics.Dc, screenW as Lang.Number) as Void {
+        var CX = screenW / 2;
 
         var devLat = 0.0f;
         var devLon = 0.0f;
@@ -326,14 +329,14 @@ class PicsMainView extends WatchUi.View {
     // ----------------------------------------------------------
     //  フッター  Y: 382 ～ 470
     // ----------------------------------------------------------
-    private function drawFooter(dc as Graphics.Dc) as Void {
-        var CX = SCREEN_W / 2;
+    private function drawFooter(dc as Graphics.Dc, screenW as Lang.Number, screenH as Lang.Number) as Void {
+        var CX = screenW / 2;
 
         dc.setColor(COLOR_BORDER, COLOR_BORDER);
-        dc.fillRectangle(0, 380, SCREEN_W, 2);
+        dc.fillRectangle(0, 380, screenW, 2);
 
         dc.setColor(COLOR_PANEL, COLOR_PANEL);
-        dc.fillRectangle(0, 382, SCREEN_W, SCREEN_H - 382);
+        dc.fillRectangle(0, 382, screenW, screenH - 382);
 
         // 最終受信時刻
         var timeStr = WatchUi.loadResource(Rez.Strings.WaitingDots) as Lang.String;
@@ -360,6 +363,6 @@ class PicsMainView extends WatchUi.View {
                     Graphics.TEXT_JUSTIFY_CENTER);
 
         dc.setColor(COLOR_ACCENT, COLOR_ACCENT);
-        dc.fillRectangle(0, SCREEN_H - 3, SCREEN_W, 3);
+        dc.fillRectangle(0, screenH - 3, screenW, 3);
     }
 }
