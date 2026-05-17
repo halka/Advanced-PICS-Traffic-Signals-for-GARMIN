@@ -5,7 +5,6 @@
 
 import Toybox.Graphics;
 import Toybox.Lang;
-import Toybox.Math;
 import Toybox.Position;
 import Toybox.Time;
 import Toybox.Time.Gregorian;
@@ -75,7 +74,8 @@ class PicsMainView extends WatchUi.View {
         _rxCount          = rxCount;
         _scanning         = true;
         var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
-        _lastReceivedTime = pad2(now.month) + "/"
+        _lastReceivedTime = pad4(now.year) + "-"
+                          + pad2(now.month) + "-"
                           + pad2(now.day) + " "
                           + pad2(now.hour) + ":"
                           + pad2(now.min)  + ":"
@@ -122,7 +122,6 @@ class PicsMainView extends WatchUi.View {
         var devLat = 43.066768f;
         var devLon = 141.350582f;
         var hasFix = false;
-        var headingDeg = null;
         var posInfo = null;
         if (!_emulatorModeActive) {
             posInfo = Position.getInfo();
@@ -132,12 +131,8 @@ class PicsMainView extends WatchUi.View {
                 devLon = coords[1].toFloat();
                 hasFix = true;
             }
-            if (posInfo != null && posInfo.heading != null) {
-                headingDeg = normalizeHeading(posInfo.heading.toFloat());
-            }
         } else {
             hasFix = true;
-            headingDeg = 0.0f;
         }
 
         if (!_emulatorModeActive && _db != null) {
@@ -159,14 +154,15 @@ class PicsMainView extends WatchUi.View {
         }
 
         // 描画
-        drawHeader(dc, screenW, headingDeg);
+        drawHeader(dc, screenW, devLat, devLon, hasFix);
         drawCards(dc, screenW, screenH, devLat, devLon);
     }
 
     private function drawHeader(dc as Graphics.Dc, screenW as Lang.Number,
-                                headingDeg as Lang.Float or Null) as Void {
+                                devLat as Lang.Float, devLon as Lang.Float,
+                                hasFix as Lang.Boolean) as Void {
         dc.setColor(COLOR_PANEL, COLOR_PANEL);
-        dc.fillRectangle(0, 0, screenW, 62);
+        dc.fillRectangle(0, 0, screenW, 82);
         dc.setColor(COLOR_ACCENT, COLOR_ACCENT);
         dc.fillRectangle(0, 0, screenW, 3);
         
@@ -185,7 +181,7 @@ class PicsMainView extends WatchUi.View {
         }
 
         dc.setColor(statusColor, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(screenW - 8, 9, Graphics.FONT_XTINY,
+        dc.drawText(screenW - 8, 8, Graphics.FONT_XTINY,
                     WatchUi.loadResource(statusLabel) as Lang.String,
                     Graphics.TEXT_JUSTIFY_RIGHT);
 
@@ -196,22 +192,27 @@ class PicsMainView extends WatchUi.View {
 
         dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
         dc.drawText(8, 8, Graphics.FONT_XTINY,
-                    timeStr + " " + _rxCount.toString() + " pkt",
+                    timeStr,
                     Graphics.TEXT_JUSTIFY_LEFT);
 
-        dc.drawText(8, 32, Graphics.FONT_XTINY,
-                    formatCurrentClock() + "  " + formatHeading(headingDeg),
+        dc.drawText(8, 28, Graphics.FONT_XTINY,
+                    _rxCount.toString() + " pkt",
+                    Graphics.TEXT_JUSTIFY_LEFT);
+
+        dc.drawText(8, 48, Graphics.FONT_XTINY,
+                    formatDevicePosition(devLat, devLon, hasFix),
                     Graphics.TEXT_JUSTIFY_LEFT);
 
         dc.setColor(COLOR_BORDER, COLOR_BORDER);
-        dc.fillRectangle(0, 62, screenW, 2);
+        dc.fillRectangle(0, 82, screenW, 2);
     }
 
-    private function formatCurrentClock() as Lang.String {
-        var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
-        return pad2(now.hour) + ":"
-             + pad2(now.min) + ":"
-             + pad2(now.sec);
+    private function formatDevicePosition(devLat as Lang.Float, devLon as Lang.Float,
+                                          hasFix as Lang.Boolean) as Lang.String {
+        if (!hasFix) {
+            return "Pos: --,--";
+        }
+        return "Pos: " + devLat.format("%.4f") + "," + devLon.format("%.4f");
     }
 
     private function pad2(value) as Lang.String {
@@ -222,23 +223,12 @@ class PicsMainView extends WatchUi.View {
         return str;
     }
 
-    private function normalizeHeading(value as Lang.Float) as Lang.Float {
-        var deg = value;
-        if (deg >= 0.0f && deg <= 6.4f) {
-            deg = Math.toDegrees(deg).toFloat();
+    private function pad4(value) as Lang.String {
+        var str = value.toString();
+        while (str.length() < 4) {
+            str = "0" + str;
         }
-        while (deg < 0.0f) { deg += 360.0f; }
-        while (deg >= 360.0f) { deg -= 360.0f; }
-        return deg;
-    }
-
-    private function formatHeading(headingDeg as Lang.Float or Null) as Lang.String {
-        if (headingDeg == null) {
-            return "方角 --";
-        }
-        var cards = ["N","NE","E","SE","S","SW","W","NW"] as Array<String>;
-        var cidx  = (((headingDeg as Lang.Float) + 22.5f) / 45.0f).toNumber() % 8;
-        return "方角 " + cards[cidx] + " " + (headingDeg as Lang.Float).format("%.0f");
+        return str;
     }
 
     private function drawCards(dc as Graphics.Dc, screenW as Lang.Number, screenH as Lang.Number,
@@ -312,9 +302,9 @@ class PicsMainView extends WatchUi.View {
         if (_currentRowOffset > maxOffset) { _currentRowOffset = maxOffset; }
 
         var gap = 8;
-        var y = 68;
+        var y = 88;
 
-        dc.setClip(0, 64, screenW, screenH - 67);
+        dc.setClip(0, 84, screenW, screenH - 87);
 
         for (var i = _currentRowOffset; i < cardsData.size(); i++) {
             if (y > screenH - 12) { break; }
@@ -471,10 +461,17 @@ class PicsMainView extends WatchUi.View {
 
         var cards = ["N","NE","E","SE","S","SW","W","NW"] as Array<String>;
         var cidx  = ((brg + 22.5f) / 45.0f).toNumber() % 8;
-        var distBrgStr = dist.format("%.0f") + "m  " + brg.format("%.0f") + " (" + cards[cidx] + ")";
+        var distBrgStr = formatDistance(dist) + "  " + brg.format("%.0f") + " (" + cards[cidx] + ")";
 
         dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
         dc.drawText(x + w - 12, sy + 30, Graphics.FONT_TINY, distBrgStr, Graphics.TEXT_JUSTIFY_RIGHT);
+    }
+
+    private function formatDistance(dist as Lang.Float) as Lang.String {
+        if (dist < 1000.0f) {
+            return dist.format("%.0f") + "m";
+        }
+        return (dist / 1000.0f).format("%.1f") + "km";
     }
 
     private function shouldShowTx(tx as Lang.String) as Lang.Boolean {
@@ -482,6 +479,22 @@ class PicsMainView extends WatchUi.View {
     }
 
     private function wrapName(text as Lang.String) as Lang.Array {
+        var len = text.length();
+        var split = findNameSplit(text);
+        if (split > 0 && split < len) {
+            var lines = [] as Lang.Array;
+            lines.add(text.substring(0, split));
+            var tail = text.substring(split, len);
+            var tailLines = wrapNameFallback(tail);
+            for (var i = 0; i < tailLines.size(); i++) {
+                lines.add(tailLines[i]);
+            }
+            return lines;
+        }
+        return wrapNameFallback(text);
+    }
+
+    private function wrapNameFallback(text as Lang.String) as Lang.Array {
         var len = text.length();
         if (len <= 12) {
             return wrapText(text, 12);
@@ -493,6 +506,14 @@ class PicsMainView extends WatchUi.View {
             return wrapText(text, ((len + 2) / 3).toNumber());
         }
         return wrapText(text, 10);
+    }
+
+    private function findNameSplit(text as Lang.String) as Lang.Number {
+        var idx = findText(text, "通り");
+        if (idx >= 0 && (idx + 2) < text.length()) {
+            return idx + 2;
+        }
+        return -1;
     }
 
     private function wrapAddress(text as Lang.String) as Lang.Array {
@@ -519,5 +540,16 @@ class PicsMainView extends WatchUi.View {
             i += maxChars;
         }
         return lines;
+    }
+
+    private function findText(text as Lang.String, needle as Lang.String) as Lang.Number {
+        var nLen = needle.length();
+        var limit = text.length() - nLen;
+        for (var i = 0; i <= limit; i++) {
+            if (text.substring(i, i + nLen).equals(needle)) {
+                return i;
+            }
+        }
+        return -1;
     }
 }
