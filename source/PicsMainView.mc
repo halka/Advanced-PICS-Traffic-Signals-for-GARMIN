@@ -27,12 +27,7 @@ class SignalIndicator {
 
 class PicsMainView extends WatchUi.View {
 
-    // ---- 画面サイズ定数 (GPSMAP H1i Plus) ----
-    private const SCREEN_W = 282;
-    private const SCREEN_H = 470;
-
-    // ---- 表示チャンネル設定 ----
-    private const DISPLAY_CHANNELS = [0, 1, 2, 3, 4, 5] as Array<Number>;
+    // ---- 表示チャンネル設定（動的リストになったため廃止） ----
 
     // ---- カラーパレット ----
     private const COLOR_BG         = 0xFFFFFF; // White
@@ -48,13 +43,16 @@ class PicsMainView extends WatchUi.View {
     private const COLOR_NONE       = 0xAAAAAA; // Gray
 
     // ---- ステート ----
-    private var _lastFrame        as PicsFrame or Null = null;
-    private var _rxCount          as Lang.Long = 0l;
-    private var _scanning         as Lang.Boolean = false;
+    private var _lastFrame         as PicsFrame or Null = null;
+    private var _rxCount           as Lang.Long = 0l;
+    private var _lastReceivedTime  as Lang.String = "";
+    private var _lastReceivedSysTime as Lang.Number = 0;
+    private var _scanning          as Lang.Boolean = false;
     private var _blinkPhase       as Lang.Boolean = false;
     private var _intersectionName as Lang.String = "";
     private var _intersectionLat  as Lang.Float  = 0.0f;
     private var _intersectionLon  as Lang.Float  = 0.0f;
+    private var _currentRowOffset as Lang.Number = 0;
 
     function initialize() {
         View.initialize();
@@ -70,6 +68,12 @@ class PicsMainView extends WatchUi.View {
                           intersectionLon  as Lang.Float) as Void {
         _lastFrame        = frame;
         _rxCount          = rxCount;
+        _scanning         = true;
+        var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
+        _lastReceivedTime = now.hour.format("%02d") + ":"
+                          + now.min.format("%02d")  + ":"
+                          + now.sec.format("%02d");
+        _lastReceivedSysTime = System.getTimer();
         _intersectionName = intersectionName;
         _intersectionLat  = intersectionLat;
         _intersectionLon  = intersectionLon;
@@ -86,6 +90,19 @@ class PicsMainView extends WatchUi.View {
     function toggleBlinkPhase() as Void {
         _blinkPhase = !_blinkPhase;
         if (_lastFrame != null) { WatchUi.requestUpdate(); }
+    }
+
+    //! 下にスクロール
+    function scrollDown() as Void {
+        _currentRowOffset += 2;
+        WatchUi.requestUpdate();
+    }
+
+    //! 上にスクロール
+    function scrollUp() as Void {
+        _currentRowOffset -= 2;
+        if (_currentRowOffset < 0) { _currentRowOffset = 0; }
+        WatchUi.requestUpdate();
     }
 
     //! 受信時刻やGPSなど時間依存表示を短周期で更新
@@ -119,12 +136,6 @@ class PicsMainView extends WatchUi.View {
         dc.setColor(COLOR_ACCENT, COLOR_ACCENT);
         dc.fillRectangle(0, 0, screenW, 3);
 
-        // アプリタイトル
-        dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 10, Graphics.FONT_TINY,
-                    WatchUi.loadResource(Rez.Strings.AppTitle) as Lang.String,
-                    Graphics.TEXT_JUSTIFY_CENTER);
-
         // 交差点名称
         var nameFont = Graphics.FONT_MEDIUM;
         var nameStr  = "";
@@ -138,11 +149,24 @@ class PicsMainView extends WatchUi.View {
             nameStr = WatchUi.loadResource(Rez.Strings.IntersectionPrefix) + intersectionId;
         }
         dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 32, nameFont, nameStr, Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(CX, 16, nameFont, nameStr, Graphics.TEXT_JUSTIFY_CENTER);
 
         // スキャン状態
-        var statusColor = _scanning ? COLOR_GREEN : COLOR_NONE;
-        var statusLabel = _scanning ? Rez.Strings.ScanningIndicator : Rez.Strings.StoppedIndicator;
+        var receiving = _scanning || _lastFrame != null;
+        var statusColor = COLOR_NONE;
+        var statusLabel = Rez.Strings.StoppedIndicator;
+
+        if (receiving) {
+            var nowTimer = System.getTimer();
+            if (_lastReceivedSysTime > 0 && (nowTimer - _lastReceivedSysTime) > 5000) {
+                statusColor = COLOR_RED;
+                statusLabel = Rez.Strings.LostIndicator;
+            } else {
+                statusColor = COLOR_GREEN;
+                statusLabel = Rez.Strings.ScanningIndicator;
+            }
+        }
+        
         dc.setColor(statusColor, Graphics.COLOR_TRANSPARENT);
         dc.drawText(CX, 55, Graphics.FONT_TINY,
                     WatchUi.loadResource(statusLabel) as Lang.String,
@@ -156,27 +180,49 @@ class PicsMainView extends WatchUi.View {
     //  信号パネル  Y: 80 ～ 330
     // ----------------------------------------------------------
     private function drawSignalPanels(dc as Graphics.Dc, screenW as Lang.Number) as Void {
+        var validSignals = [] as Lang.Array;
+        if (_lastFrame != null) {
+            var sigs = _lastFrame.signals as Lang.Array;
+            for (var i = 0; i < sigs.size(); i++) {
+                var sig = sigs[i] as PicsSignal;
+                if (sig.state != SIGNAL_NO_SIGNAL) {
+                    validSignals.add(sig);
+                }
+            }
+        }
+
+        var numPanels = validSignals.size();
+        var maxRow = (numPanels > 0) ? ((numPanels - 1) / 2) : 0;
+        
+        var maxOffset = maxRow - 2; 
+        if (maxOffset < 0) { maxOffset = 0; }
+        if (_currentRowOffset > maxOffset) { _currentRowOffset = maxOffset; }
+        if (_currentRowOffset < 0) { _currentRowOffset = 0; }
+
         var panelW = (screenW - 24) / 2;
         var panelH = 78;
         var gapX   = 8;
         var gapY   = 8;
         var startX = 8;
-        var startY = 80;
+        var startY = 80 - (_currentRowOffset * (panelH + gapY));
 
-        for (var c = 0; c < DISPLAY_CHANNELS.size(); c++) {
-            var ch  = DISPLAY_CHANNELS[c];
+        dc.setClip(0, 78, screenW, 256);
+
+        for (var c = 0; c < numPanels; c++) {
             var col = c % 2;
             var row = c / 2;
             var px  = startX + col * (panelW + gapX);
             var py  = startY + row * (panelH + gapY);
 
-            var signal = null as PicsSignal or Null;
-            if (_lastFrame != null && _lastFrame.msgType == PICS_MSG_TYPE_SIGNAL) {
-                signal = _lastFrame.signals[ch] as PicsSignal;
+            if (py + panelH < 78 || py > 334) {
+                continue;
             }
 
-            drawSinglePanel(dc, px, py, panelW, panelH, ch, signal);
+            var signal = validSignals[c] as PicsSignal;
+            drawSinglePanel(dc, px, py, panelW, panelH, c, signal);
         }
+
+        dc.clearClip();
     }
 
     //! 1チャンネル分のパネルを描画
@@ -195,13 +241,17 @@ class PicsMainView extends WatchUi.View {
         dc.drawRectangle(x, y, w, h);
 
         dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
+        var txId = "--------";
+        if (_lastFrame != null) {
+            txId = _lastFrame.transmitterId;
+        }
         dc.drawText(x + 6, y + 4, Graphics.FONT_TINY,
-                    WatchUi.loadResource(Rez.Strings.ChannelPrefix) + (channel + 1).toString(),
+                    txId,
                     Graphics.TEXT_JUSTIFY_LEFT);
 
         if (signal != null && _lastFrame != null) {
             dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(x + w - 6, y + 4, Graphics.FONT_TINY,
+            dc.drawText(x + w - 6, y + h - 18, Graphics.FONT_TINY,
                         _lastFrame.rssi.toString() + "dBm",
                         Graphics.TEXT_JUSTIFY_RIGHT);
         }
@@ -211,13 +261,11 @@ class PicsMainView extends WatchUi.View {
         var lampCX = x + 28;
 
         var sigColor  = COLOR_NONE;
-        var stateText = Rez.Strings.NoSignal as Lang.ResourceId;
         var remText   = "" as Lang.String;
 
         if (signal != null) {
-            stateText = signal.stateLabel();
             remText   = (signal.remaining > 0)
-                ? signal.remaining.toString() + "s"
+                ? signal.remaining.toString()
                 : "";
 
             switch (signal.state) {
@@ -228,7 +276,7 @@ class PicsMainView extends WatchUi.View {
                     sigColor = COLOR_GREEN;
                     break;
                 case SIGNAL_BLINK_GREEN:
-                    sigColor = _blinkPhase ? COLOR_GREEN : COLOR_NONE;
+                    sigColor = _blinkPhase ? COLOR_BLINK_G : COLOR_NONE;
                     break;
                 case SIGNAL_NONE:
                     sigColor = COLOR_NONE;
@@ -247,14 +295,9 @@ class PicsMainView extends WatchUi.View {
         dc.setColor(sigColor, Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(lampCX, lampCY, lampR);
 
-        dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x + 52, y + 28, Graphics.FONT_SMALL,
-                    WatchUi.loadResource(stateText) as Lang.String,
-                    Graphics.TEXT_JUSTIFY_LEFT);
-
         if (remText.length() > 0) {
             dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(x + 52, y + 52, Graphics.FONT_TINY,
+            dc.drawText(x + 52, y + 40, Graphics.FONT_TINY,
                         WatchUi.loadResource(Rez.Strings.RemainingPrefix) + remText,
                         Graphics.TEXT_JUSTIFY_LEFT);
         }
@@ -340,11 +383,8 @@ class PicsMainView extends WatchUi.View {
 
         // 最終受信時刻
         var timeStr = WatchUi.loadResource(Rez.Strings.WaitingDots) as Lang.String;
-        if (_lastFrame != null) {
-            var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
-            timeStr = now.hour.format("%02d") + ":"
-                    + now.min.format("%02d")  + ":"
-                    + now.sec.format("%02d");
+        if (_lastReceivedTime.length() > 0) {
+            timeStr = _lastReceivedTime;
         }
 
         dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);

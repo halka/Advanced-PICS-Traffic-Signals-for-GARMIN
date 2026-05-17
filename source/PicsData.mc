@@ -1,6 +1,6 @@
 // =============================================================
 // PicsData.mc  ―  高度化PICS データモデル
-// GPSMAP H1i Plus / Connect IQ 3.2.0+
+// GPSMAP H1i Plus / Connect IQ SDK 9.1.0
 // =============================================================
 
 import Toybox.Lang;
@@ -18,8 +18,8 @@ const SIGNAL_NONE       = 4;    // 制御外
 // ---- メーカーID (0x01CE) ----
 const PICS_MANUFACTURER_ID = 0x01CE;
 
-// ---- 歩行者信号チャンネル数（PICS仕様: 最大6系統） ----
-const PICS_SIGNAL_COUNT = 6;
+// ---- 歩行者信号チャンネル数（PICS仕様: 最大6系統、将来拡張・複数対応のため16に拡張） ----
+const PICS_SIGNAL_COUNT = 16;
 
 // ---- メッセージタイプ ----
 const PICS_MSG_TYPE_IDENTIFIER = 0;  // 交差点識別子
@@ -30,7 +30,7 @@ const PICS_MSG_TYPE_SIGNAL     = 2;  // 信号状態
 class PicsSignal {
     //! 信号状態 (SIGNAL_* 定数)
     var state   as Lang.Number = SIGNAL_NO_SIGNAL;
-    //! 残り時間（秒）。不明な場合は -1
+    //! 残り表示値（PICS の s 値）。不明な場合は -1
     var remaining as Lang.Number = -1;
 
     function initialize(state_ as Lang.Number, remaining_ as Lang.Number) {
@@ -55,6 +55,7 @@ class PicsFrame {
     var msgType        as Lang.Number = -1;
     var msgId          as Lang.Number = -1;
     var intersectionId as Lang.String = "--------";
+    var transmitterId  as Lang.String = "--------";
 
     // Type 1 (位置情報)
     var latitude       as Lang.Float = 0.0f;
@@ -108,6 +109,7 @@ class PicsParser {
                 idStr += data[i].format("%02X");
             }
             frame.intersectionId = idStr;
+            frame.transmitterId = idStr;
         }
 
         // タイプ別ペイロード解析
@@ -162,9 +164,9 @@ class PicsIntersectionDB {
     private var _entries as Lang.Array or Null = null;
 
     function initialize() {
-        var json = Rez.JsonData.intersections;
-        if (json instanceof Lang.Array) {
-            _entries = json as Lang.Array;
+        var json = Rez.JsonData.intersections as Lang.Array or Null;
+        if (json != null) {
+            _entries = json;
         }
     }
 
