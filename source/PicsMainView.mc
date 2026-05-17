@@ -497,10 +497,8 @@ class PicsMainView extends WatchUi.View {
         var len = text.length();
         var lineCount = 1;
         if (len > 54) {
-            lineCount = 4;
-        } else if (len > 36) {
             lineCount = 3;
-        } else if (len > 18) {
+        } else if (len > 36) {
             lineCount = 2;
         }
         return wrapText(text, ((len + lineCount - 1) / lineCount).toNumber());
