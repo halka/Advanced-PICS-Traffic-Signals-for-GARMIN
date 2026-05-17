@@ -219,15 +219,6 @@ class PicsIntersectionDB {
             var eLat = e[0].toFloat();
             var eLon = e[1].toFloat();
             
-            // 非常に高速なバウンディングボックスによるプレフィルタ（約15km以内）
-            var dLat = lat - eLat;
-            if (dLat < 0) { dLat = -dLat; }
-            if (dLat > 0.15f) { continue; }
-            
-            var dLon = lon - eLon;
-            if (dLon < 0) { dLon = -dLon; }
-            if (dLon > 0.15f) { continue; }
-
             var db = calcDistBrg(lat, lon, eLat, eLon);
             var dist = db[0] as Lang.Float;
             var brg  = db[1] as Lang.Float;
