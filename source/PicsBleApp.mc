@@ -127,8 +127,6 @@ class PicsBleApp extends Application.AppBase {
 
         _emulatorFrame = createEmulatorFrame();
 
-        var dummyDb = new PicsIntersectionDB();
-        _view.setDb(dummyDb);
         _view.setScanningState(false);
         publishEmulatorFrame();
     }
@@ -200,6 +198,10 @@ class PicsBleApp extends Application.AppBase {
         frame.msgType = PICS_MSG_TYPE_SIGNAL;
         frame.msgId = 1;
         frame.intersectionId = "SIM00001";
+        frame.transmitterId = "SIM00001";
+        frame.latitude = EMULATOR_LAT;
+        frame.longitude = EMULATOR_LON;
+        frame.intersectionName = EMULATOR_NAME;
         frame.rssi = -62;
         frame.timestamp = System.getTimer().toLong();
         frame.signals[0] = new PicsSignal(SIGNAL_RED, 7);

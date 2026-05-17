@@ -30,6 +30,7 @@ class PicsMainView extends WatchUi.View {
     private var _lastFrame         as PicsFrame or Null = null;
     private var _rxCount           as Lang.Long = 0l;
     private var _lastReceivedTime  as Lang.String = "";
+    private var _lastReceivedClock as Lang.String = "";
     private var _lastReceivedSysTime as Lang.Number = 0;
     private var _scanning          as Lang.Boolean = false;
     private var _blinkPhase       as Lang.Boolean = false;
@@ -76,6 +77,9 @@ class PicsMainView extends WatchUi.View {
                           + now.hour.format("%02d") + ":"
                           + now.min.format("%02d")  + ":"
                           + now.sec.format("%02d");
+        _lastReceivedClock = now.hour.format("%02d") + ":"
+                           + now.min.format("%02d")  + ":"
+                           + now.sec.format("%02d");
         _lastReceivedSysTime = System.getTimer();
         _intersectionName = intersectionName;
         _needsListUpdate = true;
@@ -182,12 +186,12 @@ class PicsMainView extends WatchUi.View {
                     Graphics.TEXT_JUSTIFY_RIGHT);
 
         var timeStr = WatchUi.loadResource(Rez.Strings.WaitingDots) as Lang.String;
-        if (_lastReceivedTime.length() > 0) {
-            timeStr = _lastReceivedTime;
+        if (_lastReceivedClock.length() > 0) {
+            timeStr = _lastReceivedClock;
         }
 
         dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(8, 28, Graphics.FONT_XTINY,
+        dc.drawText(8, 8, Graphics.FONT_XTINY,
                     timeStr + " " + _rxCount.toString() + " pkt",
                     Graphics.TEXT_JUSTIFY_LEFT);
 
@@ -195,7 +199,7 @@ class PicsMainView extends WatchUi.View {
         if (hasFix) {
             posStr = devLat.format("%.4f") + "," + devLon.format("%.4f");
         }
-        dc.drawText(8, 44, Graphics.FONT_XTINY, posStr, Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(8, 30, Graphics.FONT_XTINY, posStr, Graphics.TEXT_JUSTIFY_LEFT);
 
         dc.setColor(COLOR_BORDER, COLOR_BORDER);
         dc.fillRectangle(0, 62, screenW, 2);
@@ -259,6 +263,10 @@ class PicsMainView extends WatchUi.View {
             }
         }
 
+        if (cardsData.size() == 0 && _emulatorModeActive && _lastFrame != null) {
+            cardsData.add(createEmulatorCard(devLat, devLon));
+        }
+
         if (cardsData.size() == 0) {
             dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
             dc.drawText(screenW/2, 100, Graphics.FONT_MEDIUM, "検索対象が近くにありません", Graphics.TEXT_JUSTIFY_CENTER);
@@ -285,6 +293,31 @@ class PicsMainView extends WatchUi.View {
         }
 
         dc.clearClip();
+    }
+
+    private function createEmulatorCard(devLat as Lang.Float, devLon as Lang.Float) as Lang.Dictionary {
+        var frame = _lastFrame as PicsFrame;
+        var sigs = [] as Lang.Array;
+        for (var i = 0; i < PICS_SIGNAL_COUNT; i++) {
+            var s = frame.signals[i] as PicsSignal;
+            if (s.state != SIGNAL_NO_SIGNAL) {
+                sigs.add(s);
+            }
+        }
+        var db = calcDistBrg(devLat, devLon, frame.latitude, frame.longitude);
+        return {
+            "name" => _intersectionName,
+            "hira" => "",
+            "addr" => "シミュレーションモード",
+            "lat"  => frame.latitude,
+            "lon"  => frame.longitude,
+            "dist" => db[0] as Lang.Float,
+            "brg"  => db[1] as Lang.Float,
+            "id"   => frame.intersectionId,
+            "tx"   => frame.transmitterId,
+            "rssi" => frame.rssi,
+            "signals" => sigs
+        };
     }
 
     private function calculateCardHeight(item as Lang.Dictionary, sigs as Lang.Array) as Lang.Number {
