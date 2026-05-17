@@ -5,7 +5,6 @@
 
 import Toybox.Graphics;
 import Toybox.Lang;
-import Toybox.Math;
 import Toybox.Position;
 import Toybox.Time;
 import Toybox.Time.Gregorian;
@@ -108,16 +107,6 @@ class PicsMainView extends WatchUi.View {
         if (_scanning || _lastFrame != null) { WatchUi.requestUpdate(); }
     }
 
-    //! 距離計算ヘルパー（移動量チェック用）
-    private function distance(lat1 as Lang.Float, lon1 as Lang.Float, lat2 as Lang.Float, lon2 as Lang.Float) as Lang.Float {
-        var R = 6371000.0f;
-        var toR = Math.PI.toFloat() / 180.0f;
-        var dLat = (lat2 - lat1) * toR;
-        var dLon = (lon2 - lon1) * toR;
-        var a = Math.sin(dLat/2.0f)*Math.sin(dLat/2.0f) + Math.cos(lat1*toR)*Math.cos(lat2*toR)*Math.sin(dLon/2.0f)*Math.sin(dLon/2.0f);
-        return R * 2.0f * Math.atan2(Math.sqrt(a), Math.sqrt(1.0f - a)).toFloat();
-    }
-
     function onUpdate(dc as Graphics.Dc) as Void {
         var screenW = dc.getWidth();
         var screenH = dc.getHeight();
@@ -148,7 +137,7 @@ class PicsMainView extends WatchUi.View {
             if (_topIntersections == null) {
                 moved = true;
             } else {
-                var d = distance(devLat, devLon, _lastCalcLat, _lastCalcLon);
+                var d = calcDistBrg(devLat, devLon, _lastCalcLat, _lastCalcLon)[0] as Lang.Float;
                 if (d > 10.0f) { // 10m以上移動したら再計算
                     moved = true;
                 }
@@ -419,16 +408,6 @@ class PicsMainView extends WatchUi.View {
 
         dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
         dc.drawText(x + w - 12, sy + 30, Graphics.FONT_TINY, distBrgStr, Graphics.TEXT_JUSTIFY_RIGHT);
-    }
-
-    private function signalLabelFor(state as Lang.Number) as Lang.String {
-        switch (state) {
-            case SIGNAL_RED:         return WatchUi.loadResource(Rez.Strings.Red) as Lang.String;
-            case SIGNAL_BLINK_GREEN: return WatchUi.loadResource(Rez.Strings.BlinkGreen) as Lang.String;
-            case SIGNAL_GREEN:       return WatchUi.loadResource(Rez.Strings.Green) as Lang.String;
-            case SIGNAL_NONE:        return WatchUi.loadResource(Rez.Strings.ControlOut) as Lang.String;
-            default:                 return WatchUi.loadResource(Rez.Strings.NoSignal) as Lang.String;
-        }
     }
 
     private function shouldShowTx(tx as Lang.String) as Lang.Boolean {
