@@ -30,6 +30,7 @@ class PicsBleApp extends Application.AppBase {
     private var _emulatorModeActive as Lang.Boolean = false;
     private var _emulatorFrame as PicsFrame or Null = null;
     private var _emulatorTickCounter as Lang.Number = 0;
+    private var _emulatorRxCount as Lang.Long = 0l;
 
     // シミュレータ確認時だけ true にする。実機では BLE を起動する。
     private const EMULATOR_UI_ONLY = false;
@@ -123,6 +124,7 @@ class PicsBleApp extends Application.AppBase {
 
         _emulatorModeActive = true;
         _emulatorTickCounter = 0;
+        _emulatorRxCount = 0l;
         _view.setEmulatorMode(true);
 
         _emulatorFrame = createEmulatorFrame();
@@ -143,6 +145,7 @@ class PicsBleApp extends Application.AppBase {
             _emulatorModeActive = false;
             _emulatorFrame = null;
             _emulatorTickCounter = 0;
+            _emulatorRxCount = 0l;
             if (_view != null) {
                 _view.setEmulatorMode(false);
                 var db = (_delegate != null) ? _delegate.getIntersectionDb() : new PicsIntersectionDB();
@@ -240,7 +243,11 @@ class PicsBleApp extends Application.AppBase {
 
     private function publishEmulatorFrame() as Void {
         if (_view == null || _emulatorFrame == null) { return; }
-        _view.updateSignal(_emulatorFrame as PicsFrame, 1l, EMULATOR_NAME, EMULATOR_LAT, EMULATOR_LON);
+        var frame = _emulatorFrame as PicsFrame;
+        _emulatorRxCount++;
+        frame.msgId = (_emulatorRxCount % 256).toNumber();
+        frame.timestamp = System.getTimer().toLong();
+        _view.updateSignal(frame, _emulatorRxCount, EMULATOR_NAME, EMULATOR_LAT, EMULATOR_LON);
     }
 
     // ----------------------------------------------------------

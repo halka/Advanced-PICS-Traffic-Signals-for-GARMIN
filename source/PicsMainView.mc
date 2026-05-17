@@ -5,6 +5,7 @@
 
 import Toybox.Graphics;
 import Toybox.Lang;
+import Toybox.Math;
 import Toybox.Position;
 import Toybox.Time;
 import Toybox.Time.Gregorian;
@@ -30,7 +31,6 @@ class PicsMainView extends WatchUi.View {
     private var _lastFrame         as PicsFrame or Null = null;
     private var _rxCount           as Lang.Long = 0l;
     private var _lastReceivedTime  as Lang.String = "";
-    private var _lastReceivedClock as Lang.String = "";
     private var _lastReceivedSysTime as Lang.Number = 0;
     private var _scanning          as Lang.Boolean = false;
     private var _blinkPhase       as Lang.Boolean = false;
@@ -60,6 +60,10 @@ class PicsMainView extends WatchUi.View {
     function setEmulatorMode(active as Lang.Boolean) as Void {
         _emulatorModeActive = active;
         _needsListUpdate = true;
+        _currentRowOffset = 0;
+        if (active) {
+            _topIntersections = null;
+        }
         WatchUi.requestUpdate();
     }
 
@@ -71,15 +75,11 @@ class PicsMainView extends WatchUi.View {
         _rxCount          = rxCount;
         _scanning         = true;
         var now = Gregorian.info(Time.now(), Time.FORMAT_LONG);
-        _lastReceivedTime = now.year.format("%04d") + "-"
-                          + now.month.format("%02d") + "-"
+        _lastReceivedTime = now.month.format("%02d") + "/"
                           + now.day.format("%02d") + " "
                           + now.hour.format("%02d") + ":"
                           + now.min.format("%02d")  + ":"
                           + now.sec.format("%02d");
-        _lastReceivedClock = now.hour.format("%02d") + ":"
-                           + now.min.format("%02d")  + ":"
-                           + now.sec.format("%02d");
         _lastReceivedSysTime = System.getTimer();
         _intersectionName = intersectionName;
         _needsListUpdate = true;
@@ -122,6 +122,7 @@ class PicsMainView extends WatchUi.View {
         var devLat = 43.066768f;
         var devLon = 141.350582f;
         var hasFix = false;
+        var headingDeg = null;
         var posInfo = null;
         if (!_emulatorModeActive) {
             posInfo = Position.getInfo();
@@ -131,11 +132,15 @@ class PicsMainView extends WatchUi.View {
                 devLon = coords[1].toFloat();
                 hasFix = true;
             }
+            if (posInfo != null && posInfo.heading != null) {
+                headingDeg = normalizeHeading(posInfo.heading.toFloat());
+            }
         } else {
             hasFix = true;
+            headingDeg = 0.0f;
         }
 
-        if (_db != null) {
+        if (!_emulatorModeActive && _db != null) {
             var moved = _needsListUpdate;
             _needsListUpdate = false;
             if (_topIntersections == null) {
@@ -154,13 +159,12 @@ class PicsMainView extends WatchUi.View {
         }
 
         // 描画
-        drawHeader(dc, screenW, devLat, devLon, hasFix);
+        drawHeader(dc, screenW, headingDeg);
         drawCards(dc, screenW, screenH, devLat, devLon);
     }
 
     private function drawHeader(dc as Graphics.Dc, screenW as Lang.Number,
-                                devLat as Lang.Float, devLon as Lang.Float,
-                                hasFix as Lang.Boolean) as Void {
+                                headingDeg as Lang.Float or Null) as Void {
         dc.setColor(COLOR_PANEL, COLOR_PANEL);
         dc.fillRectangle(0, 0, screenW, 62);
         dc.setColor(COLOR_ACCENT, COLOR_ACCENT);
@@ -181,13 +185,13 @@ class PicsMainView extends WatchUi.View {
         }
 
         dc.setColor(statusColor, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(screenW - 8, 8, Graphics.FONT_SMALL,
+        dc.drawText(screenW - 8, 9, Graphics.FONT_XTINY,
                     WatchUi.loadResource(statusLabel) as Lang.String,
                     Graphics.TEXT_JUSTIFY_RIGHT);
 
         var timeStr = WatchUi.loadResource(Rez.Strings.WaitingDots) as Lang.String;
-        if (_lastReceivedClock.length() > 0) {
-            timeStr = _lastReceivedClock;
+        if (_lastReceivedTime.length() > 0) {
+            timeStr = _lastReceivedTime;
         }
 
         dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
@@ -195,14 +199,38 @@ class PicsMainView extends WatchUi.View {
                     timeStr + " " + _rxCount.toString() + " pkt",
                     Graphics.TEXT_JUSTIFY_LEFT);
 
-        var posStr = "-,-";
-        if (hasFix) {
-            posStr = devLat.format("%.4f") + "," + devLon.format("%.4f");
-        }
-        dc.drawText(8, 30, Graphics.FONT_XTINY, posStr, Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(8, 32, Graphics.FONT_XTINY,
+                    formatCurrentClock() + "  " + formatHeading(headingDeg),
+                    Graphics.TEXT_JUSTIFY_LEFT);
 
         dc.setColor(COLOR_BORDER, COLOR_BORDER);
         dc.fillRectangle(0, 62, screenW, 2);
+    }
+
+    private function formatCurrentClock() as Lang.String {
+        var now = Gregorian.info(Time.now(), Time.FORMAT_LONG);
+        return now.hour.format("%02d") + ":"
+             + now.min.format("%02d") + ":"
+             + now.sec.format("%02d");
+    }
+
+    private function normalizeHeading(value as Lang.Float) as Lang.Float {
+        var deg = value;
+        if (deg >= 0.0f && deg <= 6.4f) {
+            deg = Math.toDegrees(deg).toFloat();
+        }
+        while (deg < 0.0f) { deg += 360.0f; }
+        while (deg >= 360.0f) { deg -= 360.0f; }
+        return deg;
+    }
+
+    private function formatHeading(headingDeg as Lang.Float or Null) as Lang.String {
+        if (headingDeg == null) {
+            return "方角 --";
+        }
+        var cards = ["N","NE","E","SE","S","SW","W","NW"] as Array<String>;
+        var cidx  = (((headingDeg as Lang.Float) + 22.5f) / 45.0f).toNumber() % 8;
+        return "方角 " + cards[cidx] + " " + (headingDeg as Lang.Float).format("%.0f");
     }
 
     private function drawCards(dc as Graphics.Dc, screenW as Lang.Number, screenH as Lang.Number,
@@ -229,7 +257,9 @@ class PicsMainView extends WatchUi.View {
             }
         }
 
-        if (_topIntersections != null && (_topIntersections as Lang.Array).size() > 0) {
+        if (_emulatorModeActive && _lastFrame != null) {
+            cardsData.add(createEmulatorCard(devLat, devLon));
+        } else if (_topIntersections != null && (_topIntersections as Lang.Array).size() > 0) {
             var arr = _topIntersections as Lang.Array;
             for (var i = 0; i < arr.size(); i++) {
                 var item = arr[i] as Lang.Dictionary;
@@ -261,10 +291,6 @@ class PicsMainView extends WatchUi.View {
                 };
                 cardsData.add(cardItem);
             }
-        }
-
-        if (cardsData.size() == 0 && _emulatorModeActive && _lastFrame != null) {
-            cardsData.add(createEmulatorCard(devLat, devLon));
         }
 
         if (cardsData.size() == 0) {
