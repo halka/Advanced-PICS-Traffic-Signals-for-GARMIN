@@ -20,7 +20,7 @@
   <string id="Red">赤</string>
   <string id="Green">青</string>
   <string id="BlinkGreen">点滅</string>
-  <string id="NoSignal">信号なし</string>
+  <string id="NoSignal">なし</string>
   <string id="ControlOut">制御外</string>
 
   <!-- GPS info -->
