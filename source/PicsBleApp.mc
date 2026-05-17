@@ -43,6 +43,10 @@ class PicsBleApp extends Application.AppBase {
     //! アプリが初期化されたタイミング（最初のビューを返す）
     function getInitialView() {
         _view = new PicsMainView();
+        if (_delegate != null) {
+            _view.setDb(_delegate.getIntersectionDb());
+            _view.setScanningState(_bleScanningStarted);
+        }
         if (EMULATOR_UI_ONLY) {
             startEmulatorUiOnlyMode();
         }
@@ -109,6 +113,10 @@ class PicsBleApp extends Application.AppBase {
     private function startEmulatorUiOnlyMode() as Void {
         if (_view == null) { return; }
 
+        _emulatorModeActive = true;
+        _emulatorTickCounter = 0;
+        _view.setEmulatorMode(true);
+
         _emulatorFrame = new PicsFrame();
         var frame = _emulatorFrame as PicsFrame;
         frame.msgType = PICS_MSG_TYPE_SIGNAL;
@@ -134,16 +142,15 @@ class PicsBleApp extends Application.AppBase {
     }
 
     function toggleEmulatorMode() as Void {
-        _emulatorModeActive = !_emulatorModeActive;
-        if (_view != null) {
-            _view.setEmulatorMode(_emulatorModeActive);
-        }
-        if (_emulatorModeActive) {
+        if (!_emulatorModeActive) {
             stopBleScanning();
             startEmulatorUiOnlyMode();
         } else {
+            _emulatorModeActive = false;
             _emulatorFrame = null;
+            _emulatorTickCounter = 0;
             if (_view != null) {
+                _view.setEmulatorMode(false);
                 var db = (_delegate != null) ? _delegate.getIntersectionDb() : new PicsIntersectionDB();
                 _view.setDb(db);
                 _view.setScanningState(true);
@@ -248,7 +255,11 @@ class PicsInputDelegate extends WatchUi.BehaviorDelegate {
 
     function onKey(keyEvent as WatchUi.KeyEvent) as Lang.Boolean {
         var key = keyEvent.getKey();
-        if (key == WatchUi.KEY_DOWN) {
+        if (key == WatchUi.KEY_MENU) {
+            var app = Application.getApp() as PicsBleApp;
+            app.toggleEmulatorMode();
+            return true;
+        } else if (key == WatchUi.KEY_DOWN) {
             _view.scrollDown();
             return true;
         } else if (key == WatchUi.KEY_UP) {
@@ -279,7 +290,9 @@ class PicsInputDelegate extends WatchUi.BehaviorDelegate {
 
     //! ENTER キーでスキャン ON/OFF トグル（将来拡張用）
     function onSelect() as Lang.Boolean {
-        return false;
+        var app = Application.getApp() as PicsBleApp;
+        app.toggleEmulatorMode();
+        return true;
     }
 }
 

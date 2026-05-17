@@ -451,16 +451,15 @@ class PicsMainView extends WatchUi.View {
 
     private function wrapAddress(text as Lang.String) as Lang.Array {
         var len = text.length();
-        if (len <= 18) {
-            return wrapText(text, 18);
+        var lineCount = 1;
+        if (len > 54) {
+            lineCount = 4;
+        } else if (len > 36) {
+            lineCount = 3;
+        } else if (len > 18) {
+            lineCount = 2;
         }
-        if (len <= 32) {
-            return wrapText(text, ((len + 1) / 2).toNumber());
-        }
-        if (len <= 48) {
-            return wrapText(text, ((len + 2) / 3).toNumber());
-        }
-        return wrapText(text, 16);
+        return wrapText(text, ((len + lineCount - 1) / lineCount).toNumber());
     }
 
     private function wrapText(text as Lang.String, maxChars as Lang.Number) as Lang.Array {
