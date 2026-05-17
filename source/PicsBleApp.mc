@@ -27,6 +27,9 @@ class PicsBleApp extends Application.AppBase {
     private var _timer    as Timer.Timer     or Null = null;
     private var _timerTickCount as Lang.Number = 0;
     private var _bleScanningStarted as Lang.Boolean = false;
+    private var _emulatorModeActive as Lang.Boolean = false;
+    private var _emulatorFrame as PicsFrame or Null = null;
+    private var _emulatorTickCounter as Lang.Number = 0;
 
     // シミュレータ確認時だけ true にする。実機では BLE を起動する。
     private const EMULATOR_UI_ONLY = false;
@@ -74,6 +77,7 @@ class PicsBleApp extends Application.AppBase {
         _bleScanningStarted = true;
 
         if (_view != null) {
+            _view.setDb(_delegate.getIntersectionDb());
             _view.setScanningState(true);
         }
     }
@@ -105,7 +109,8 @@ class PicsBleApp extends Application.AppBase {
     private function startEmulatorUiOnlyMode() as Void {
         if (_view == null) { return; }
 
-        var frame = new PicsFrame();
+        _emulatorFrame = new PicsFrame();
+        var frame = _emulatorFrame as PicsFrame;
         frame.msgType = PICS_MSG_TYPE_SIGNAL;
         frame.msgId = 1;
         frame.intersectionId = "SIM00001";
@@ -118,8 +123,33 @@ class PicsBleApp extends Application.AppBase {
         frame.signals[4] = new PicsSignal(SIGNAL_BLINK_GREEN, 5);
         frame.signals[5] = new PicsSignal(SIGNAL_NONE, -1);
 
+        var dummyDb = new PicsIntersectionDB();
+        _view.setDb(dummyDb);
         _view.setScanningState(false);
-        _view.updateSignal(frame, 1l, "エミュレータ確認", 35.6812f, 139.7671f);
+        _view.updateSignal(frame, 1l, "北５条通り札幌駅前交差点", 43.066768f, 141.350582f);
+    }
+
+    function isEmulatorModeActive() as Lang.Boolean {
+        return _emulatorModeActive;
+    }
+
+    function toggleEmulatorMode() as Void {
+        _emulatorModeActive = !_emulatorModeActive;
+        if (_view != null) {
+            _view.setEmulatorMode(_emulatorModeActive);
+        }
+        if (_emulatorModeActive) {
+            stopBleScanning();
+            startEmulatorUiOnlyMode();
+        } else {
+            _emulatorFrame = null;
+            if (_view != null) {
+                var db = (_delegate != null) ? _delegate.getIntersectionDb() : new PicsIntersectionDB();
+                _view.setDb(db);
+                _view.setScanningState(true);
+            }
+            startBleScanning();
+        }
     }
 
     // ----------------------------------------------------------
@@ -149,6 +179,33 @@ class PicsBleApp extends Application.AppBase {
         } else {
             _view.refreshRealtime();
         }
+
+        if (_emulatorModeActive && _emulatorFrame != null) {
+            _emulatorTickCounter++;
+            if (_emulatorTickCounter >= 10) { // 100ms * 10 = 1秒
+                _emulatorTickCounter = 0;
+                var frame = _emulatorFrame as PicsFrame;
+                for (var i = 0; i < 6; i++) {
+                    var s = frame.signals[i] as PicsSignal;
+                    if (s.remaining > 0) {
+                        s.remaining--;
+                    } else if (s.remaining == 0) {
+                        // ダミー信号の状態変化をアニメーション
+                        if (s.state == SIGNAL_RED) {
+                            s.state = SIGNAL_GREEN;
+                            s.remaining = 15;
+                        } else if (s.state == SIGNAL_GREEN) {
+                            s.state = SIGNAL_BLINK_GREEN;
+                            s.remaining = 5;
+                        } else if (s.state == SIGNAL_BLINK_GREEN) {
+                            s.state = SIGNAL_RED;
+                            s.remaining = 10;
+                        }
+                    }
+                }
+                _view.updateSignal(frame, 1l, "北５条通り札幌駅前交差点", 43.066768f, 141.350582f);
+            }
+        }
     }
 
     // ----------------------------------------------------------
@@ -160,7 +217,7 @@ class PicsBleApp extends Application.AppBase {
 //  キー入力デリゲート
 // ----------------------------------------------------------
 
-//! @brief BACK キーでアプリ終了
+//! @brief BACK キーでアプリ終了、またはシミュレータモードから通常モードへ復帰
 class PicsInputDelegate extends WatchUi.BehaviorDelegate {
     private var _view as PicsMainView;
 
@@ -170,6 +227,11 @@ class PicsInputDelegate extends WatchUi.BehaviorDelegate {
     }
 
     function onBack() as Lang.Boolean {
+        var app = Application.getApp() as PicsBleApp;
+        if (app.isEmulatorModeActive()) {
+            app.toggleEmulatorMode();
+            return true;
+        }
         WatchUi.popView(WatchUi.SLIDE_DOWN);
         return true;
     }
@@ -184,8 +246,34 @@ class PicsInputDelegate extends WatchUi.BehaviorDelegate {
         return true;
     }
 
-    //! MENUキー → 何もしない
+    function onKey(keyEvent as WatchUi.KeyEvent) as Lang.Boolean {
+        var key = keyEvent.getKey();
+        if (key == WatchUi.KEY_DOWN) {
+            _view.scrollDown();
+            return true;
+        } else if (key == WatchUi.KEY_UP) {
+            _view.scrollUp();
+            return true;
+        }
+        return false;
+    }
+
+    function onSwipe(swipeEvent as WatchUi.SwipeEvent) as Lang.Boolean {
+        var dir = swipeEvent.getDirection();
+        if (dir == WatchUi.SWIPE_UP) {
+            _view.scrollDown();
+            return true;
+        } else if (dir == WatchUi.SWIPE_DOWN) {
+            _view.scrollUp();
+            return true;
+        }
+        return false;
+    }
+
+    //! MENUキーでシミュレータ確認モードをトグル
     function onMenu() as Lang.Boolean {
+        var app = Application.getApp() as PicsBleApp;
+        app.toggleEmulatorMode();
         return true;
     }
 

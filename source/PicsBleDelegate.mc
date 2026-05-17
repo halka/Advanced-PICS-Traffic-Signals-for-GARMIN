@@ -103,8 +103,8 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
                     var entry = (_intersectionDb as PicsIntersectionDB)
                         .findNearestEntry(frame.latitude, frame.longitude);
                     if (entry != null) {
-                        currentIntersectionLat  = entry[0] as Lang.Float;
-                        currentIntersectionLon  = entry[1] as Lang.Float;
+                        currentIntersectionLat  = entry[0].toFloat();
+                        currentIntersectionLon  = entry[1].toFloat();
                         currentIntersectionName = entry[2] as Lang.String;
                     }
                 }
@@ -142,8 +142,8 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
         var entry = (_intersectionDb as PicsIntersectionDB)
             .findNearestEntry(coords[0].toFloat(), coords[1].toFloat());
         if (entry != null) {
-            currentIntersectionLat  = entry[0] as Lang.Float;
-            currentIntersectionLon  = entry[1] as Lang.Float;
+            currentIntersectionLat  = entry[0].toFloat();
+            currentIntersectionLon  = entry[1].toFloat();
             currentIntersectionName = entry[2] as Lang.String;
         }
     }
