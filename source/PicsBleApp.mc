@@ -35,6 +35,10 @@ class PicsBleApp extends Application.AppBase {
     private const EMULATOR_UI_ONLY = false;
     private const UI_POLL_INTERVAL_MS = 100;
     private const BLINK_INTERVAL_TICKS = 5; // 100ms × 5 = 500ms
+    private const EMULATOR_SIGNAL_TICKS = 10; // 100ms × 10 = 1秒
+    private const EMULATOR_NAME = "北５条通り札幌駅前交差点";
+    private const EMULATOR_LAT = 43.066768f;
+    private const EMULATOR_LON = 141.350582f;
 
     function initialize() {
         AppBase.initialize();
@@ -74,8 +78,12 @@ class PicsBleApp extends Application.AppBase {
     // ----------------------------------------------------------
 
     private function startBleScanning() as Void {
+        if (_bleScanningStarted) { return; }
+
         // コールバック: Type2 受信時に View を更新
-        _delegate = new PicsBleDelegate(method(:onPicsSignal));
+        if (_delegate == null) {
+            _delegate = new PicsBleDelegate(method(:onPicsSignal));
+        }
         BluetoothLowEnergy.setDelegate(_delegate);
         BluetoothLowEnergy.setScanState(BluetoothLowEnergy.SCAN_STATE_SCANNING);
         _bleScanningStarted = true;
@@ -117,24 +125,12 @@ class PicsBleApp extends Application.AppBase {
         _emulatorTickCounter = 0;
         _view.setEmulatorMode(true);
 
-        _emulatorFrame = new PicsFrame();
-        var frame = _emulatorFrame as PicsFrame;
-        frame.msgType = PICS_MSG_TYPE_SIGNAL;
-        frame.msgId = 1;
-        frame.intersectionId = "SIM00001";
-        frame.rssi = -62;
-        frame.timestamp = System.getTimer().toLong();
-        frame.signals[0] = new PicsSignal(SIGNAL_RED, 7);
-        frame.signals[1] = new PicsSignal(SIGNAL_GREEN, 12);
-        frame.signals[2] = new PicsSignal(SIGNAL_NO_SIGNAL, -1);
-        frame.signals[3] = new PicsSignal(SIGNAL_RED, 3);
-        frame.signals[4] = new PicsSignal(SIGNAL_BLINK_GREEN, 5);
-        frame.signals[5] = new PicsSignal(SIGNAL_NONE, -1);
+        _emulatorFrame = createEmulatorFrame();
 
         var dummyDb = new PicsIntersectionDB();
         _view.setDb(dummyDb);
         _view.setScanningState(false);
-        _view.updateSignal(frame, 1l, "北５条通り札幌駅前交差点", 43.066768f, 141.350582f);
+        publishEmulatorFrame();
     }
 
     function isEmulatorModeActive() as Lang.Boolean {
@@ -164,6 +160,8 @@ class PicsBleApp extends Application.AppBase {
     // ----------------------------------------------------------
 
     private function startBlinkTimer() as Void {
+        if (_timer != null) { return; }
+
         _timer = new Timer.Timer();
         _timerTickCount = 0;
         _timer.start(method(:onUiPollTick), UI_POLL_INTERVAL_MS, true);
@@ -189,30 +187,58 @@ class PicsBleApp extends Application.AppBase {
 
         if (_emulatorModeActive && _emulatorFrame != null) {
             _emulatorTickCounter++;
-            if (_emulatorTickCounter >= 10) { // 100ms * 10 = 1秒
+            if (_emulatorTickCounter >= EMULATOR_SIGNAL_TICKS) {
                 _emulatorTickCounter = 0;
-                var frame = _emulatorFrame as PicsFrame;
-                for (var i = 0; i < 6; i++) {
-                    var s = frame.signals[i] as PicsSignal;
-                    if (s.remaining > 0) {
-                        s.remaining--;
-                    } else if (s.remaining == 0) {
-                        // ダミー信号の状態変化をアニメーション
-                        if (s.state == SIGNAL_RED) {
-                            s.state = SIGNAL_GREEN;
-                            s.remaining = 15;
-                        } else if (s.state == SIGNAL_GREEN) {
-                            s.state = SIGNAL_BLINK_GREEN;
-                            s.remaining = 5;
-                        } else if (s.state == SIGNAL_BLINK_GREEN) {
-                            s.state = SIGNAL_RED;
-                            s.remaining = 10;
-                        }
-                    }
-                }
-                _view.updateSignal(frame, 1l, "北５条通り札幌駅前交差点", 43.066768f, 141.350582f);
+                advanceEmulatorSignals();
+                publishEmulatorFrame();
             }
         }
+    }
+
+    private function createEmulatorFrame() as PicsFrame {
+        var frame = new PicsFrame();
+        frame.msgType = PICS_MSG_TYPE_SIGNAL;
+        frame.msgId = 1;
+        frame.intersectionId = "SIM00001";
+        frame.rssi = -62;
+        frame.timestamp = System.getTimer().toLong();
+        frame.signals[0] = new PicsSignal(SIGNAL_RED, 7);
+        frame.signals[1] = new PicsSignal(SIGNAL_GREEN, 12);
+        frame.signals[2] = new PicsSignal(SIGNAL_NO_SIGNAL, -1);
+        frame.signals[3] = new PicsSignal(SIGNAL_RED, 3);
+        frame.signals[4] = new PicsSignal(SIGNAL_BLINK_GREEN, 5);
+        frame.signals[5] = new PicsSignal(SIGNAL_NONE, -1);
+        return frame;
+    }
+
+    private function advanceEmulatorSignals() as Void {
+        var frame = _emulatorFrame as PicsFrame;
+        for (var i = 0; i < 6; i++) {
+            var s = frame.signals[i] as PicsSignal;
+            if (s.remaining > 0) {
+                s.remaining--;
+            } else if (s.remaining == 0) {
+                advanceEmulatorSignal(s);
+            }
+        }
+    }
+
+    private function advanceEmulatorSignal(s as PicsSignal) as Void {
+        if (s.state == SIGNAL_RED) {
+            s.state = SIGNAL_GREEN;
+            s.remaining = 15;
+        } else if (s.state == SIGNAL_GREEN) {
+            s.state = SIGNAL_BLINK_GREEN;
+            s.remaining = 5;
+        } else if (s.state == SIGNAL_BLINK_GREEN) {
+            s.state = SIGNAL_RED;
+            s.remaining = 10;
+        }
+    }
+
+    private function publishEmulatorFrame() as Void {
+        if (_view == null || _emulatorFrame == null) { return; }
+        _view.updateSignal(_emulatorFrame as PicsFrame, 1l, EMULATOR_NAME, EMULATOR_LAT, EMULATOR_LON);
     }
 
     // ----------------------------------------------------------
