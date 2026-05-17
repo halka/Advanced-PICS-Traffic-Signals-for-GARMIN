@@ -19,18 +19,23 @@ Advanced-PICS-Traffic-Signals-for-GARMIN/
 ├── manifest.xml                     ← App definition, permissions (BLE + Positioning)
 ├── monkey.jungle                    ← Project build configuration
 ├── source/
+│   ├── ApiFlags.mc                  ← Auto-generated compile-time feature flags
 │   ├── PicsBleApp.mc                ← App entry point, lifecycle, menu handling
 │   ├── PicsBleDelegate.mc           ← BLE scanning & packet reception
 │   ├── PicsData.mc                  ← Data models, PICS parser, intersection DB
-│   ├── PicsMainView.mc              ← Screen rendering (282×470 px)
+│   └── PicsMainView.mc              ← Screen rendering (282×470 px)
 ├── resources/
 │   ├── data/
 │   │   ├── intersections.json       ← Intersection database (auto-generated)
 │   │   └── jsonResources.xml        ← JSON resource declaration
+│   ├── drawables/
+│   │   ├── drawables.xml            ← Drawable resource declarations
+│   │   └── launcher_icon.png        ← App launcher icon
 │   └── strings/
 │       └── strings.xml              ← UI strings (Japanese; add translations here)
 └── tools/
-    └── csv_to_resource.py           ← CSV → JSON resource converter
+    ├── csv_to_resource.py           ← CSV → JSON resource converter
+    └── debug_project.py             ← Project diagnostics & API flag generator
 ```
 
 ### Technical Specifications
@@ -39,7 +44,7 @@ Advanced-PICS-Traffic-Signals-for-GARMIN/
 - GARMIN GPSMAP H1i Plus (primary)
 - GARMIN GPSMAP H1 (inReach-free variant)
 
-**Required Connect IQ API Level:** 9.1.0 (built with Connect IQ SDK 9.1.0)
+**Minimum Connect IQ API Level:** 5.0.0
 - `Toybox.BluetoothLowEnergy` (BLE scanning): API Level 3.1.0+
 - `ScanResult.getManufacturerSpecificData(companyId)`: API Level 3.2.0+
 - `Toybox.Position` (GPS): API Level 1.0.0+
@@ -107,7 +112,13 @@ openssl pkcs8 -topk8 -inform PEM -outform DER \
   -in developer_key.pem -out developer_key.der -nocrypt
 ```
 
-#### 3. Generate Intersection Database Resource
+#### 3. Generate API Feature Flags
+```bash
+python3 tools/debug_project.py
+```
+This auto-generates `source/ApiFlags.mc` with compile-time constants based on the installed SDK.
+
+#### 4. Generate Intersection Database Resource
 ```bash
 # Default: reads ~/Downloads/250501-zenkoku-kousaten.csv
 python3 tools/csv_to_resource.py
@@ -116,32 +127,14 @@ python3 tools/csv_to_resource.py
 python3 tools/csv_to_resource.py /path/to/input.csv resources/data/intersections.json
 ```
 
-#### 4. Build
-The build is automated to generate API flags before compiling.
-
+#### 5. Build
 ```bash
-make build
+monkeyc -d gpsmaph1 -f monkey.jungle -o bin/pics-viewer.prg -y developer_key.der
 ```
 
-To build for a different Garmin device or output path, override the variables:
+To build for a different device, replace `gpsmaph1` with the target device ID.
 
-```bash
-make build DEVICE=gpsmaph1 OUTPUT=bin/myapp.prg
-```
-
-If you want to regenerate API feature flags only:
-
-```bash
-make generate
-```
-
-If you want to remove the app binary:
-
-```bash
-make clean
-```
-
-#### 5. Deploy to Device (USB Mass Storage)
+#### 6. Deploy to Device (USB Mass Storage)
 **Ensure USB Mass Storage Mode**
 ```bash
 cp bin/pics-viewer.prg /GARMIN/APPS/
@@ -154,24 +147,6 @@ The app automatically logs every received PICS packet (including millisecond pre
 2. In the `GARMIN/APPS/LOGS/` directory, create an empty text file named **exactly** the same as your app executable but with a `.txt` extension (e.g. `pics-viewer.txt`).
 3. Launch the app. All BLE traffic logs will be continuously appended to that text file.
 
-### PICS Test Packet Generator
-
-A helper script is available at `tools/send_pics_test_packet.py` to generate PICS manufacturer-specific advertisement payloads on macOS.
-
-Example:
-```bash
-python3 tools/send_pics_test_packet.py --type 2 --intersection-id 01234567 \
-  --signals red:7 green:12 none:0 red:3 blink-green:5 none:0
-```
-
-macOS CoreBluetooth cannot advertise arbitrary Manufacturer Specific Data, so this script cannot transmit a real PICS BLE advertisement from the Mac itself. Use the printed Manufacturer Data with a BLE advertiser that supports raw manufacturer data, such as Linux/BlueZ, Android, or an nRF52 board.
-
-The unsupported `--send` option now reports that limitation explicitly:
-```bash
-python3 tools/send_pics_test_packet.py --send --type 2 --intersection-id 01234567 \
-  --signals red:7 green:12 none:0 red:3 blink-green:5 none:0
-```
-
 ### Notes & Limitations
 
 - **BLE**: Central (scan-only) mode. No GATT connection is established.
@@ -180,7 +155,7 @@ python3 tools/send_pics_test_packet.py --send --type 2 --intersection-id 0123456
 - **Intersection database**: Built from the [e-Gov national intersection list](https://data.e-gov.go.jp/data/dataset/npa_20221124_0054/resource/6f7e83e1-be28-4030-961f-3b489c9f6ad8) (596 intersections). Re-run `csv_to_resource.py` to update.
 - **Identification of traffic signs**: Need to dump network telemetry of NIPPON SIGNAL's App. [ref.](https://qiita.com/kitazaki/items/ef2d8710d1656705f307)
 - **String resources**: All UI labels are defined in `resources/strings/strings.xml`. To add a language translation, create a locale-specific strings file (e.g. `resources-eng/strings/strings.xml`).
-- **Connect IQ SDK 9.1.0**: `ScanResult.getManufacturerSpecificData()` now requires the company ID as an argument and returns a `ByteArray` directly (no longer returns a `Dictionary`). This app targets SDK 8.x+ behaviour and is developed with the latest SDK.
+- **Connect IQ SDK**: `ScanResult.getManufacturerSpecificData()` requires the company ID as an argument and returns a `ByteArray` directly (no longer returns a `Dictionary`).
 - **Simulator**: The Connect IQ SDK 9.1.0 simulator may crash on macOS 26+ (Tahoe) in the `ant_main` thread when loading apps that use BLE. Deploy to actual hardware for testing until Garmin releases a compatible SDK update.
 - **Legal compliance**: PICS BLE advertisements are public-infrastructure transmissions broadcast to all. This app is receive-only and does not transmit or modify any signal. Reception is compliant with Japanese radio and telecommunications law.
 

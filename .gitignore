@@ -1,2 +1,33 @@
-# Created by venv; see https://docs.python.org/3/library/venv.html
-*
+# macOS
+.DS_Store
+
+# Build artifacts
+*.prg
+*.prg.debug.xml
+gen/
+mir/
+internal-mir/
+external-mir/
+
+# Generated test manifests
+manifest_test_*.xml
+
+# Python
+.venv/
+pyvenv.cfg
+lib/
+include/
+__pycache__/
+
+# Developer keys
+developer_key.der
+developer_key.pem
+
+# IDE / editor
+.vscode/
+.claude/
+
+# Allow tracked build output in bin/
+!bin/
+!bin/pics-viewer.prg
+!bin/pics-viewer.prg.debug.xml
