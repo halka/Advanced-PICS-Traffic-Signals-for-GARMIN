@@ -479,26 +479,11 @@ class PicsMainView extends WatchUi.View {
     }
 
     private function wrapName(text as Lang.String) as Lang.Array {
-        var len = text.length();
-        var split = findNameSplit(text);
-        if (split > 0 && split < len) {
-            var lines = [] as Lang.Array;
-            lines.add(text.substring(0, split));
-            var tail = text.substring(split, len);
-            var tailLines = wrapNameFallback(tail);
-            for (var i = 0; i < tailLines.size(); i++) {
-                lines.add(tailLines[i]);
-            }
-            return lines;
-        }
         return wrapNameFallback(text);
     }
 
     private function wrapNameFallback(text as Lang.String) as Lang.Array {
         var len = text.length();
-        if (len <= 12) {
-            return wrapText(text, 12);
-        }
         if (len <= 18) {
             return wrapText(text, ((len + 1) / 2).toNumber());
         }
@@ -506,14 +491,6 @@ class PicsMainView extends WatchUi.View {
             return wrapText(text, ((len + 2) / 3).toNumber());
         }
         return wrapText(text, 10);
-    }
-
-    private function findNameSplit(text as Lang.String) as Lang.Number {
-        var idx = findText(text, "通り");
-        if (idx >= 0 && (idx + 2) < text.length()) {
-            return idx + 2;
-        }
-        return -1;
     }
 
     private function wrapAddress(text as Lang.String) as Lang.Array {
