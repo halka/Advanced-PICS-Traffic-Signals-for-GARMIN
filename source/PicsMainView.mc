@@ -24,7 +24,7 @@ class PicsMainView extends WatchUi.View {
 
     private const COLOR_RED        = 0xFF0000; // Bright Red
     private const COLOR_GREEN      = 0x00CC00; // Bright Green
-    private const COLOR_BLINK_G    = 0xDDDD00; // Yellow
+    private const COLOR_BLINK_G    = 0x00CC00; // Blinking Green
     private const COLOR_NONE       = 0xAAAAAA; // Gray
 
     // ---- ステート ----
@@ -70,8 +70,11 @@ class PicsMainView extends WatchUi.View {
         _lastFrame        = frame;
         _rxCount          = rxCount;
         _scanning         = true;
-        var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
-        _lastReceivedTime = now.hour.format("%02d") + ":"
+        var now = Gregorian.info(Time.now(), Time.FORMAT_LONG);
+        _lastReceivedTime = now.year.format("%04d") + "-"
+                          + now.month.format("%02d") + "-"
+                          + now.day.format("%02d") + " "
+                          + now.hour.format("%02d") + ":"
                           + now.min.format("%02d")  + ":"
                           + now.sec.format("%02d");
         _lastReceivedSysTime = System.getTimer();
@@ -158,14 +161,15 @@ class PicsMainView extends WatchUi.View {
         }
 
         // 描画
-        drawHeader(dc, screenW);
-        drawCards(dc, screenW, devLat, devLon);
-        drawFooter(dc, screenW, screenH, posInfo);
+        drawHeader(dc, screenW, devLat, devLon, hasFix);
+        drawCards(dc, screenW, screenH, devLat, devLon);
     }
 
-    private function drawHeader(dc as Graphics.Dc, screenW as Lang.Number) as Void {
+    private function drawHeader(dc as Graphics.Dc, screenW as Lang.Number,
+                                devLat as Lang.Float, devLon as Lang.Float,
+                                hasFix as Lang.Boolean) as Void {
         dc.setColor(COLOR_PANEL, COLOR_PANEL);
-        dc.fillRectangle(0, 0, screenW, 40);
+        dc.fillRectangle(0, 0, screenW, 62);
         dc.setColor(COLOR_ACCENT, COLOR_ACCENT);
         dc.fillRectangle(0, 0, screenW, 3);
         
@@ -183,24 +187,33 @@ class PicsMainView extends WatchUi.View {
             }
         }
 
-        var intersectionLabel = "交差点: --";
-        if (_lastFrame != null) {
-            intersectionLabel = "交差点: " + (_lastFrame as PicsFrame).intersectionId;
-        }
-
-        dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(8, 10, Graphics.FONT_MEDIUM, intersectionLabel, Graphics.TEXT_JUSTIFY_LEFT);
-
         dc.setColor(statusColor, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(screenW - 8, 11, Graphics.FONT_SMALL,
+        dc.drawText(screenW - 8, 8, Graphics.FONT_SMALL,
                     WatchUi.loadResource(statusLabel) as Lang.String,
                     Graphics.TEXT_JUSTIFY_RIGHT);
 
+        var timeStr = WatchUi.loadResource(Rez.Strings.WaitingDots) as Lang.String;
+        if (_lastReceivedTime.length() > 0) {
+            timeStr = _lastReceivedTime;
+        }
+
+        dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(8, 28, Graphics.FONT_XTINY,
+                    timeStr + " " + _rxCount.toString() + " pkt",
+                    Graphics.TEXT_JUSTIFY_LEFT);
+
+        var posStr = "-,-";
+        if (hasFix) {
+            posStr = devLat.format("%.4f") + "," + devLon.format("%.4f");
+        }
+        dc.drawText(8, 44, Graphics.FONT_XTINY, posStr, Graphics.TEXT_JUSTIFY_LEFT);
+
         dc.setColor(COLOR_BORDER, COLOR_BORDER);
-        dc.fillRectangle(0, 40, screenW, 2);
+        dc.fillRectangle(0, 62, screenW, 2);
     }
 
-    private function drawCards(dc as Graphics.Dc, screenW as Lang.Number, devLat as Lang.Float, devLon as Lang.Float) as Void {
+    private function drawCards(dc as Graphics.Dc, screenW as Lang.Number, screenH as Lang.Number,
+                               devLat as Lang.Float, devLon as Lang.Float) as Void {
         var cardsData = [] as Lang.Array;
         
         var activeIntersectionId = null;
@@ -268,12 +281,12 @@ class PicsMainView extends WatchUi.View {
         if (_currentRowOffset > maxOffset) { _currentRowOffset = maxOffset; }
 
         var gap = 8;
-        var y = 46;
+        var y = 68;
 
-        dc.setClip(0, 42, screenW, 350);
+        dc.setClip(0, 64, screenW, screenH - 67);
 
         for (var i = _currentRowOffset; i < cardsData.size(); i++) {
-            if (y > 380) { break; }
+            if (y > screenH - 12) { break; }
             var item = cardsData[i] as Lang.Dictionary;
             var sigs = item["signals"] as Lang.Array;
             var cardH = calculateCardHeight(item, sigs);
@@ -286,15 +299,17 @@ class PicsMainView extends WatchUi.View {
     }
 
     private function calculateCardHeight(item as Lang.Dictionary, sigs as Lang.Array) as Lang.Number {
+        var name = item["name"] as Lang.String;
         var addr = item["addr"] as Lang.String;
-        var hira = item["hira"] as Lang.String;
         
-        var wrappedAddr = wrapText(addr, 14);
-        var wrappedHira = wrapText(hira, 18);
+        var wrappedName = wrapName(name);
+        var wrappedAddr = wrapAddress(addr);
         var tx = item["tx"] as Lang.String;
-        var txH = tx.equals("--") ? 0 : 20;
+        var txH = shouldShowTx(tx) ? 18 : 0;
         
-        var staticH = 6 + 28 + txH + (20 * wrappedAddr.size()) + (16 * wrappedHira.size()) + 18 + 4;
+        var staticH = 8 + (24 * wrappedName.size()) + txH
+                    + (18 * wrappedAddr.size())
+                    + 18 + 6;
         
         var numSigs = sigs.size();
         if (numSigs == 0) {
@@ -311,7 +326,6 @@ class PicsMainView extends WatchUi.View {
         dc.drawRectangle(x, y, w, h);
 
         var name = item["name"] as Lang.String;
-        var hira = item["hira"] as Lang.String;
         var addr = item["addr"] as Lang.String;
         var latVal = item["lat"] as Lang.Float;
         var lonVal = item["lon"] as Lang.Float;
@@ -321,32 +335,30 @@ class PicsMainView extends WatchUi.View {
         var rssi = item["rssi"];
         var sigs = item["signals"] as Lang.Array;
 
-        var cy = y + 6;
+        var padX = 14;
+        var textX = x + padX;
+        var cy = y + 8;
 
-        // 1. 交差点名（大きな文字）
+        // 1. 交差点名
         dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x + 8, cy, Graphics.FONT_MEDIUM, name, Graphics.TEXT_JUSTIFY_CENTER);
-        cy += 28;
-
-        if (!tx.equals("--")) {
-            dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(x + 8, cy, Graphics.FONT_TINY, tx, Graphics.TEXT_JUSTIFY_CENTER);
-            cy += 20;
+        var wrappedName = wrapName(name);
+        for (var i = 0; i < wrappedName.size(); i++) {
+            dc.drawText(textX, cy, Graphics.FONT_SMALL, wrappedName[i] as Lang.String, Graphics.TEXT_JUSTIFY_LEFT);
+            cy += 24;
         }
 
-        // 2. よみがな（小さい文字、折り返し）
-        dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        var wrappedHira = wrapText(hira, 18);
-        for (var i = 0; i < wrappedHira.size(); i++) {
-            dc.drawText(x + 8, cy, Graphics.FONT_XTINY, wrappedHira[i] as Lang.String, Graphics.TEXT_JUSTIFY_LEFT);
+        if (shouldShowTx(tx)) {
+            dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(textX, cy, Graphics.FONT_XTINY, "ID: " + tx, Graphics.TEXT_JUSTIFY_LEFT);
             cy += 18;
         }
-        // 3. 所在地（中くらいの文字、折り返し）
+
+        // 2. 所在地（小さい文字、折り返し）
         dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        var wrappedAddr = wrapText(addr, 14);
+        var wrappedAddr = wrapAddress(addr);
         for (var i = 0; i < wrappedAddr.size(); i++) {
-            dc.drawText(x + 8, cy, Graphics.FONT_XTINY, wrappedAddr[i] as Lang.String, Graphics.TEXT_JUSTIFY_LEFT);
-            cy += 20;
+            dc.drawText(textX, cy, Graphics.FONT_XTINY, wrappedAddr[i] as Lang.String, Graphics.TEXT_JUSTIFY_LEFT);
+            cy += 18;
         }
 
         // 4. 信号機の緯度経度（小さい文字）
@@ -389,14 +401,13 @@ class PicsMainView extends WatchUi.View {
         dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
         dc.drawCircle(x + 38, sy + 25, 18);
 
-        dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x + 66, sy + 2, Graphics.FONT_SMALL, signalLabelFor(state), Graphics.TEXT_JUSTIFY_LEFT);
-
-        var remainingStr = "残り: --";
+        var remainingStr = "--";
         if (state != SIGNAL_NO_SIGNAL && remaining >= 0) {
-            remainingStr = "残り: " + remaining.toString();
+            remainingStr = remaining.toString();
         }
-        dc.drawText(x + 66, sy + 26, Graphics.FONT_SMALL, remainingStr, Graphics.TEXT_JUSTIFY_LEFT);
+        dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(x + 84, sy + 25, Graphics.FONT_LARGE, remainingStr,
+                    Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
         dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
         var dbmStr = (rssi != null) ? (rssi.toString() + " dBm") : "-- dBm";
@@ -420,6 +431,38 @@ class PicsMainView extends WatchUi.View {
         }
     }
 
+    private function shouldShowTx(tx as Lang.String) as Lang.Boolean {
+        return tx.length() > 0 && !tx.equals("--") && !tx.equals("--------");
+    }
+
+    private function wrapName(text as Lang.String) as Lang.Array {
+        var len = text.length();
+        if (len <= 12) {
+            return wrapText(text, 12);
+        }
+        if (len <= 18) {
+            return wrapText(text, ((len + 1) / 2).toNumber());
+        }
+        if (len <= 27) {
+            return wrapText(text, ((len + 2) / 3).toNumber());
+        }
+        return wrapText(text, 10);
+    }
+
+    private function wrapAddress(text as Lang.String) as Lang.Array {
+        var len = text.length();
+        if (len <= 18) {
+            return wrapText(text, 18);
+        }
+        if (len <= 32) {
+            return wrapText(text, ((len + 1) / 2).toNumber());
+        }
+        if (len <= 48) {
+            return wrapText(text, ((len + 2) / 3).toNumber());
+        }
+        return wrapText(text, 16);
+    }
+
     private function wrapText(text as Lang.String, maxChars as Lang.Number) as Lang.Array {
         var lines = [] as Lang.Array;
         var len = text.length();
@@ -431,59 +474,5 @@ class PicsMainView extends WatchUi.View {
             i += maxChars;
         }
         return lines;
-    }
-    private function drawFooter(dc as Graphics.Dc, screenW as Lang.Number, screenH as Lang.Number, posInfo as Position.Info or Null) as Void {
-        var CX = screenW / 2;
-
-        dc.setColor(COLOR_BORDER, COLOR_BORDER);
-        dc.fillRectangle(0, 396, screenW, 2);
-
-        dc.setColor(COLOR_PANEL, COLOR_PANEL);
-        dc.fillRectangle(0, 398, screenW, screenH - 398);
-
-        var timeStr = WatchUi.loadResource(Rez.Strings.WaitingDots) as Lang.String;
-        if (_lastReceivedTime.length() > 0) {
-            timeStr = _lastReceivedTime;
-        }
-
-        // 1行目: 受信時刻 と パケット数
-        dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
-        var info1 = timeStr + "    " + _rxCount.toString() + " pkt";
-        dc.drawText(CX, 400, Graphics.FONT_TINY, info1, Graphics.TEXT_JUSTIFY_CENTER);
-
-        // 2行目: 緯度・経度
-        var latStr = "--";
-        var lonStr = "--";
-        var altStr = "--";
-        var spdStr = "--";
-
-        if (_emulatorModeActive) {
-            latStr = "43.0668";
-            lonStr = "141.3506";
-            altStr = "18m";
-            spdStr = "0.0km/h";
-        } else if (posInfo != null) {
-            var info = posInfo as Position.Info;
-            if (info.position != null) {
-                var coords = (info.position as Position.Location).toDegrees();
-                latStr = coords[0].format("%.4f");
-                lonStr = coords[1].format("%.4f");
-            }
-            if (info.altitude != null) {
-                altStr = info.altitude.format("%.0f") + "m";
-            }
-            if (info.speed != null) {
-                var spdKmH = info.speed * 3.6f;
-                spdStr = spdKmH.format("%.1f") + "km/h";
-            }
-        }
-
-        dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 420, Graphics.FONT_TINY, "Lat:" + latStr + " Lon:" + lonStr, Graphics.TEXT_JUSTIFY_CENTER);
-        dc.drawText(CX, 440, Graphics.FONT_TINY, "Alt:" + altStr + " Spd:" + spdStr,
-                    Graphics.TEXT_JUSTIFY_CENTER);
-
-        dc.setColor(COLOR_ACCENT, COLOR_ACCENT);
-        dc.fillRectangle(0, screenH - 3, screenW, 3);
     }
 }
