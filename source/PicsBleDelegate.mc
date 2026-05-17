@@ -32,6 +32,8 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
 
     //! GPS座標から解決された最新の交差点名称（未解決時は空文字）
     var currentIntersectionName as Lang.String = "";
+    //! Type1/識別子側から取得した発信器ID（BLEデバイス名）
+    var currentTransmitterId as Lang.String = "";
     //! 最近傍交差点の緯度・経度（未解決時は 0.0）
     var currentIntersectionLat  as Lang.Float  = 0.0f;
     var currentIntersectionLon  as Lang.Float  = 0.0f;
@@ -99,6 +101,7 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
             case PICS_MSG_TYPE_LOCATION:
                 System.println(logPrefix + " Lat:" + frame.latitude.format("%.6f") + " Lon:" + frame.longitude.format("%.6f"));
                 lastLocFrame = frame;
+                currentTransmitterId = frame.transmitterId;
                 if (_intersectionDb != null) {
                     var entry = (_intersectionDb as PicsIntersectionDB)
                         .findNearestEntry(frame.latitude, frame.longitude);
@@ -118,6 +121,9 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
                 System.println(logPrefix + " Sig:" + sigStr);
                 
                 lastSignalFrame = frame;
+                if (currentTransmitterId.length() > 0 && frame.transmitterId.equals(frame.intersectionId)) {
+                    frame.transmitterId = currentTransmitterId;
+                }
                 resolveNearestFromDeviceLocation();
                 // UI 通知は Type 2 のときのみ
                 if (_callback != null) {

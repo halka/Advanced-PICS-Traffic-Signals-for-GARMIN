@@ -183,11 +183,16 @@ class PicsMainView extends WatchUi.View {
             }
         }
 
+        var intersectionLabel = "交差点: --";
+        if (_lastFrame != null) {
+            intersectionLabel = "交差点: " + (_lastFrame as PicsFrame).intersectionId;
+        }
+
         dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(8, 10, Graphics.FONT_MEDIUM, "PICS", Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(8, 10, Graphics.FONT_MEDIUM, intersectionLabel, Graphics.TEXT_JUSTIFY_LEFT);
 
         dc.setColor(statusColor, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(screenW - 8, 10, Graphics.FONT_MEDIUM,
+        dc.drawText(screenW - 8, 11, Graphics.FONT_SMALL,
                     WatchUi.loadResource(statusLabel) as Lang.String,
                     Graphics.TEXT_JUSTIFY_RIGHT);
 
@@ -199,6 +204,7 @@ class PicsMainView extends WatchUi.View {
         var cardsData = [] as Lang.Array;
         
         var activeIntersectionId = null;
+        var activeTransmitterId = "--";
         var activeSigs = [] as Lang.Array;
         var frameRssi = null;
         if (_lastFrame != null) {
@@ -206,6 +212,7 @@ class PicsMainView extends WatchUi.View {
             var nowTimer = System.getTimer();
             if (_lastReceivedSysTime > 0 && (nowTimer - _lastReceivedSysTime) <= 5000) {
                 activeIntersectionId = frame.intersectionId;
+                activeTransmitterId = frame.transmitterId;
                 frameRssi = frame.rssi;
                 for (var i = 0; i < PICS_SIGNAL_COUNT; i++) {
                     var s = frame.signals[i] as PicsSignal;
@@ -242,6 +249,7 @@ class PicsMainView extends WatchUi.View {
                     "dist" => item["dist"] as Lang.Float,
                     "brg"  => item["brg"] as Lang.Float,
                     "id"   => isBleActive ? activeIntersectionId : "--",
+                    "tx"   => isBleActive ? activeTransmitterId : "--",
                     "rssi" => rssiVal,
                     "signals" => sigs
                 };
@@ -283,8 +291,10 @@ class PicsMainView extends WatchUi.View {
         
         var wrappedAddr = wrapText(addr, 14);
         var wrappedHira = wrapText(hira, 18);
+        var tx = item["tx"] as Lang.String;
+        var txH = tx.equals("--") ? 0 : 20;
         
-        var staticH = 6 + 28 + (20 * wrappedAddr.size()) + (16 * wrappedHira.size()) + 18 + 4;
+        var staticH = 6 + 28 + txH + (20 * wrappedAddr.size()) + (16 * wrappedHira.size()) + 18 + 4;
         
         var numSigs = sigs.size();
         if (numSigs == 0) {
@@ -307,7 +317,7 @@ class PicsMainView extends WatchUi.View {
         var lonVal = item["lon"] as Lang.Float;
         var dist = item["dist"] as Lang.Float;
         var brg = item["brg"] as Lang.Float;
-        var id = item["id"] as Lang.String;
+        var tx = item["tx"] as Lang.String;
         var rssi = item["rssi"];
         var sigs = item["signals"] as Lang.Array;
 
@@ -315,19 +325,25 @@ class PicsMainView extends WatchUi.View {
 
         // 1. 交差点名（大きな文字）
         dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x + 8, cy, Graphics.FONT_MEDIUM, name, Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(x + 8, cy, Graphics.FONT_MEDIUM, name, Graphics.TEXT_JUSTIFY_CENTER);
         cy += 28;
+
+        if (!tx.equals("--")) {
+            dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(x + 8, cy, Graphics.FONT_TINY, tx, Graphics.TEXT_JUSTIFY_CENTER);
+            cy += 20;
+        }
 
         // 2. よみがな（小さい文字、折り返し）
         dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        var wrappedHira = wrapText(hira, Graphics.FONT_XTINY);
+        var wrappedHira = wrapText(hira, 18);
         for (var i = 0; i < wrappedHira.size(); i++) {
             dc.drawText(x + 8, cy, Graphics.FONT_XTINY, wrappedHira[i] as Lang.String, Graphics.TEXT_JUSTIFY_LEFT);
             cy += 18;
         }
         // 3. 所在地（中くらいの文字、折り返し）
         dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        var wrappedAddr = wrapText(addr, Graphics.FONT_XTINY);
+        var wrappedAddr = wrapText(addr, 14);
         for (var i = 0; i < wrappedAddr.size(); i++) {
             dc.drawText(x + 8, cy, Graphics.FONT_XTINY, wrappedAddr[i] as Lang.String, Graphics.TEXT_JUSTIFY_LEFT);
             cy += 20;
@@ -337,7 +353,7 @@ class PicsMainView extends WatchUi.View {
         var latStr = latVal.format("%.4f");
         var lonStr = lonVal.format("%.4f");
         dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x + 8, cy, Graphics.FONT_XTINY, "Lat: " + latStr + " Lon: " + lonStr, Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(x + w / 2, cy, Graphics.FONT_XTINY, "Lat: " + latStr + " Lon: " + lonStr, Graphics.TEXT_JUSTIFY_CENTER);
         cy += 18;
 
         // 5. 信号機表示ブロック（繰り返す）
@@ -367,31 +383,41 @@ class PicsMainView extends WatchUi.View {
         else if (state == SIGNAL_GREEN) { color = COLOR_GREEN; }
         else if (state == SIGNAL_BLINK_GREEN) { color = _blinkPhase ? COLOR_BLINK_G : COLOR_NONE; }
         
-        // 信号の丸（大きな丸、左寄せ）：大きさ・Y軸中心位置を数字に合わせる
+        // 信号の丸
         dc.setColor(color, Graphics.COLOR_TRANSPARENT);
-        dc.fillCircle(x + 50, sy + 16, 30);
+        dc.fillCircle(x + 38, sy + 25, 18);
+        dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
+        dc.drawCircle(x + 38, sy + 25, 18);
 
-        // カウント（大きな文字、中央寄せ）：大きさ・Y軸中心位置を丸に合わせる
         dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
-        var countStr = "--";
-        if (state != SIGNAL_NO_SIGNAL && remaining >= 0) {
-            countStr = remaining.toString();
-        }
-        dc.drawText(x + w / 2, sy + 16, Graphics.FONT_LARGE, countStr, 
-                    Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(x + 66, sy + 2, Graphics.FONT_SMALL, signalLabelFor(state), Graphics.TEXT_JUSTIFY_LEFT);
 
-        // 電波の強さ（小さな文字、右寄せ）：Y軸中心位置を揃える
+        var remainingStr = "残り: --";
+        if (state != SIGNAL_NO_SIGNAL && remaining >= 0) {
+            remainingStr = "残り: " + remaining.toString();
+        }
+        dc.drawText(x + 66, sy + 26, Graphics.FONT_SMALL, remainingStr, Graphics.TEXT_JUSTIFY_LEFT);
+
         dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
         var dbmStr = (rssi != null) ? (rssi.toString() + " dBm") : "-- dBm";
-        dc.drawText(x + w - 12, sy + 16, Graphics.FONT_TINY, dbmStr, 
-                    Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(x + w - 12, sy + 6, Graphics.FONT_TINY, dbmStr, Graphics.TEXT_JUSTIFY_RIGHT);
 
         var cards = ["N","NE","E","SE","S","SW","W","NW"] as Array<String>;
         var cidx  = ((brg + 22.5f) / 45.0f).toNumber() % 8;
         var distBrgStr = dist.format("%.0f") + "m  " + brg.format("%.0f") + " (" + cards[cidx] + ")";
 
         dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x + w / 2, sy + 32, Graphics.FONT_SMALL, distBrgStr, Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(x + w - 12, sy + 30, Graphics.FONT_TINY, distBrgStr, Graphics.TEXT_JUSTIFY_RIGHT);
+    }
+
+    private function signalLabelFor(state as Lang.Number) as Lang.String {
+        switch (state) {
+            case SIGNAL_RED:         return WatchUi.loadResource(Rez.Strings.Red) as Lang.String;
+            case SIGNAL_BLINK_GREEN: return WatchUi.loadResource(Rez.Strings.BlinkGreen) as Lang.String;
+            case SIGNAL_GREEN:       return WatchUi.loadResource(Rez.Strings.Green) as Lang.String;
+            case SIGNAL_NONE:        return WatchUi.loadResource(Rez.Strings.ControlOut) as Lang.String;
+            default:                 return WatchUi.loadResource(Rez.Strings.NoSignal) as Lang.String;
+        }
     }
 
     private function wrapText(text as Lang.String, maxChars as Lang.Number) as Lang.Array {
