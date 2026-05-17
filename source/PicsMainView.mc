@@ -318,27 +318,26 @@ class PicsMainView extends WatchUi.View {
         dc.drawText(x + 8, cy, Graphics.FONT_MEDIUM, name, Graphics.TEXT_JUSTIFY_LEFT);
         cy += 28;
 
-        // 2. 所在地（中くらいの文字、折り返し）
+        // 2. よみがな（小さい文字、折り返し）
         dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        var wrappedAddr = wrapText(addr, 14);
-        for (var i = 0; i < wrappedAddr.size(); i++) {
-            dc.drawText(x + 8, cy, Graphics.FONT_SMALL, wrappedAddr[i] as Lang.String, Graphics.TEXT_JUSTIFY_LEFT);
-            cy += 20;
-        }
-
-        // 3. よみがな（小さい文字、折り返し）
-        dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        var wrappedHira = wrapText(hira, 18);
+        var wrappedHira = wrapText(hira, Graphics.FONT_XTINY);
         for (var i = 0; i < wrappedHira.size(); i++) {
-            dc.drawText(x + 8, cy, Graphics.FONT_TINY, wrappedHira[i] as Lang.String, Graphics.TEXT_JUSTIFY_LEFT);
-            cy += 16;
+            dc.drawText(x + 8, cy, Graphics.FONT_XTINY, wrappedHira[i] as Lang.String, Graphics.TEXT_JUSTIFY_LEFT);
+            cy += 18;
+        }
+        // 3. 所在地（中くらいの文字、折り返し）
+        dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
+        var wrappedAddr = wrapText(addr, Graphics.FONT_XTINY);
+        for (var i = 0; i < wrappedAddr.size(); i++) {
+            dc.drawText(x + 8, cy, Graphics.FONT_XTINY, wrappedAddr[i] as Lang.String, Graphics.TEXT_JUSTIFY_LEFT);
+            cy += 20;
         }
 
         // 4. 信号機の緯度経度（小さい文字）
         var latStr = latVal.format("%.4f");
         var lonStr = lonVal.format("%.4f");
         dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x + 8, cy, Graphics.FONT_TINY, "Lat: " + latStr + " Lon: " + lonStr, Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(x + 8, cy, Graphics.FONT_XTINY, "Lat: " + latStr + " Lon: " + lonStr, Graphics.TEXT_JUSTIFY_CENTER);
         cy += 18;
 
         // 5. 信号機表示ブロック（繰り返す）
@@ -370,7 +369,7 @@ class PicsMainView extends WatchUi.View {
         
         // 信号の丸（大きな丸、左寄せ）：大きさ・Y軸中心位置を数字に合わせる
         dc.setColor(color, Graphics.COLOR_TRANSPARENT);
-        dc.fillCircle(x + 20, sy + 16, 16);
+        dc.fillCircle(x + 50, sy + 16, 30);
 
         // カウント（大きな文字、中央寄せ）：大きさ・Y軸中心位置を丸に合わせる
         dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
