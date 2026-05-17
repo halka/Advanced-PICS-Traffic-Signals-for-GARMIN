@@ -218,20 +218,19 @@ class PicsIntersectionDB {
             var e = entries[i] as Lang.Array;
             var eLat = e[0].toFloat();
             var eLon = e[1].toFloat();
-            
-            var db = calcDistBrg(lat, lon, eLat, eLon);
-            var dist = db[0] as Lang.Float;
-            var brg  = db[1] as Lang.Float;
+
+            var dLat = lat - eLat;
+            var dLon = lon - eLon;
+            var rank = dLat * dLat + dLon * dLon;
             
             var item = {
                 "entry" => e,
-                "dist"  => dist,
-                "brg"   => brg
+                "rank"  => rank
             };
 
             var inserted = false;
             for (var j = 0; j < top.size(); j++) {
-                if (dist < (top[j] as Lang.Dictionary)["dist"] as Lang.Float) {
+                if (rank < (top[j] as Lang.Dictionary)["rank"] as Lang.Float) {
                     var newTop = [] as Lang.Array;
                     for(var k=0; k<j; k++) { newTop.add(top[k]); }
                     newTop.add(item);
@@ -245,7 +244,21 @@ class PicsIntersectionDB {
                 top.add(item);
             }
         }
-        return top;
+
+        var result = [] as Lang.Array;
+        for (var i = 0; i < top.size(); i++) {
+            var rankedItem = top[i] as Lang.Dictionary;
+            var rankedEntry = rankedItem["entry"] as Lang.Array;
+            var db = calcDistBrg(lat, lon,
+                                 rankedEntry[0].toFloat(),
+                                 rankedEntry[1].toFloat());
+            result.add({
+                "entry" => rankedEntry,
+                "dist"  => db[0] as Lang.Float,
+                "brg"   => db[1] as Lang.Float
+            });
+        }
+        return result;
     }
 }
 

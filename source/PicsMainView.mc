@@ -74,12 +74,12 @@ class PicsMainView extends WatchUi.View {
         _lastFrame        = frame;
         _rxCount          = rxCount;
         _scanning         = true;
-        var now = Gregorian.info(Time.now(), Time.FORMAT_LONG);
-        _lastReceivedTime = now.month.format("%02d") + "/"
-                          + now.day.format("%02d") + " "
-                          + now.hour.format("%02d") + ":"
-                          + now.min.format("%02d")  + ":"
-                          + now.sec.format("%02d");
+        var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
+        _lastReceivedTime = pad2(now.month) + "/"
+                          + pad2(now.day) + " "
+                          + pad2(now.hour) + ":"
+                          + pad2(now.min)  + ":"
+                          + pad2(now.sec);
         _lastReceivedSysTime = System.getTimer();
         _intersectionName = intersectionName;
         _needsListUpdate = true;
@@ -208,10 +208,18 @@ class PicsMainView extends WatchUi.View {
     }
 
     private function formatCurrentClock() as Lang.String {
-        var now = Gregorian.info(Time.now(), Time.FORMAT_LONG);
-        return now.hour.format("%02d") + ":"
-             + now.min.format("%02d") + ":"
-             + now.sec.format("%02d");
+        var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
+        return pad2(now.hour) + ":"
+             + pad2(now.min) + ":"
+             + pad2(now.sec);
+    }
+
+    private function pad2(value) as Lang.String {
+        var str = value.toString();
+        if (str.length() < 2) {
+            return "0" + str;
+        }
+        return str;
     }
 
     private function normalizeHeading(value as Lang.Float) as Lang.Float {
