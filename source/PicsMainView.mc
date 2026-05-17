@@ -387,11 +387,9 @@ class PicsMainView extends WatchUi.View {
 
         // 1. 交差点名
         dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
-        var wrappedName = wrapName(name);
-        for (var i = 0; i < wrappedName.size(); i++) {
-            dc.drawText(textX, cy, Graphics.FONT_SMALL, wrappedName[i] as Lang.String, Graphics.TEXT_JUSTIFY_LEFT);
-            cy += 24;
-        }
+        dc.drawText(textX, cy, Graphics.FONT_SMALL, name, Graphics.TEXT_JUSTIFY_LEFT);
+        cy += 24;
+    
 
         if (shouldShowTx(tx)) {
             dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
@@ -484,10 +482,10 @@ class PicsMainView extends WatchUi.View {
 
     private function wrapNameFallback(text as Lang.String) as Lang.Array {
         var len = text.length();
-        if (len <= 18) {
+        if (len <= 36) {
             return wrapText(text, ((len + 1) / 2).toNumber());
         }
-        if (len <= 27) {
+        if (len <= 54) {
             return wrapText(text, ((len + 2) / 3).toNumber());
         }
         return wrapText(text, 10);
