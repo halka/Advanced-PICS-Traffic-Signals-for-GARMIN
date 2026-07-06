@@ -29,7 +29,8 @@ function Find-Monkeyc {
     $roots = @(
         Join-Path $env:APPDATA "Garmin\ConnectIQ\Sdks",
         Join-Path $env:LOCALAPPDATA "Garmin\ConnectIQ\Sdks",
-        Join-Path $env:USERPROFILE "Garmin\ConnectIQ\Sdks"
+        Join-Path $env:USERPROFILE "Garmin\ConnectIQ\Sdks",
+        Join-Path $env:USERPROFILE "Library\Application Support\Garmin\ConnectIQ\Sdks"
     )
 
     foreach ($root in $roots) {

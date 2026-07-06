@@ -117,8 +117,8 @@ class PicsParser {
         switch (frame.msgType) {
 
             case PICS_MSG_TYPE_IDENTIFIER:
-                // [10..23]: 交差点名称 (ASCII / Shift-JIS, null padded)
-                // ※ Connect IQ は Shift-JIS 非対応のため ASCII 部のみ採用
+                // [10..23]: 発信器識別子 (例: "UTMS_PICS0001", null padded)
+                // 実測ログでは UTF-8/Shift-JIS の交差点名称ではなく ASCII 識別子。
                 break;
 
             case PICS_MSG_TYPE_LOCATION:
@@ -159,7 +159,7 @@ class PicsParser {
 //! @brief 全国交差点DBを保持し、GPS座標から最近傍の交差点名を返す
 //!
 //! resources/data/intersections.json を Rez.JsonData 経由で読み込む。
-//! データ形式: [[lat_int, lon_int, "名称"], ...]  (lat/lon は度 × 1,000,000)
+//! データ形式: [[lat, lon, "名称", "ひらがな", "住所"], ...]  (lat/lon は度)
 class PicsIntersectionDB {
 
     private var _entries as Lang.Array or Null = null;

@@ -96,7 +96,7 @@ openssl pkcs8 -topk8 -inform PEM -outform DER \
 
 #### 3. Generate API Feature Flags
 ```bash
-python3 tools/debug_project.py
+python3 tools/debug_project.py --generate-api-flags
 ```
 This auto-generates `source/ApiFlags.mc` with compile-time constants based on the installed SDK.
 
@@ -257,7 +257,7 @@ openssl pkcs8 -topk8 -inform PEM -outform DER -in developer_key.pem -out develop
 
 ### APIフラグの自動生成
 ```bash
-python3 tools/debug_project.py
+python3 tools/debug_project.py --generate-api-flags
 ```
 これにより、インストールされているSDKに基づいてコンパイル時定数を持つ `source/ApiFlags.mc` が生成されます。
 
@@ -303,7 +303,7 @@ cp bin/pics-viewer.prg /GARMIN/APPS/
 - **画面レイアウト**：フッターは削除し、受信情報はコンパクトなヘッダーへ集約しています。
 
 ### 交差点名称について
-PICSのType0パケットに含まれる交差点名称はShift-JISエンコードのため、Connect IQでは直接デコードできません。代わりに、BLEのType1パケット（緯度経度）とバンドルされた全国交差点DBを使ってGPS座標マッチングで名称を解決します。
+実測ログ上の PICS Type0 パケットには、交差点名称ではなく `UTMS_PICS0001` のような ASCII の発信器識別子が入っています。交差点名は Type1 パケット（緯度経度）とバンドルされた全国交差点DBを使って、GPS座標マッチングで名称解決します。
 
 ### 文字列リソース
 画面に表示するすべてのUIラベルは `resources/strings/strings.xml` で管理しています。ロケール別のディレクトリ（例：`resources-eng/strings/strings.xml`）を作成することで多言語対応が可能です。

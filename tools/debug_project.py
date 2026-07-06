@@ -13,13 +13,27 @@ import argparse
 import json
 import os
 import re
-import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SDK_ROOT = Path.home() / "Library" / "Application Support" / "Garmin" / "ConnectIQ" / "Sdks"
 IQ_NAMESPACE = "http://www.garmin.com/xml/connectiq"
+SDK_NAME_RE = re.compile(r"connectiq-sdk-(?:mac|win|linux)-([0-9]+(?:\.[0-9]+)*)")
+
+
+def sdk_roots():
+    home = Path.home()
+    candidates = [
+        home / "Library" / "Application Support" / "Garmin" / "ConnectIQ" / "Sdks",
+        home / "AppData" / "Roaming" / "Garmin" / "ConnectIQ" / "Sdks",
+        home / "AppData" / "Local" / "Garmin" / "ConnectIQ" / "Sdks",
+        home / "Garmin" / "ConnectIQ" / "Sdks",
+        home / ".Garmin" / "ConnectIQ" / "Sdks",
+    ]
+    env_root = os.environ.get("CONNECTIQ_SDK_HOME")
+    if env_root:
+        candidates.insert(0, Path(env_root))
+    return candidates
 
 
 def parse_manifest(manifest_path: Path):
@@ -57,17 +71,35 @@ def parse_manifest(manifest_path: Path):
 
 
 def get_installed_sdk_versions():
-    if not SDK_ROOT.exists():
-        return []
-
     versions = []
-    for item in sorted(SDK_ROOT.iterdir()):
-        if not item.is_dir():
+    seen = set()
+    for root in sdk_roots():
+        try:
+            exists = root.exists()
+        except OSError:
             continue
-        match = re.search(r"connectiq-sdk-mac-([0-9]+(?:\.[0-9]+)*)", item.name)
-        if match:
-            versions.append({"name": item.name, "version": match.group(1), "path": item})
-    return versions
+        if not exists:
+            continue
+        try:
+            children = sorted(root.iterdir())
+        except OSError:
+            continue
+        for item in children:
+            try:
+                is_dir = item.is_dir()
+            except OSError:
+                continue
+            if not is_dir or item in seen:
+                continue
+            seen.add(item)
+            match = SDK_NAME_RE.search(item.name)
+            if match:
+                versions.append({"name": item.name, "version": match.group(1), "path": item})
+    return sorted(versions, key=lambda item: version_tuple(item["version"]))
+
+
+def version_tuple(version):
+    return tuple(int(part) for part in version.split("."))
 
 
 def read_intersection_db(db_path: Path):
@@ -85,6 +117,8 @@ def read_intersection_db(db_path: Path):
 def find_source_patterns(source_dir: Path, patterns):
     matches = []
     for path in source_dir.rglob("*.mc"):
+        if path.name == "ApiFlags.mc":
+            continue
         try:
             text = path.read_text(encoding="utf-8")
         except UnicodeDecodeError:
@@ -130,8 +164,8 @@ def report_manifest():
         print(f"installed latest SDK: {latest['name']} (version: {latest['version']})")
         if info['minApiLevel']:
             try:
-                manifest_ver = tuple(int(v) for v in info['minApiLevel'].split('.'))
-                latest_ver = tuple(int(v) for v in latest['version'].split('.'))
+                manifest_ver = version_tuple(info['minApiLevel'])
+                latest_ver = version_tuple(latest['version'])
                 cmp_text = "<=" if manifest_ver <= latest_ver else ">"
                 print(f"manifest minApiLevel {cmp_text} installed latest SDK version")
             except ValueError:
@@ -161,7 +195,7 @@ def report_resources():
         first = entries[0]
         print(f"first entry sample: {first}")
         if isinstance(first, list) and len(first) >= 3:
-            print("entry format appears to be [lat_int, lon_int, name].")
+            print("entry format appears to be [lat, lon, name, hiragana, address].")
 
 
 def report_source():
@@ -206,6 +240,7 @@ def parse_arguments():
     parser.add_argument("--source", action="store_true", help="Scan source files for debug keywords")
     parser.add_argument("--readme", action="store_true", help="Inspect README version references")
     parser.add_argument("--sdk", action="store_true", help="Report installed Connect IQ SDK versions")
+    parser.add_argument("--generate-api-flags", action="store_true", help="Write source/ApiFlags.mc from installed SDK inspection")
     parser.add_argument("--all", action="store_true", help="Run all checks")
     return parser.parse_args()
 
@@ -218,24 +253,26 @@ def generate_api_flags():
     otherwise false. This file allows conditional compilation in Monkey C.
     """
     sdk_versions = get_installed_sdk_versions()
+    if not sdk_versions:
+        print("Connect IQ SDK が見つからないため ApiFlags.mc は更新しません。")
+        return
+
     supports = False
-    if sdk_versions:
-        latest = sdk_versions[-1]
-        sdk_path = latest['path']
-        # Search for the symbol name in SDK files
-        for root, dirs, files in os.walk(sdk_path):
-            for fname in files:
-                try:
-                    fpath = os.path.join(root, fname)
-                    with open(fpath, 'r', encoding='utf-8', errors='ignore') as f:
-                        text = f.read()
-                        if 'takeScreenshot' in text:
-                            supports = True
-                            break
-                except Exception:
-                    continue
-            if supports:
-                break
+    latest = sdk_versions[-1]
+    sdk_path = latest['path']
+    for root, dirs, files in os.walk(sdk_path):
+        for fname in files:
+            try:
+                fpath = os.path.join(root, fname)
+                with open(fpath, 'r', encoding='utf-8', errors='ignore') as f:
+                    text = f.read()
+                    if 'takeScreenshot' in text:
+                        supports = True
+                        break
+            except Exception:
+                continue
+        if supports:
+            break
 
     out_path = ROOT / 'source' / 'ApiFlags.mc'
     content = ('// Auto-generated by tools/debug_project.py\n'
@@ -247,12 +284,12 @@ def generate_api_flags():
 
 def main():
     args = parse_arguments()
-    if not any((args.manifest, args.resources, args.source, args.readme, args.sdk, args.all)):
+    if not any((args.manifest, args.resources, args.source, args.readme, args.sdk, args.generate_api_flags, args.all)):
         args.all = True
 
-    # Always generate API flags when requested
-    if args.all:
+    if args.generate_api_flags:
         generate_api_flags()
+        print()
 
     if args.all or args.manifest:
         report_manifest()
