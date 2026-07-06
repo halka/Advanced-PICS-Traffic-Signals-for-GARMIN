@@ -127,6 +127,16 @@ python3 tools/csv_to_resource.py /path/to/input.csv resources/data/intersections
 monkeyc -d gpsmaph1 -f monkey.jungle -o bin/pics-viewer.prg -y developer_key.der
 ```
 
+On Windows, you can also use the repository build helper. It looks for
+`monkeyc` on `PATH` and in the default Garmin SDK Manager install locations:
+
+```powershell
+.\tools\build.ps1
+
+# Or specify an SDK path explicitly:
+.\tools\build.ps1 -SdkPath "C:\Path\To\connectiq-sdk-win-9.2.0"
+```
+
 #### 5. Deploy to Device (USB Mass Storage)
 **Ensure USB Mass Storage Mode**
 ```bash
