@@ -3,7 +3,7 @@
   <iq:application
     entry="PicsBleApp"
     id="a0de30cc00014ce0b1e591c50000cafe"
-    minApiLevel="3.2.0"
+    minApiLevel="5.0.0"
     launcherIcon="@Drawables.LauncherIcon"
     name="@Strings.AppName"
     type="widget"

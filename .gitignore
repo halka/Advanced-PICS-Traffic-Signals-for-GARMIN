@@ -53,7 +53,29 @@ dkms.conf
 
 # debug information files
 *.dwo
+/{source,resources
 .DS_Store
+
+# Build artifacts
+*.prg
+*.prg.debug.xml
+gen/
+mir/
+internal-mir/
+external-mir/
+
+# Generated test manifests
+manifest_test_*.xml
+
+# Python
+.venv/
+pyvenv.cfg
+lib/
+include/
+__pycache__/
+
+# Developer keys
+developer_key.der
 developer_key.pem
 developer_key.der
 *.mir
@@ -62,5 +84,3 @@ developer_key.der
 *.mbc
 *.mcgen
 /bin/pics-viewer.prg.debug.xml
-connectiq-sdk-manager-windows.zip
-/tools/connectiq-sdk-manager/

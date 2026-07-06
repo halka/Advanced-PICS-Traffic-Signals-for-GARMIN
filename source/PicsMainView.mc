@@ -5,34 +5,13 @@
 
 import Toybox.Graphics;
 import Toybox.Lang;
-import Toybox.Math;
 import Toybox.Position;
 import Toybox.Time;
 import Toybox.Time.Gregorian;
 import Toybox.WatchUi;
 import Toybox.System;
 
-//! @brief 信号インジケータ1つ分の描画パラメータ
-class SignalIndicator {
-    var x     as Lang.Number;
-    var y     as Lang.Number;
-    var label as Lang.String;
-
-    function initialize(x_ as Lang.Number, y_ as Lang.Number, label_ as Lang.String) {
-        x = x_;
-        y = y_;
-        label = label_;
-    }
-}
-
 class PicsMainView extends WatchUi.View {
-
-    // ---- 画面サイズ定数 (GPSMAP H1i Plus) ----
-    private const SCREEN_W = 282;
-    private const SCREEN_H = 470;
-
-    // ---- 表示チャンネル設定 ----
-    private const DISPLAY_CHANNELS = [0, 1] as Array<Number>;
 
     // ---- カラーパレット ----
     private const COLOR_BG         = 0xFFFFFF; // White
@@ -44,17 +23,25 @@ class PicsMainView extends WatchUi.View {
 
     private const COLOR_RED        = 0xFF0000; // Bright Red
     private const COLOR_GREEN      = 0x00CC00; // Bright Green
-    private const COLOR_BLINK_G    = 0xDDDD00; // Yellow
+    private const COLOR_BLINK_G    = 0x00CC00; // Blinking Green
     private const COLOR_NONE       = 0xAAAAAA; // Gray
 
     // ---- ステート ----
-    private var _lastFrame        as PicsFrame or Null = null;
-    private var _rxCount          as Lang.Long = 0l;
-    private var _scanning         as Lang.Boolean = false;
+    private var _lastFrame         as PicsFrame or Null = null;
+    private var _rxCount           as Lang.Long = 0l;
+    private var _lastReceivedTime  as Lang.String = "";
+    private var _lastReceivedSysTime as Lang.Number = 0;
+    private var _scanning          as Lang.Boolean = false;
     private var _blinkPhase       as Lang.Boolean = false;
     private var _intersectionName as Lang.String = "";
-    private var _intersectionLat  as Lang.Float  = 0.0f;
-    private var _intersectionLon  as Lang.Float  = 0.0f;
+    
+    // GPS & リスト
+    private var _db as PicsIntersectionDB or Null = null;
+    private var _topIntersections as Lang.Array or Null = null;
+    private var _lastCalcLat as Lang.Float = 0.0f;
+    private var _lastCalcLon as Lang.Float = 0.0f;
+    private var _currentRowOffset as Lang.Number = 0;
+    private var _needsListUpdate as Lang.Boolean = true;
 
     function initialize() {
         View.initialize();
@@ -63,300 +50,479 @@ class PicsMainView extends WatchUi.View {
     function onLayout(dc as Graphics.Dc) as Void {
     }
 
-    //! 外部から呼ばれる：信号状態を更新して再描画を要求
+    private var _emulatorModeActive as Lang.Boolean = false;
+
+    function setDb(db as PicsIntersectionDB or Null) as Void {
+        _db = db;
+    }
+
+    function setEmulatorMode(active as Lang.Boolean) as Void {
+        _emulatorModeActive = active;
+        _needsListUpdate = true;
+        _currentRowOffset = 0;
+        if (active) {
+            _topIntersections = null;
+        }
+        WatchUi.requestUpdate();
+    }
+
     function updateSignal(frame as PicsFrame, rxCount as Lang.Long,
                           intersectionName as Lang.String,
                           intersectionLat  as Lang.Float,
                           intersectionLon  as Lang.Float) as Void {
         _lastFrame        = frame;
         _rxCount          = rxCount;
+        _scanning         = true;
+        var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
+        _lastReceivedTime = pad4(now.year) + "-"
+                          + pad2(now.month) + "-"
+                          + pad2(now.day) + " "
+                          + pad2(now.hour) + ":"
+                          + pad2(now.min)  + ":"
+                          + pad2(now.sec);
+        _lastReceivedSysTime = System.getTimer();
         _intersectionName = intersectionName;
-        _intersectionLat  = intersectionLat;
-        _intersectionLon  = intersectionLon;
+        _needsListUpdate = true;
         WatchUi.requestUpdate();
     }
 
-    //! スキャン状態を反映
     function setScanningState(scanning as Lang.Boolean) as Void {
         _scanning = scanning;
         WatchUi.requestUpdate();
     }
 
-    //! 点滅フェーズを外部タイマーから更新（500ms 間隔想定）
     function toggleBlinkPhase() as Void {
         _blinkPhase = !_blinkPhase;
         if (_lastFrame != null) { WatchUi.requestUpdate(); }
     }
 
-    //! 画面全体を描画する
+    function scrollDown() as Void {
+        _currentRowOffset += 1;
+        WatchUi.requestUpdate();
+    }
+
+    function scrollUp() as Void {
+        _currentRowOffset -= 1;
+        if (_currentRowOffset < 0) { _currentRowOffset = 0; }
+        WatchUi.requestUpdate();
+    }
+
+    function refreshRealtime() as Void {
+        if (_scanning || _lastFrame != null) { WatchUi.requestUpdate(); }
+    }
+
     function onUpdate(dc as Graphics.Dc) as Void {
+        var screenW = dc.getWidth();
+        var screenH = dc.getHeight();
+
         dc.setColor(COLOR_BG, COLOR_BG);
         dc.clear();
 
-        drawHeader(dc);
-        drawSignalPanels(dc);
-        drawGpsInfo(dc);
-        drawFooter(dc);
+        // 1. 位置情報の取得とリストの更新
+        var devLat = 43.066768f;
+        var devLon = 141.350582f;
+        var hasFix = false;
+        var posInfo = null;
+        if (!_emulatorModeActive) {
+            posInfo = Position.getInfo();
+            if (posInfo != null && posInfo.position != null) {
+                var coords = (posInfo.position as Position.Location).toDegrees();
+                devLat = coords[0].toFloat();
+                devLon = coords[1].toFloat();
+                hasFix = true;
+            }
+        } else {
+            hasFix = true;
+        }
+
+        if (!_emulatorModeActive && _db != null) {
+            var moved = _needsListUpdate;
+            _needsListUpdate = false;
+            if (_topIntersections == null) {
+                moved = true;
+            } else {
+                var d = calcDistBrg(devLat, devLon, _lastCalcLat, _lastCalcLon)[0] as Lang.Float;
+                if (d > 10.0f) { // 10m以上移動したら再計算
+                    moved = true;
+                }
+            }
+            if (moved) {
+                _topIntersections = (_db as PicsIntersectionDB).getTopN(devLat, devLon, 15);
+                _lastCalcLat = devLat;
+                _lastCalcLon = devLon;
+            }
+        }
+
+        // 描画
+        drawHeader(dc, screenW, devLat, devLon, hasFix);
+        drawCards(dc, screenW, screenH, devLat, devLon);
     }
 
-    // ----------------------------------------------------------
-    //  ヘッダー部  Y: 0 ～ 76
-    // ----------------------------------------------------------
-    private function drawHeader(dc as Graphics.Dc) as Void {
-        var CX = SCREEN_W / 2;
-
+    private function drawHeader(dc as Graphics.Dc, screenW as Lang.Number,
+                                devLat as Lang.Float, devLon as Lang.Float,
+                                hasFix as Lang.Boolean) as Void {
         dc.setColor(COLOR_PANEL, COLOR_PANEL);
-        dc.fillRectangle(0, 0, SCREEN_W, 76);
-
+        dc.fillRectangle(0, 0, screenW, 82);
         dc.setColor(COLOR_ACCENT, COLOR_ACCENT);
-        dc.fillRectangle(0, 0, SCREEN_W, 3);
-
-        // アプリタイトル
-        dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 10, Graphics.FONT_TINY,
-                    WatchUi.loadResource(Rez.Strings.AppTitle) as Lang.String,
-                    Graphics.TEXT_JUSTIFY_CENTER);
-
-        // 交差点名称
-        var nameFont = Graphics.FONT_MEDIUM;
-        var nameStr  = "";
-        if (_intersectionName.length() > 0) {
-            nameStr  = _intersectionName;
-            nameFont = Graphics.FONT_SMALL;
-        } else {
-            var intersectionId = (_lastFrame != null)
-                ? _lastFrame.intersectionId
-                : "--------";
-            nameStr = WatchUi.loadResource(Rez.Strings.IntersectionPrefix) + intersectionId;
+        dc.fillRectangle(0, 0, screenW, 3);
+        
+        var statusLabel = Rez.Strings.StoppedIndicator;
+        var statusColor = COLOR_NONE;
+        var receiving = _scanning || _lastFrame != null;
+        if (receiving) {
+            var nowTimer = System.getTimer();
+            if (_lastReceivedSysTime > 0 && (nowTimer - _lastReceivedSysTime) > 5000) {
+                statusColor = COLOR_RED;
+                statusLabel = Rez.Strings.LostIndicator;
+            } else {
+                statusColor = COLOR_GREEN;
+                statusLabel = Rez.Strings.ScanningIndicator;
+            }
         }
-        dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 32, nameFont, nameStr, Graphics.TEXT_JUSTIFY_CENTER);
 
-        // スキャン状態
-        var statusColor = _scanning ? COLOR_GREEN : COLOR_NONE;
-        var statusLabel = _scanning ? Rez.Strings.ScanningIndicator : Rez.Strings.StoppedIndicator;
         dc.setColor(statusColor, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 55, Graphics.FONT_TINY,
+        dc.drawText(screenW - 8, 8, Graphics.FONT_XTINY,
                     WatchUi.loadResource(statusLabel) as Lang.String,
-                    Graphics.TEXT_JUSTIFY_CENTER);
+                    Graphics.TEXT_JUSTIFY_RIGHT);
+
+        var timeStr = WatchUi.loadResource(Rez.Strings.WaitingDots) as Lang.String;
+        if (_lastReceivedTime.length() > 0) {
+            timeStr = _lastReceivedTime;
+        }
+
+        dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(8, 8, Graphics.FONT_XTINY,
+                    timeStr,
+                    Graphics.TEXT_JUSTIFY_LEFT);
+
+        dc.drawText(8, 28, Graphics.FONT_XTINY,
+                    _rxCount.toString() + " pkt",
+                    Graphics.TEXT_JUSTIFY_LEFT);
+
+        dc.drawText(8, 48, Graphics.FONT_XTINY,
+                    formatDevicePosition(devLat, devLon, hasFix),
+                    Graphics.TEXT_JUSTIFY_LEFT);
 
         dc.setColor(COLOR_BORDER, COLOR_BORDER);
-        dc.fillRectangle(0, 76, SCREEN_W, 2);
+        dc.fillRectangle(0, 82, screenW, 2);
     }
 
-    // ----------------------------------------------------------
-    //  信号パネル  Y: 80 ～ 330
-    // ----------------------------------------------------------
-    private function drawSignalPanels(dc as Graphics.Dc) as Void {
-        var panelW  = (SCREEN_W - 24) / 2;
-        var panelH  = 250;
-        var panelY  = 80;
-        var panelX0 = 8;
-        var panelX1 = panelX0 + panelW + 8;
-
-        var channelLabels = [Rez.Strings.EastWest, Rez.Strings.NorthSouth] as Array;
-
-        for (var c = 0; c < DISPLAY_CHANNELS.size(); c++) {
-            var ch    = DISPLAY_CHANNELS[c];
-            var px    = (c == 0) ? panelX0 : panelX1;
-            var label = channelLabels[c];
-
-            var signal = null as PicsSignal or Null;
-            if (_lastFrame != null && _lastFrame.msgType == PICS_MSG_TYPE_SIGNAL) {
-                signal = _lastFrame.signals[ch] as PicsSignal;
-            }
-
-            drawSinglePanel(dc, px, panelY, panelW, panelH, label, signal);
+    private function formatDevicePosition(devLat as Lang.Float, devLon as Lang.Float,
+                                          hasFix as Lang.Boolean) as Lang.String {
+        if (!hasFix) {
+            return "Pos: --,--";
         }
+        return "Pos: " + devLat.format("%.4f") + "," + devLon.format("%.4f");
     }
 
-    //! 1チャンネル分のパネルを描画
-    private function drawSinglePanel(
-        dc     as Graphics.Dc,
-        x      as Lang.Number,
-        y      as Lang.Number,
-        w      as Lang.Number,
-        h      as Lang.Number,
-        label  as Lang.ResourceId,
-        signal as PicsSignal or Null
-    ) as Void {
-        var cx = x + w / 2;
+    private function pad2(value) as Lang.String {
+        var str = value.toString();
+        if (str.length() < 2) {
+            return "0" + str;
+        }
+        return str;
+    }
 
+    private function pad4(value) as Lang.String {
+        var str = value.toString();
+        while (str.length() < 4) {
+            str = "0" + str;
+        }
+        return str;
+    }
+
+    private function drawCards(dc as Graphics.Dc, screenW as Lang.Number, screenH as Lang.Number,
+                               devLat as Lang.Float, devLon as Lang.Float) as Void {
+        var cardsData = [] as Lang.Array;
+        
+        var activeIntersectionId = null;
+        var activeTransmitterId = "--";
+        var activeSigs = [] as Lang.Array;
+        var frameRssi = null;
+        if (_lastFrame != null) {
+            var frame = _lastFrame as PicsFrame;
+            var nowTimer = System.getTimer();
+            if (_lastReceivedSysTime > 0 && (nowTimer - _lastReceivedSysTime) <= 5000) {
+                activeIntersectionId = frame.intersectionId;
+                activeTransmitterId = frame.transmitterId;
+                frameRssi = frame.rssi;
+                for (var i = 0; i < PICS_SIGNAL_COUNT; i++) {
+                    var s = frame.signals[i] as PicsSignal;
+                    if (s.state != SIGNAL_NO_SIGNAL) {
+                        activeSigs.add(s);
+                    }
+                }
+            }
+        }
+
+        if (_emulatorModeActive && _lastFrame != null) {
+            cardsData.add(createEmulatorCard(devLat, devLon));
+        } else if (_topIntersections != null && (_topIntersections as Lang.Array).size() > 0) {
+            var arr = _topIntersections as Lang.Array;
+            for (var i = 0; i < arr.size(); i++) {
+                var item = arr[i] as Lang.Dictionary;
+                var entry = item["entry"] as Lang.Array;
+                var name = entry[2] as Lang.String;
+                
+                var sigs = [] as Lang.Array;
+                var isBleActive = false;
+                var rssiVal = null;
+                
+                if (activeIntersectionId != null && name.equals(_intersectionName) && activeSigs.size() > 0) {
+                    sigs = activeSigs;
+                    isBleActive = true;
+                    rssiVal = frameRssi;
+                }
+                
+                var cardItem = {
+                    "name" => name,
+                    "hira" => entry[3] as Lang.String,
+                    "addr" => entry[4] as Lang.String,
+                    "lat"  => entry[0].toFloat(),
+                    "lon"  => entry[1].toFloat(),
+                    "dist" => item["dist"] as Lang.Float,
+                    "brg"  => item["brg"] as Lang.Float,
+                    "id"   => isBleActive ? activeIntersectionId : "--",
+                    "tx"   => isBleActive ? activeTransmitterId : "--",
+                    "rssi" => rssiVal,
+                    "signals" => sigs
+                };
+                cardsData.add(cardItem);
+            }
+        }
+
+        if (cardsData.size() == 0) {
+            dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(screenW/2, 100, Graphics.FONT_MEDIUM, "検索対象が近くにありません", Graphics.TEXT_JUSTIFY_CENTER);
+            return;
+        }
+
+        var maxOffset = cardsData.size() - 1;
+        if (maxOffset < 0) { maxOffset = 0; }
+        if (_currentRowOffset > maxOffset) { _currentRowOffset = maxOffset; }
+
+        var gap = 8;
+        var y = 88;
+
+        dc.setClip(0, 84, screenW, screenH - 87);
+
+        for (var i = _currentRowOffset; i < cardsData.size(); i++) {
+            if (y > screenH - 12) { break; }
+            var item = cardsData[i] as Lang.Dictionary;
+            var sigs = item["signals"] as Lang.Array;
+            var cardH = calculateCardHeight(item, sigs);
+            
+            drawSingleCard(dc, 8, y, screenW - 16, cardH, item);
+            y += cardH + gap;
+        }
+
+        dc.clearClip();
+    }
+
+    private function createEmulatorCard(devLat as Lang.Float, devLon as Lang.Float) as Lang.Dictionary {
+        var frame = _lastFrame as PicsFrame;
+        var sigs = [] as Lang.Array;
+        for (var i = 0; i < PICS_SIGNAL_COUNT; i++) {
+            var s = frame.signals[i] as PicsSignal;
+            if (s.state != SIGNAL_NO_SIGNAL) {
+                sigs.add(s);
+            }
+        }
+        var db = calcDistBrg(devLat, devLon, frame.latitude, frame.longitude);
+        return {
+            "name" => _intersectionName,
+            "hira" => "",
+            "addr" => "シミュレーションモード",
+            "lat"  => frame.latitude,
+            "lon"  => frame.longitude,
+            "dist" => db[0] as Lang.Float,
+            "brg"  => db[1] as Lang.Float,
+            "id"   => frame.intersectionId,
+            "tx"   => frame.transmitterId,
+            "rssi" => frame.rssi,
+            "signals" => sigs
+        };
+    }
+
+    private function calculateCardHeight(item as Lang.Dictionary, sigs as Lang.Array) as Lang.Number {
+        var name = item["name"] as Lang.String;
+        var addr = item["addr"] as Lang.String;
+        
+        var wrappedName = wrapName(name);
+        var wrappedAddr = wrapAddress(addr);
+        var tx = item["tx"] as Lang.String;
+        var txH = shouldShowTx(tx) ? 18 : 0;
+        
+        var staticH = 8 + (24 * wrappedName.size()) + txH
+                    + (18 * wrappedAddr.size())
+                    + 18 + 6;
+        
+        var numSigs = sigs.size();
+        if (numSigs == 0) {
+            numSigs = 1;
+        }
+        
+        return staticH + numSigs * 52 + 6;
+    }
+
+    private function drawSingleCard(dc as Graphics.Dc, x as Lang.Number, y as Lang.Number, w as Lang.Number, h as Lang.Number, item as Lang.Dictionary) as Void {
         dc.setColor(COLOR_PANEL, COLOR_PANEL);
         dc.fillRectangle(x, y, w, h);
         dc.setColor(COLOR_BORDER, COLOR_BORDER);
         dc.drawRectangle(x, y, w, h);
 
+        var name = item["name"] as Lang.String;
+        var addr = item["addr"] as Lang.String;
+        var latVal = item["lat"] as Lang.Float;
+        var lonVal = item["lon"] as Lang.Float;
+        var dist = item["dist"] as Lang.Float;
+        var brg = item["brg"] as Lang.Float;
+        var tx = item["tx"] as Lang.String;
+        var rssi = item["rssi"];
+        var sigs = item["signals"] as Lang.Array;
+
+        var padX = 14;
+        var textX = x + padX;
+        var cy = y + 8;
+
+        // 1. 交差点名
+        dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(textX, cy, Graphics.FONT_SMALL, name, Graphics.TEXT_JUSTIFY_LEFT);
+        cy += 24;
+    
+
+        if (shouldShowTx(tx)) {
+            dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(textX, cy, Graphics.FONT_XTINY, "ID: " + tx, Graphics.TEXT_JUSTIFY_LEFT);
+            cy += 18;
+        }
+
+        // 2. 所在地（小さい文字、折り返し）
+        dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
+        var wrappedAddr = wrapAddress(addr);
+        for (var i = 0; i < wrappedAddr.size(); i++) {
+            dc.drawText(textX, cy, Graphics.FONT_XTINY, wrappedAddr[i] as Lang.String, Graphics.TEXT_JUSTIFY_LEFT);
+            cy += 18;
+        }
+
+        // 4. 信号機の緯度経度（小さい文字）
+        var latStr = latVal.format("%.4f");
+        var lonStr = lonVal.format("%.4f");
+        dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(x + w / 2, cy, Graphics.FONT_XTINY, "Lat: " + latStr + " Lon: " + lonStr, Graphics.TEXT_JUSTIFY_CENTER);
+        cy += 18;
+
+        // 5. 信号機表示ブロック（繰り返す）
+        var sy = cy + 4;
+        var numSigs = sigs.size();
+        
+        if (numSigs > 0) {
+            for (var i = 0; i < numSigs; i++) {
+                var s = sigs[i] as PicsSignal;
+                if (i > 0) {
+                    dc.setColor(COLOR_BORDER, COLOR_BORDER);
+                    dc.drawLine(x + 12, sy, x + w - 12, sy);
+                }
+                drawSignalBlock(dc, x, sy, w, s.state, s.remaining, rssi, dist, brg);
+                sy += 52;
+            }
+        } else {
+            drawSignalBlock(dc, x, sy, w, SIGNAL_NO_SIGNAL, -1, null, dist, brg);
+        }
+    }
+
+    private function drawSignalBlock(dc as Graphics.Dc, x as Lang.Number, sy as Lang.Number, w as Lang.Number, 
+                                     state as Lang.Number, remaining as Lang.Number, rssi as Lang.Number or Null, 
+                                     dist as Lang.Float, brg as Lang.Float) as Void {
+        var color = COLOR_NONE;
+        if (state == SIGNAL_RED) { color = COLOR_RED; }
+        else if (state == SIGNAL_GREEN) { color = COLOR_GREEN; }
+        else if (state == SIGNAL_BLINK_GREEN) { color = _blinkPhase ? COLOR_BLINK_G : COLOR_NONE; }
+        
+        // 信号の丸
+        dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+        dc.fillCircle(x + 38, sy + 25, 18);
+        dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
+        dc.drawCircle(x + 38, sy + 25, 18);
+
+        var remainingStr = "--";
+        if (state != SIGNAL_NO_SIGNAL && remaining >= 0) {
+            remainingStr = remaining.toString();
+        }
+        dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(x + 84, sy + 25, Graphics.FONT_LARGE, remainingStr,
+                    Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
+        var dbmStr = (rssi != null) ? (rssi.toString() + " dBm") : "-- dBm";
+        dc.drawText(x + w - 12, sy + 6, Graphics.FONT_TINY, dbmStr, Graphics.TEXT_JUSTIFY_RIGHT);
+
+        var cards = ["N","NE","E","SE","S","SW","W","NW"] as Array<String>;
+        var cidx  = ((brg + 22.5f) / 45.0f).toNumber() % 8;
+        var distBrgStr = formatDistance(dist) + "  " + brg.format("%.0f") + " (" + cards[cidx] + ")";
+
         dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, y + 6, Graphics.FONT_MEDIUM,
-                    WatchUi.loadResource(label) as Lang.String,
-                    Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(x + w - 12, sy + 30, Graphics.FONT_TINY, distBrgStr, Graphics.TEXT_JUSTIFY_RIGHT);
+    }
 
-        var lampR  = 44;
-        var lampCY = y + 96;
+    private function formatDistance(dist as Lang.Float) as Lang.String {
+        if (dist < 1000.0f) {
+            return dist.format("%.0f") + "m";
+        }
+        return (dist / 1000.0f).format("%.1f") + "km";
+    }
 
-        var sigColor  = COLOR_NONE;
-        var stateText = Rez.Strings.NoSignal as Lang.ResourceId;
-        var remText   = "" as Lang.String;
+    private function shouldShowTx(tx as Lang.String) as Lang.Boolean {
+        return tx.length() > 0 && !tx.equals("--") && !tx.equals("--------");
+    }
 
-        if (signal != null) {
-            stateText = signal.stateLabel();
-            remText   = (signal.remaining > 0)
-                ? signal.remaining.toString() + "s"
-                : "";
+    private function wrapName(text as Lang.String) as Lang.Array {
+        return wrapNameFallback(text);
+    }
 
-            switch (signal.state) {
-                case SIGNAL_RED:
-                    sigColor = COLOR_RED;
-                    break;
-                case SIGNAL_GREEN:
-                    sigColor = COLOR_GREEN;
-                    break;
-                case SIGNAL_BLINK_GREEN:
-                    sigColor = _blinkPhase ? COLOR_GREEN : COLOR_NONE;
-                    break;
-                case SIGNAL_NONE:
-                    sigColor = COLOR_NONE;
-                    break;
-                default:
-                    sigColor = COLOR_NONE;
-                    break;
+    private function wrapNameFallback(text as Lang.String) as Lang.Array {
+        var len = text.length();
+        if (len <= 36) {
+            return wrapText(text, ((len + 1) / 2).toNumber());
+        }
+        if (len <= 54) {
+            return wrapText(text, ((len + 2) / 3).toNumber());
+        }
+        return wrapText(text, 10);
+    }
+
+    private function wrapAddress(text as Lang.String) as Lang.Array {
+        var len = text.length();
+        var lineCount = 1;
+        if (len > 54) {
+            lineCount = 3;
+        } else if (len > 36) {
+            lineCount = 2;
+        }
+        return wrapText(text, ((len + lineCount - 1) / lineCount).toNumber());
+    }
+
+    private function wrapText(text as Lang.String, maxChars as Lang.Number) as Lang.Array {
+        var lines = [] as Lang.Array;
+        var len = text.length();
+        var i = 0;
+        while (i < len) {
+            var end = i + maxChars;
+            if (end > len) { end = len; }
+            lines.add(text.substring(i, end));
+            i += maxChars;
+        }
+        return lines;
+    }
+
+    private function findText(text as Lang.String, needle as Lang.String) as Lang.Number {
+        var nLen = needle.length();
+        var limit = text.length() - nLen;
+        for (var i = 0; i <= limit; i++) {
+            if (text.substring(i, i + nLen).equals(needle)) {
+                return i;
             }
         }
-
-        if (signal != null && signal.state != SIGNAL_NO_SIGNAL) {
-            dc.setColor(sigColor & 0x3F3F3F, Graphics.COLOR_TRANSPARENT);
-            dc.fillCircle(cx, lampCY, lampR + 6);
-        }
-
-        dc.setColor(sigColor, Graphics.COLOR_TRANSPARENT);
-        dc.fillCircle(cx, lampCY, lampR);
-
-        // ランプ内ハイライト円は削除（意味が不明瞭なため）
-
-        dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, y + 152, Graphics.FONT_MEDIUM,
-                    WatchUi.loadResource(stateText) as Lang.String,
-                    Graphics.TEXT_JUSTIFY_CENTER);
-
-        if (remText.length() > 0) {
-            dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(cx, y + 182, Graphics.FONT_SMALL,
-                        WatchUi.loadResource(Rez.Strings.RemainingPrefix) + remText,
-                        Graphics.TEXT_JUSTIFY_CENTER);
-        }
-
-        if (signal != null && _lastFrame != null) {
-            dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(cx, y + 212, Graphics.FONT_TINY,
-                        "RSSI: " + _lastFrame.rssi.toString() + " dBm",
-                        Graphics.TEXT_JUSTIFY_CENTER);
-        }
-    }
-
-    // ----------------------------------------------------------
-    //  GPS 情報  Y: 334 ～ 378
-    // ----------------------------------------------------------
-    private function drawGpsInfo(dc as Graphics.Dc) as Void {
-        var CX = SCREEN_W / 2;
-
-        var devLat = 0.0f;
-        var devLon = 0.0f;
-        var hasFix = false;
-        var posInfo = Position.getInfo();
-        if (posInfo != null && posInfo.position != null) {
-            var coords = (posInfo.position as Position.Location).toDegrees();
-            devLat = coords[0].toFloat();
-            devLon = coords[1].toFloat();
-            hasFix = true;
-        }
-
-        var hasInt = (_intersectionName.length() > 0);
-
-        // デバイス座標
-        var devLatStr = hasFix ? (devLat.abs().format("%.4f") + (devLat >= 0.0f ? "N" : "S")) : "--";
-        var devLonStr = hasFix ? (devLon.abs().format("%.4f") + (devLon >= 0.0f ? "E" : "W")) : "--";
-        dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 332, Graphics.FONT_TINY,
-                    WatchUi.loadResource(Rez.Strings.DevicePrefix) + devLatStr + " " + devLonStr,
-                    Graphics.TEXT_JUSTIFY_CENTER);
-
-        // 交差点座標
-        var intLatStr = hasInt ? (_intersectionLat.abs().format("%.4f") + (_intersectionLat >= 0.0f ? "N" : "S")) : "--";
-        var intLonStr = hasInt ? (_intersectionLon.abs().format("%.4f") + (_intersectionLon >= 0.0f ? "E" : "W")) : "--";
-        dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 348, Graphics.FONT_TINY,
-                    WatchUi.loadResource(Rez.Strings.IntersectionCoordPrefix) + intLatStr + " " + intLonStr,
-                    Graphics.TEXT_JUSTIFY_CENTER);
-
-        // 距離・方位
-        var distBrgStr = "--";
-        if (hasFix && hasInt) {
-            var R    = 6371000.0f;
-            var phi1 = devLat * (Math.PI / 180.0f);
-            var phi2 = _intersectionLat * (Math.PI / 180.0f);
-            var dPhi = (_intersectionLat - devLat) * (Math.PI / 180.0f);
-            var dLam = (_intersectionLon - devLon) * (Math.PI / 180.0f);
-            var sinH = Math.sin(dPhi / 2.0f);
-            var sinL = Math.sin(dLam / 2.0f);
-            var a    = sinH * sinH + Math.cos(phi1) * Math.cos(phi2) * sinL * sinL;
-            var dist = R * 2.0f * Math.atan2(Math.sqrt(a), Math.sqrt(1.0f - a));
-
-            var vy   = Math.sin(dLam) * Math.cos(phi2);
-            var vx   = Math.cos(phi1) * Math.sin(phi2)
-                     - Math.sin(phi1) * Math.cos(phi2) * Math.cos(dLam);
-            var brg  = Math.toDegrees(Math.atan2(vy, vx)).toFloat();
-            brg = brg + 360.0f;
-            if (brg >= 360.0f) { brg = brg - 360.0f; }
-
-            var cards = ["N","NE","E","SE","S","SW","W","NW"] as Array<String>;
-            var cidx  = ((brg + 22.5f) / 45.0f).toNumber() % 8;
-
-            distBrgStr = dist.format("%.0f") + "m  " + brg.format("%.0f") + "(" + cards[cidx] + ")";
-        }
-        dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 364, Graphics.FONT_TINY,
-                    WatchUi.loadResource(Rez.Strings.DistancePrefix) + distBrgStr,
-                    Graphics.TEXT_JUSTIFY_CENTER);
-    }
-
-    // ----------------------------------------------------------
-    //  フッター  Y: 382 ～ 470
-    // ----------------------------------------------------------
-    private function drawFooter(dc as Graphics.Dc) as Void {
-        var CX = SCREEN_W / 2;
-
-        dc.setColor(COLOR_BORDER, COLOR_BORDER);
-        dc.fillRectangle(0, 380, SCREEN_W, 2);
-
-        dc.setColor(COLOR_PANEL, COLOR_PANEL);
-        dc.fillRectangle(0, 382, SCREEN_W, SCREEN_H - 382);
-
-        // 最終受信時刻
-        var timeStr = WatchUi.loadResource(Rez.Strings.WaitingDots) as Lang.String;
-        if (_lastFrame != null) {
-            var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
-            timeStr = now.hour.format("%02d") + ":"
-                    + now.min.format("%02d")  + ":"
-                    + now.sec.format("%02d");
-        }
-
-        dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 388, Graphics.FONT_TINY,
-                    WatchUi.loadResource(Rez.Strings.LastReceivedPrefix) + timeStr,
-                    Graphics.TEXT_JUSTIFY_CENTER);
-
-        dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 412, Graphics.FONT_TINY,
-                    WatchUi.loadResource(Rez.Strings.PacketCountPrefix) + _rxCount.toString() + " pkt",
-                    Graphics.TEXT_JUSTIFY_CENTER);
-
-        dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 442, Graphics.FONT_TINY,
-                    WatchUi.loadResource(Rez.Strings.BackHint) as Lang.String,
-                    Graphics.TEXT_JUSTIFY_CENTER);
-
-        dc.setColor(COLOR_ACCENT, COLOR_ACCENT);
-        dc.fillRectangle(0, SCREEN_H - 3, SCREEN_W, 3);
+        return -1;
     }
 }

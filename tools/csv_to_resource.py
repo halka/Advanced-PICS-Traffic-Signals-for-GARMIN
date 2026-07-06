@@ -6,13 +6,8 @@ csv_to_resource.py
 使い方:
     python3 tools/csv_to_resource.py [input_csv] [output_json]
 
-デフォルト:
-    input : ~/Downloads/250501-zenkoku-kousaten.csv
-    output: resources/data/intersections.json
-
 出力フォーマット (メモリ効率を優先したフラット配列):
-    [[lat_int, lon_int, "交差点名称"], ...]
-    - lat/lon は整数 (度 × 1,000,000)
+    [[lat, lon, "交差点名称", "ひらがな", "住所"], ...]
 """
 
 import csv
@@ -28,26 +23,22 @@ DEFAULT_OUTPUT = os.path.join(
 def convert(input_path: str, output_path: str) -> None:
     entries = []
     with open(input_path, encoding="utf-8-sig", newline="") as f:
-        reader = csv.reader(f)
-        for row_num, row in enumerate(reader, start=1):
-            # ヘッダー行・短い行はスキップ
-            if len(row) < 7:
-                continue
-            name = row[2].strip()
-            lat_str = row[5].strip()
-            lon_str = row[6].strip()
-            # 数値でない行（ヘッダー等）をスキップ
+        reader = csv.DictReader(f)
+        for row in reader:
             try:
-                lat_int = round(float(lat_str) * 1_000_000)
-                lon_int = round(float(lon_str) * 1_000_000)
+                lat = float(row['lat']) if 'lat' in row and row['lat'] else 0.0
+                lon = float(row['lon']) if 'lon' in row and row['lon'] else 0.0
             except ValueError:
                 continue
-            if not name:
-                continue
-            entries.append([lat_int, lon_int, name])
+            
+            name = row.get('intersection', '')
+            hira = row.get('hiragana', '')
+            addr = row.get('pref', '') + row.get('city', '') + row.get('address', '')
+            
+            entries.append([lat, lon, name, hira, addr])
 
     os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
-    with open(output_path, "w", encoding="utf-8") as f:
+    with open(output_path, "w", encoding="utf-8", newline="\n") as f:
         json.dump(entries, f, ensure_ascii=False, separators=(",", ":"))
 
     print(f"変換完了: {len(entries)} 件 -> {output_path}")
