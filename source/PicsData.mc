@@ -97,6 +97,22 @@ class PicsParser {
             return null;
         }
 
+        var msgType = data[2];
+        if (data.size() < 10) {
+            return null;
+        }
+        if (msgType == PICS_MSG_TYPE_LOCATION && data.size() < 18) {
+            return null;
+        }
+        if (msgType == PICS_MSG_TYPE_SIGNAL && data.size() < 11) {
+            return null;
+        }
+        if (msgType != PICS_MSG_TYPE_IDENTIFIER &&
+            msgType != PICS_MSG_TYPE_LOCATION &&
+            msgType != PICS_MSG_TYPE_SIGNAL) {
+            return null;
+        }
+
         var frame = new PicsFrame();
         frame.rssi      = rssi;
         frame.timestamp = System.getTimer().toLong();
