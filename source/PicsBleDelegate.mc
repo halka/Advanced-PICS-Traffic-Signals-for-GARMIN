@@ -46,6 +46,7 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
     private var _locationByIntersection as Lang.Dictionary = {};
     //! 古いType 1を別時点の信号へ関連付けないための有効期間
     private const LOCATION_CACHE_TTL_MS = 15000;
+    private const MAX_LOCATION_CACHE_ENTRIES = 16;
 
     function initialize(callback as PicsCallback or Null) {
         BleDelegate.initialize();
@@ -138,6 +139,7 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
             .findNearestEntry(frame.latitude, frame.longitude);
         if (entry == null) { return; }
 
+        evictOldestLocationIfFull(frame.intersectionId);
         _locationByIntersection[frame.intersectionId] = {
             "name" => entry[2] as Lang.String,
             "lat" => entry[0].toFloat(),
@@ -145,6 +147,29 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
             "transmitter" => frame.transmitterId,
             "tick" => receiveTick
         };
+    }
+
+    private function evictOldestLocationIfFull(incomingId as Lang.String) as Void {
+        if (_locationByIntersection.hasKey(incomingId) ||
+            _locationByIntersection.size() < MAX_LOCATION_CACHE_ENTRIES) {
+            return;
+        }
+
+        var keys = _locationByIntersection.keys();
+        var oldestKey = null;
+        var oldestTick = 0x7FFFFFFF;
+        for (var i = 0; i < keys.size(); i++) {
+            var key = keys[i];
+            var value = _locationByIntersection[key] as Lang.Dictionary;
+            var tick = value["tick"] as Lang.Number;
+            if (tick < oldestTick) {
+                oldestTick = tick;
+                oldestKey = key;
+            }
+        }
+        if (oldestKey != null) {
+            _locationByIntersection.remove(oldestKey);
+        }
     }
 
     private function applyCachedLocation(frame as PicsFrame,
