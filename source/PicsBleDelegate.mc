@@ -42,6 +42,10 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
     private var _callback       as PicsCallback or Null = null;
     //! 交差点DB（GPS座標 → 名称ルックアップ）
     private var _intersectionDb as PicsIntersectionDB or Null = null;
+    //! Type 1 から得た位置情報を交差点IDごとに保持する
+    private var _locationByIntersection as Lang.Dictionary = {};
+    //! 古いType 1を別時点の信号へ関連付けないための有効期間
+    private const LOCATION_CACHE_TTL_MS = 15000;
 
     function initialize(callback as PicsCallback or Null) {
         BleDelegate.initialize();
@@ -73,16 +77,16 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
             frame.transmitterId = deviceName as Lang.String;
         }
 
-        // ---- ログ出力用タイムスタンプ生成 (yyyy-MM-dd HH:mm:ss.SSS) ----
+        // Gregorianの秒とSystem.getTimer()は同期していないため、疑似ミリ秒に連結しない。
+        // Tickは同一秒内の受信順を追跡するための単調増加値として別フィールドに出す。
         var info = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
-        var ms   = System.getTimer() % 1000;
+        var receiveTick = System.getTimer();
         var timeStr = info.year.format("%04d") + "-" +
                       info.month.format("%02d") + "-" +
                       info.day.format("%02d") + " " +
                       info.hour.format("%02d") + ":" +
                       info.min.format("%02d") + ":" +
-                      info.sec.format("%02d") + "." +
-                      ms.format("%03d");
+                      info.sec.format("%02d");
 
         // ---- 受信したHEXダンプを生成 ----
         var hexStr = "";
@@ -90,7 +94,9 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
             hexStr += (payload[i] & 0xFF).format("%02X");
         }
 
-        var logPrefix = timeStr + " [PICS]" + " RSSI:" + frame.rssi + " Type:" + frame.msgType + " ID:" + frame.intersectionId + " HEX:" + hexStr;
+        var logPrefix = timeStr + " [PICS]" + " Tick:" + receiveTick +
+                        " RSSI:" + frame.rssi + " Type:" + frame.msgType +
+                        " ID:" + frame.intersectionId + " HEX:" + hexStr;
 
         // タイプ別にキャッシュを更新 & ログ出力
         switch (frame.msgType) {
@@ -101,16 +107,7 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
             case PICS_MSG_TYPE_LOCATION:
                 System.println(logPrefix + " Lat:" + frame.latitude.format("%.6f") + " Lon:" + frame.longitude.format("%.6f"));
                 lastLocFrame = frame;
-                currentTransmitterId = frame.transmitterId;
-                if (_intersectionDb != null) {
-                    var entry = (_intersectionDb as PicsIntersectionDB)
-                        .findNearestEntry(frame.latitude, frame.longitude);
-                    if (entry != null) {
-                        currentIntersectionLat  = entry[0].toFloat();
-                        currentIntersectionLon  = entry[1].toFloat();
-                        currentIntersectionName = entry[2] as Lang.String;
-                    }
-                }
+                cacheLocation(frame, receiveTick);
                 break;
             case PICS_MSG_TYPE_SIGNAL:
                 var sigStr = "";
@@ -121,16 +118,64 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
                 System.println(logPrefix + " Sig:" + sigStr);
                 
                 lastSignalFrame = frame;
-                if (currentTransmitterId.length() > 0 && frame.transmitterId.equals(frame.intersectionId)) {
-                    frame.transmitterId = currentTransmitterId;
+                if (!applyCachedLocation(frame, receiveTick)) {
+                    clearCurrentIntersection();
+                    resolveNearestFromDeviceLocation();
                 }
-                resolveNearestFromDeviceLocation();
                 // UI 通知は Type 2 のときのみ
                 if (_callback != null) {
                     _callback.invoke(frame, PICS_MSG_TYPE_SIGNAL);
                 }
                 break;
         }
+    }
+
+    //! Type 1を同じ交差点IDのType 2だけに関連付ける
+    private function cacheLocation(frame as PicsFrame, receiveTick as Lang.Number) as Void {
+        if (_intersectionDb == null) { return; }
+
+        var entry = (_intersectionDb as PicsIntersectionDB)
+            .findNearestEntry(frame.latitude, frame.longitude);
+        if (entry == null) { return; }
+
+        _locationByIntersection[frame.intersectionId] = {
+            "name" => entry[2] as Lang.String,
+            "lat" => entry[0].toFloat(),
+            "lon" => entry[1].toFloat(),
+            "transmitter" => frame.transmitterId,
+            "tick" => receiveTick
+        };
+    }
+
+    private function applyCachedLocation(frame as PicsFrame,
+                                         receiveTick as Lang.Number) as Lang.Boolean {
+        if (!_locationByIntersection.hasKey(frame.intersectionId)) {
+            return false;
+        }
+
+        var cached = _locationByIntersection[frame.intersectionId] as Lang.Dictionary;
+        var cachedTick = cached["tick"] as Lang.Number;
+        var age = receiveTick - cachedTick;
+        if (age < 0 || age > LOCATION_CACHE_TTL_MS) {
+            return false;
+        }
+
+        currentIntersectionName = cached["name"] as Lang.String;
+        currentIntersectionLat = cached["lat"] as Lang.Float;
+        currentIntersectionLon = cached["lon"] as Lang.Float;
+        currentTransmitterId = cached["transmitter"] as Lang.String;
+        if (currentTransmitterId.length() > 0 &&
+            frame.transmitterId.equals(frame.intersectionId)) {
+            frame.transmitterId = currentTransmitterId;
+        }
+        return true;
+    }
+
+    private function clearCurrentIntersection() as Void {
+        currentIntersectionName = "";
+        currentIntersectionLat = 0.0f;
+        currentIntersectionLon = 0.0f;
+        currentTransmitterId = "";
     }
 
     //! Type1 位置情報が来ないビーコンでも、現在地から最近傍交差点名を補完する
