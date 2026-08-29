@@ -8,7 +8,6 @@ param(
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
-Set-Location $repoRoot
 
 function Find-Monkeyc {
     param([string]$ExplicitSdkPath)
@@ -39,9 +38,17 @@ function Find-Monkeyc {
         }
 
         $sdk = Get-ChildItem -Path $root -Directory -ErrorAction SilentlyContinue |
-            Sort-Object Name -Descending |
             ForEach-Object {
-                $candidate = Join-Path $_.FullName "bin\monkeyc.bat"
+                if ($_.Name -match '^connectiq-sdk-(?:mac|win|linux)-(?<Version>\d+(?:\.\d+)*)') {
+                    [PSCustomObject]@{
+                        Directory = $_
+                        Version = [version]$Matches.Version
+                    }
+                }
+            } |
+            Sort-Object Version -Descending |
+            ForEach-Object {
+                $candidate = Join-Path $_.Directory.FullName "bin\monkeyc.bat"
                 if (Test-Path $candidate) {
                     return (Resolve-Path $candidate).Path
                 }
@@ -56,16 +63,25 @@ function Find-Monkeyc {
     throw "Connect IQ SDK was not found. Install it with Garmin SDK Manager, then rerun this script or pass -SdkPath."
 }
 
-if (!(Test-Path $DeveloperKey)) {
-    throw "Developer key not found: $DeveloperKey. Generate one with the Connect IQ SDK tools or OpenSSL before building."
+Push-Location $repoRoot
+try {
+    if (!(Test-Path -LiteralPath $DeveloperKey)) {
+        throw "Developer key not found: $DeveloperKey. Generate one with the Connect IQ SDK tools or OpenSSL before building."
+    }
+
+    $monkeyc = Find-Monkeyc -ExplicitSdkPath $SdkPath
+    $outputDirectory = Split-Path $Output
+    if ($outputDirectory) {
+        New-Item -ItemType Directory -Path $outputDirectory -Force | Out-Null
+    }
+
+    & $monkeyc -d $Device -f "monkey.jungle" -o $Output -y $DeveloperKey
+    if ($LASTEXITCODE -ne 0) {
+        exit $LASTEXITCODE
+    }
+
+    Write-Host "Built $Output for $Device"
 }
-
-$monkeyc = Find-Monkeyc -ExplicitSdkPath $SdkPath
-New-Item -ItemType Directory -Path (Split-Path $Output) -Force | Out-Null
-
-& $monkeyc -d $Device -f "monkey.jungle" -o $Output -y $DeveloperKey
-if ($LASTEXITCODE -ne 0) {
-    exit $LASTEXITCODE
+finally {
+    Pop-Location
 }
-
-Write-Host "Built $Output for $Device"

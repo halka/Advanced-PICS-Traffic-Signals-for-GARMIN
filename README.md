@@ -38,9 +38,14 @@ Advanced-PICS-Traffic-Signals-for-GARMIN/
 │   │   └── launcher_icon.png        ← App launcher icon
 │   └── strings/
 │       └── strings.xml              ← UI strings (Japanese; add translations here)
-└── tools/
-    ├── csv_to_resource.py           ← CSV → JSON resource converter
-    └── debug_project.py             ← Project diagnostics & API flag generator
+├── tools/
+│   ├── build.ps1                    ← Windows build helper
+│   ├── clean_intersections.py       ← Address cleanup helper
+│   ├── csv_to_resource.py           ← CSV → JSON resource converter
+│   ├── debug_project.py             ← Project diagnostics & API flag generator
+│   └── BlePicsAdvertiser.cs         ← Windows BLE test advertiser source
+└── tests/
+    └── test_csv_to_resource.py       ← CSV converter regression tests
 ```
 
 ### Technical Specifications
@@ -126,6 +131,12 @@ On Windows, you can also use the repository build helper. It looks for
 
 To build for a different device, replace `gpsmaph1` with the target device ID.
 
+Run the repository tests with:
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
 #### 6. Deploy to Device (USB Mass Storage)
 **Ensure USB Mass Storage Mode**
 ```bash
@@ -134,7 +145,7 @@ cp bin/pics-viewer.prg /GARMIN/APPS/
 
 ### SD Card Logging (Debug)
 
-The app automatically logs every received PICS packet (including millisecond precision timestamps and raw HEX payloads). However, Garmin OS discards these logs unless you manually create a text file to capture them:
+The app automatically logs every received PICS packet with a wall-clock timestamp, monotonic receive tick, and raw HEX payload. However, Garmin OS discards these logs unless you manually create a text file to capture them:
 1. Connect your Garmin device via USB.
 2. In the `GARMIN/APPS/LOGS/` directory, create an empty text file named **exactly** the same as your app executable but with a `.txt` extension (e.g. `pics-viewer.txt`).
 3. Launch the app. All BLE traffic logs will be continuously appended to that text file.
@@ -148,7 +159,7 @@ The app automatically logs every received PICS packet (including millisecond pre
 - **Screen layout**: The footer is removed; receive metadata is shown in the compact header and cards use the remaining screen height.
 - **Intersection database**: Built from the [e-Gov national intersection list](https://data.e-gov.go.jp/data/dataset/npa_20221124_0054/resource/6f7e83e1-be28-4030-961f-3b489c9f6ad8) (596 intersections). Re-run `csv_to_resource.py` to update.
 - **Identification of traffic signs**: Need to dump network telemetry of NIPPON SIGNAL's App. [ref.](https://qiita.com/kitazaki/items/ef2d8710d1656705f307)
-- **String resources**: All UI labels are defined in `resources/strings/strings.xml`. To add a language translation, create a locale-specific strings file (e.g. `resources-eng/strings/strings.xml`).
+- **String resources**: Status and empty-state labels are defined in `resources/strings/strings.xml`. To add a language translation, create a locale-specific strings file (e.g. `resources-eng/strings/strings.xml`).
 - **Connect IQ SDK**: `ScanResult.getManufacturerSpecificData()` requires the company ID as an argument and returns a `ByteArray` directly (no longer returns a `Dictionary`).
 - **Simulator**: The Connect IQ SDK 9.1.0 simulator may crash on macOS 26+ (Tahoe) in the `ant_main` thread when loading apps that use BLE. Deploy to actual hardware for testing until Garmin releases a compatible SDK update.
 - **Legal compliance**: PICS BLE advertisements are public-infrastructure transmissions broadcast to all. This app is receive-only and does not transmit or modify any signal. Reception is compliant with Japanese radio and telecommunications law.
@@ -194,9 +205,14 @@ Advanced-PICS-Traffic-Signals-for-GARMIN/
 │   │   └── launcher_icon.png        ← アプリアイコン
 │   └── strings/
 │       └── strings.xml              ← UIラベル文字列（日本語）
-└── tools/
-    ├── csv_to_resource.py           ← CSV → JSON リソース変換スクリプト
-    └── debug_project.py             ← プロジェクト診断・APIフラグ生成
+├── tools/
+│   ├── build.ps1                    ← Windows向けビルド補助
+│   ├── clean_intersections.py       ← 住所データの整形補助
+│   ├── csv_to_resource.py           ← CSV → JSON リソース変換スクリプト
+│   ├── debug_project.py             ← プロジェクト診断・APIフラグ生成
+│   └── BlePicsAdvertiser.cs         ← Windows BLEテスト送信ツールのソース
+└── tests/
+    └── test_csv_to_resource.py       ← CSV変換ツールの回帰テスト
 ```
 
 ---
@@ -281,9 +297,15 @@ monkeyc -d gpsmaph1 -f monkey.jungle -o bin/pics-viewer.prg -y developer_key.der
 cp bin/pics-viewer.prg /GARMIN/APPS/
 ```
 
+### テスト
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
 ### ログ保存機能 (SDカード記録)
 
-受信したPICSパケットの生データ（HEXダンプ）、信号状態、電波強度がミリ秒単位のタイムスタンプとともに記録されます。GarminのOS仕様上、以下の手順を実施しないとログはデバイスに保存されません。
+受信したPICSパケットの生データ（HEXダンプ）、信号状態、電波強度が、実時刻と単調増加する受信Tickとともに記録されます。GarminのOS仕様上、以下の手順を実施しないとログはデバイスに保存されません。
 1. GarminデバイスをPCにUSB接続します。
 2. デバイス内の `/GARMIN/APPS/LOGS/` フォルダを開きます。
 3. アプリの実行ファイル名と同じ名前を持つ、空のテキストファイル（例: `pics-viewer.txt`）を作成します。
@@ -306,7 +328,7 @@ cp bin/pics-viewer.prg /GARMIN/APPS/
 実測ログ上の PICS Type0 パケットには、交差点名称ではなく `UTMS_PICS0001` のような ASCII の発信器識別子が入っています。交差点名は Type1 パケット（緯度経度）とバンドルされた全国交差点DBを使って、GPS座標マッチングで名称解決します。
 
 ### 文字列リソース
-画面に表示するすべてのUIラベルは `resources/strings/strings.xml` で管理しています。ロケール別のディレクトリ（例：`resources-eng/strings/strings.xml`）を作成することで多言語対応が可能です。
+状態表示と空表示のUIラベルは `resources/strings/strings.xml` で管理しています。ロケール別のディレクトリ（例：`resources-eng/strings/strings.xml`）を作成することで多言語対応が可能です。
 
 ### シミュレーターについて
 Connect IQ SDK 9.1.0 のシミュレーターは macOS 26 (Tahoe) 以降で `ant_main` スレッドがクラッシュする既知の問題があります。テストは実機（GPSMAP H1）で行ってください。Garmin が対応 SDK をリリース次第、更新予定です。

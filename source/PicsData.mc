@@ -70,7 +70,7 @@ class PicsFrame {
 
     // メタ
     var rssi           as Lang.Number = 0;
-    var timestamp      as Lang.Long = 0l;   // millis since epoch
+    var timestamp      as Lang.Long = 0l;   // monotonic milliseconds from System.getTimer()
 
     function initialize() {
         for (var i = 0; i < PICS_SIGNAL_COUNT; i++) {
@@ -93,14 +93,11 @@ class PicsFrame {
 class PicsParser {
 
     static function parse(data as Lang.ByteArray, rssi as Lang.Number) as PicsFrame or Null {
-        if (data == null || data.size() < 4) {
+        if (data == null || data.size() < 10) {
             return null;
         }
 
         var msgType = data[2];
-        if (data.size() < 10) {
-            return null;
-        }
         if (msgType == PICS_MSG_TYPE_LOCATION && data.size() < 18) {
             return null;
         }
@@ -120,14 +117,12 @@ class PicsParser {
         frame.msgId     = data[3];
 
         // 交差点ID
-        if (data.size() >= 10) {
-            var idStr = "";
-            for (var i = 6; i < 10; i++) {
-                idStr += data[i].format("%02X");
-            }
-            frame.intersectionId = idStr;
-            frame.transmitterId = idStr;
+        var idStr = "";
+        for (var i = 6; i < 10; i++) {
+            idStr += data[i].format("%02X");
         }
+        frame.intersectionId = idStr;
+        frame.transmitterId = idStr;
 
         // タイプ別ペイロード解析
         switch (frame.msgType) {
@@ -138,14 +133,15 @@ class PicsParser {
                 break;
 
             case PICS_MSG_TYPE_LOCATION:
-                if (data.size() >= 18) {
-                    // big-endian signed 32-bit  ÷ 1,000,000 → 度
-                    var lat = ((data[10] << 24) | (data[11] << 16)
-                             | (data[12] << 8)  |  data[13]);
-                    var lon = ((data[14] << 24) | (data[15] << 16)
-                             | (data[16] << 8)  |  data[17]);
-                    frame.latitude  = (lat / 1000000.0f);
-                    frame.longitude = (lon / 1000000.0f);
+                // big-endian signed 32-bit  ÷ 1,000,000 → 度
+                var lat = ((data[10] << 24) | (data[11] << 16)
+                         | (data[12] << 8)  |  data[13]);
+                var lon = ((data[14] << 24) | (data[15] << 16)
+                         | (data[16] << 8)  |  data[17]);
+                frame.latitude  = (lat / 1000000.0f);
+                frame.longitude = (lon / 1000000.0f);
+                if (!isValidCoordinate(frame.latitude, frame.longitude)) {
+                    return null;
                 }
                 break;
 
@@ -201,18 +197,20 @@ class PicsIntersectionDB {
     //! GPS座標 (度) から最近傍エントリを返す。
     //! エントリが空の場合は null を返す。
     function findNearestEntry(lat as Lang.Float, lon as Lang.Float) as Lang.Array or Null {
-        if (_entries == null || (_entries as Lang.Array).size() == 0) {
+        if (!isValidCoordinate(lat, lon) ||
+            _entries == null || (_entries as Lang.Array).size() == 0) {
             return null;
         }
         var entries  = _entries as Lang.Array;
         var bestEntry = null;
         var bestDist = 9.9e9f;
+        var lonScale = Math.cos(lat * Math.PI.toFloat() / 180.0f).toFloat();
         for (var i = 0; i < entries.size(); i++) {
             var e    = entries[i] as Lang.Array;
             var eLat = e[0].toFloat();
             var eLon = e[1].toFloat();
             var dLat = lat - eLat;
-            var dLon = lon - eLon;
+            var dLon = (lon - eLon) * lonScale;
             var dist = dLat * dLat + dLon * dLon;
             if (dist < bestDist) {
                 bestDist = dist;
@@ -226,17 +224,19 @@ class PicsIntersectionDB {
     //! 戻り値: [ { "entry": dict, "dist": float, "brg": float }, ... ]
     function getTopN(lat as Lang.Float, lon as Lang.Float, limit as Lang.Number) as Lang.Array {
         var top = [] as Lang.Array;
-        if (_entries == null || (_entries as Lang.Array).size() == 0) {
+        if (limit <= 0 || !isValidCoordinate(lat, lon) ||
+            _entries == null || (_entries as Lang.Array).size() == 0) {
             return top;
         }
         var entries = _entries as Lang.Array;
+        var lonScale = Math.cos(lat * Math.PI.toFloat() / 180.0f).toFloat();
         for (var i = 0; i < entries.size(); i++) {
             var e = entries[i] as Lang.Array;
             var eLat = e[0].toFloat();
             var eLon = e[1].toFloat();
 
             var dLat = lat - eLat;
-            var dLon = lon - eLon;
+            var dLon = (lon - eLon) * lonScale;
             var rank = dLat * dLat + dLon * dLon;
             
             var item = {
@@ -276,6 +276,12 @@ class PicsIntersectionDB {
         }
         return result;
     }
+}
+
+//! 緯度・経度が地理座標として有効かを返す
+function isValidCoordinate(lat as Lang.Float, lon as Lang.Float) as Lang.Boolean {
+    return lat >= -90.0f && lat <= 90.0f &&
+           lon >= -180.0f && lon <= 180.0f;
 }
 
 //! 2点間の距離(m)と方位(度)を計算する [Haversine + atan2]

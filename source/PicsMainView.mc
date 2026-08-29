@@ -36,6 +36,8 @@ class PicsMainView extends WatchUi.View {
     private var _scanning          as Lang.Boolean = false;
     private var _blinkPhase       as Lang.Boolean = false;
     private var _intersectionName as Lang.String = "";
+    private var _intersectionLat  as Lang.Float = 0.0f;
+    private var _intersectionLon  as Lang.Float = 0.0f;
     
     // GPS & リスト
     private var _db as PicsIntersectionDB or Null = null;
@@ -56,6 +58,7 @@ class PicsMainView extends WatchUi.View {
 
     function setDb(db as PicsIntersectionDB or Null) as Void {
         _db = db;
+        _needsListUpdate = true;
     }
 
     function setEmulatorMode(active as Lang.Boolean) as Void {
@@ -70,8 +73,8 @@ class PicsMainView extends WatchUi.View {
 
     function updateSignal(frame as PicsFrame, rxCount as Lang.Long,
                           intersectionName as Lang.String,
-                          intersectionLat  as Lang.Float,
-                          intersectionLon  as Lang.Float) as Void {
+                          intersectionLat as Lang.Float,
+                          intersectionLon as Lang.Float) as Void {
         _lastFrame        = frame;
         _rxCount          = rxCount;
         _scanning         = true;
@@ -84,7 +87,8 @@ class PicsMainView extends WatchUi.View {
                           + pad2(now.sec);
         _lastReceivedSysTime = System.getTimer();
         _intersectionName = intersectionName;
-        _needsListUpdate = true;
+        _intersectionLat = intersectionLat;
+        _intersectionLon = intersectionLon;
         WatchUi.requestUpdate();
     }
 
@@ -95,7 +99,7 @@ class PicsMainView extends WatchUi.View {
 
     function toggleBlinkPhase() as Void {
         _blinkPhase = !_blinkPhase;
-        if (_lastFrame != null) { WatchUi.requestUpdate(); }
+        if (_scanning || _lastFrame != null) { WatchUi.requestUpdate(); }
     }
 
     function scrollDown() as Void {
@@ -109,10 +113,6 @@ class PicsMainView extends WatchUi.View {
         WatchUi.requestUpdate();
     }
 
-    function refreshRealtime() as Void {
-        if (_scanning || _lastFrame != null) { WatchUi.requestUpdate(); }
-    }
-
     function onUpdate(dc as Graphics.Dc) as Void {
         var screenW = dc.getWidth();
         var screenH = dc.getHeight();
@@ -121,8 +121,8 @@ class PicsMainView extends WatchUi.View {
         dc.clear();
 
         // 1. 位置情報の取得とリストの更新
-        var devLat = 43.066768f;
-        var devLon = 141.350582f;
+        var devLat = 0.0f;
+        var devLon = 0.0f;
         var hasFix = false;
         var posInfo = null;
         if (!_emulatorModeActive) {
@@ -137,7 +137,9 @@ class PicsMainView extends WatchUi.View {
             hasFix = true;
         }
 
-        if (!_emulatorModeActive && _db != null) {
+        if (!_emulatorModeActive && !hasFix) {
+            _topIntersections = null;
+        } else if (!_emulatorModeActive && _db != null) {
             var moved = _needsListUpdate;
             _needsListUpdate = false;
             if (_topIntersections == null) {
@@ -157,7 +159,7 @@ class PicsMainView extends WatchUi.View {
 
         // 描画
         drawHeader(dc, screenW, devLat, devLon, hasFix);
-        drawCards(dc, screenW, screenH, devLat, devLon);
+        drawCards(dc, screenW, screenH, devLat, devLon, hasFix);
     }
 
     private function drawHeader(dc as Graphics.Dc, screenW as Lang.Number,
@@ -238,20 +240,16 @@ class PicsMainView extends WatchUi.View {
     }
 
     private function drawCards(dc as Graphics.Dc, screenW as Lang.Number, screenH as Lang.Number,
-                               devLat as Lang.Float, devLon as Lang.Float) as Void {
+                               devLat as Lang.Float, devLon as Lang.Float,
+                               hasFix as Lang.Boolean) as Void {
         var cardsData = [] as Lang.Array;
-        
-        var activeIntersectionId = null;
-        var activeTransmitterId = "--";
+
         var activeSigs = [] as Lang.Array;
-        var frameRssi = null;
+        var featuredItem = null;
         if (_lastFrame != null) {
             var frame = _lastFrame as PicsFrame;
             var nowTimer = System.getTimer();
             if (_lastReceivedSysTime > 0 && (nowTimer - _lastReceivedSysTime) <= 5000) {
-                activeIntersectionId = frame.intersectionId;
-                activeTransmitterId = frame.transmitterId;
-                frameRssi = frame.rssi;
                 for (var i = 0; i < PICS_SIGNAL_COUNT; i++) {
                     var s = frame.signals[i] as PicsSignal;
                     if (s.state != SIGNAL_NO_SIGNAL) {
@@ -262,62 +260,56 @@ class PicsMainView extends WatchUi.View {
         }
 
         if (_emulatorModeActive && _lastFrame != null) {
-            cardsData.add(createEmulatorCard(devLat, devLon));
+            featuredItem = createEmulatorCard(devLat, devLon);
+            cardsData.add(featuredItem);
         } else if (_topIntersections != null && (_topIntersections as Lang.Array).size() > 0) {
             var arr = _topIntersections as Lang.Array;
             for (var i = 0; i < arr.size(); i++) {
                 var item = arr[i] as Lang.Dictionary;
                 var entry = item["entry"] as Lang.Array;
                 var name = entry[2] as Lang.String;
-                
+
                 var sigs = [] as Lang.Array;
-                var isBleActive = false;
-                var rssiVal = null;
-                
-                if (activeIntersectionId != null && name.equals(_intersectionName) && activeSigs.size() > 0) {
+                if (name.equals(_intersectionName) && activeSigs.size() > 0) {
                     sigs = activeSigs;
-                    isBleActive = true;
-                    rssiVal = frameRssi;
                 }
-                
+
                 var cardItem = {
                     "name" => name,
-                    "hira" => entry[3] as Lang.String,
                     "addr" => entry[4] as Lang.String,
-                    "lat"  => entry[0].toFloat(),
-                    "lon"  => entry[1].toFloat(),
                     "dist" => item["dist"] as Lang.Float,
                     "brg"  => item["brg"] as Lang.Float,
-                    "id"   => isBleActive ? activeIntersectionId : "--",
-                    "tx"   => isBleActive ? activeTransmitterId : "--",
-                    "rssi" => rssiVal,
                     "signals" => sigs
                 };
                 cardsData.add(cardItem);
             }
         }
 
-        if (cardsData.size() == 0) {
-            dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(screenW/2, 112, Graphics.FONT_MEDIUM,
-                        "検索対象が近くにありません", Graphics.TEXT_JUSTIFY_CENTER);
-            return;
+        if (featuredItem == null && activeSigs.size() > 0 && _lastFrame != null) {
+            featuredItem = createLiveCard(_lastFrame as PicsFrame, activeSigs,
+                                          devLat, devLon, hasFix);
         }
 
-        // Keep the nearby-only data set and ordering; the redesign changes only how it is presented.
-        var featuredItem = null;
-        for (var i = 0; i < cardsData.size(); i++) {
-            var candidate = cardsData[i] as Lang.Dictionary;
-            if ((candidate["signals"] as Lang.Array).size() > 0) {
-                featuredItem = candidate;
-                break;
-            }
+        if (cardsData.size() == 0 && featuredItem == null) {
+            dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(screenW/2, 112, Graphics.FONT_MEDIUM,
+                        emptyStateText(hasFix),
+                        Graphics.TEXT_JUSTIFY_CENTER);
+            return;
         }
 
         var y = 72;
         if (featuredItem != null) {
             drawLiveCard(dc, 8, y, screenW - 16, 112, featuredItem as Lang.Dictionary);
             y += 120;
+        }
+
+        if (cardsData.size() == 0) {
+            dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(screenW/2, y + 18, Graphics.FONT_SMALL,
+                        emptyStateText(hasFix),
+                        Graphics.TEXT_JUSTIFY_CENTER);
+            return;
         }
 
         var listTop = y + 22;
@@ -350,13 +342,39 @@ class PicsMainView extends WatchUi.View {
         var db = calcDistBrg(devLat, devLon, frame.latitude, frame.longitude);
         return {
             "name" => _intersectionName,
-            "hira" => "",
             "addr" => "シミュレーションモード",
-            "lat"  => frame.latitude,
-            "lon"  => frame.longitude,
             "dist" => db[0] as Lang.Float,
             "brg"  => db[1] as Lang.Float,
-            "id"   => frame.intersectionId,
+            "hasDistance" => true,
+            "tx"   => frame.transmitterId,
+            "rssi" => frame.rssi,
+            "signals" => sigs
+        };
+    }
+
+    private function createLiveCard(frame as PicsFrame, sigs as Lang.Array,
+                                    devLat as Lang.Float, devLon as Lang.Float,
+                                    hasFix as Lang.Boolean) as Lang.Dictionary {
+        var name = _intersectionName;
+        if (name.length() == 0) {
+            name = frame.intersectionId;
+        }
+
+        var dist = 0.0f;
+        var brg = 0.0f;
+        var hasDistance = hasFix && _intersectionName.length() > 0 &&
+                          isValidCoordinate(_intersectionLat, _intersectionLon);
+        if (hasDistance) {
+            var db = calcDistBrg(devLat, devLon, _intersectionLat, _intersectionLon);
+            dist = db[0] as Lang.Float;
+            brg = db[1] as Lang.Float;
+        }
+
+        return {
+            "name" => name,
+            "dist" => dist,
+            "brg"  => brg,
+            "hasDistance" => hasDistance,
             "tx"   => frame.transmitterId,
             "rssi" => frame.rssi,
             "signals" => sigs
@@ -376,8 +394,10 @@ class PicsMainView extends WatchUi.View {
         var name = item["name"] as Lang.String;
         var dist = item["dist"] as Lang.Float;
         var brg = item["brg"] as Lang.Float;
+        var hasDistance = item["hasDistance"] as Lang.Boolean;
         var rssi = item["rssi"];
         var sigs = item["signals"] as Lang.Array;
+        var tx = item["tx"] as Lang.String;
 
         dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
         dc.drawText(x + 14, y + 8, Graphics.FONT_XTINY, "LIVE SIGNAL",
@@ -391,22 +411,28 @@ class PicsMainView extends WatchUi.View {
         dc.drawText(x + 14, y + 25, Graphics.FONT_SMALL,
                     shortText(name, 21), Graphics.TEXT_JUSTIFY_LEFT);
 
+        if (shouldShowTx(tx) && !tx.equals(name)) {
+            dc.setColor(COLOR_TEXT_MUTED, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(x + 14, y + 45, Graphics.FONT_XTINY,
+                        "TX " + shortText(tx, 18), Graphics.TEXT_JUSTIFY_LEFT);
+        }
+
         var signalX = x + 18;
         var maxSignals = sigs.size();
         if (maxSignals > 6) { maxSignals = 6; }
         for (var i = 0; i < maxSignals; i++) {
             var s = sigs[i] as PicsSignal;
-            drawCompactSignal(dc, signalX + (i * 38), y + 66, s.state, s.remaining);
+            drawCompactSignal(dc, signalX + (i * 38), y + 72, s.state, s.remaining);
         }
         if (sigs.size() > 6) {
             dc.setColor(COLOR_TEXT_MUTED, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(signalX + 6 * 38 - 4, y + 62, Graphics.FONT_XTINY,
+            dc.drawText(signalX + 6 * 38 - 4, y + 68, Graphics.FONT_XTINY,
                         "+" + (sigs.size() - 6).toString(), Graphics.TEXT_JUSTIFY_LEFT);
         }
 
         dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
         dc.drawText(x + w - 12, y + 91, Graphics.FONT_XTINY,
-                    formatDistance(dist) + "  " + formatBearing(brg),
+                    hasDistance ? (formatDistance(dist) + "  " + formatBearing(brg)) : "--",
                     Graphics.TEXT_JUSTIFY_RIGHT);
     }
 
@@ -492,6 +518,13 @@ class PicsMainView extends WatchUi.View {
         var directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"] as Array<String>;
         var index = ((brg + 22.5f) / 45.0f).toNumber() % 8;
         return brg.format("%.0f") + "° " + directions[index];
+    }
+
+    private function emptyStateText(hasFix as Lang.Boolean) as Lang.String {
+        if (hasFix) {
+            return WatchUi.loadResource(Rez.Strings.NoNearbyIntersections) as Lang.String;
+        }
+        return WatchUi.loadResource(Rez.Strings.WaitingForPosition) as Lang.String;
     }
 
     private function shortText(text as Lang.String, maxChars as Lang.Number) as Lang.String {

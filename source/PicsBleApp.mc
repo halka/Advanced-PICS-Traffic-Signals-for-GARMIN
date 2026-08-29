@@ -6,8 +6,6 @@
 import Toybox.Application;
 import Toybox.BluetoothLowEnergy;
 import Toybox.Lang;
-import Toybox.Math;
-import Toybox.Position;
 import Toybox.Timer;
 import Toybox.WatchUi;
 import Toybox.System;
@@ -18,14 +16,13 @@ import Toybox.System;
 //!    onStart()
 //!      → BleDelegate 登録
 //!      → SCAN_STATE_SCANNING 開始
-//!      → 100ms タイマー開始（リアルタイム表示更新 + 点滅アニメ用）
+//!      → 500ms タイマー開始（状態更新 + 点滅アニメ用）
 //!      → PicsMainView を push
 class PicsBleApp extends Application.AppBase {
 
     private var _delegate as PicsBleDelegate or Null = null;
     private var _view     as PicsMainView    or Null = null;
     private var _timer    as Timer.Timer     or Null = null;
-    private var _timerTickCount as Lang.Number = 0;
     private var _bleScanningStarted as Lang.Boolean = false;
     private var _emulatorModeActive as Lang.Boolean = false;
     private var _emulatorFrame as PicsFrame or Null = null;
@@ -34,9 +31,8 @@ class PicsBleApp extends Application.AppBase {
 
     // シミュレータ確認時だけ true にする。実機では BLE を起動する。
     private const EMULATOR_UI_ONLY = false;
-    private const UI_POLL_INTERVAL_MS = 100;
-    private const BLINK_INTERVAL_TICKS = 5; // 100ms × 5 = 500ms
-    private const EMULATOR_SIGNAL_TICKS = 10; // 100ms × 10 = 1秒
+    private const UI_POLL_INTERVAL_MS = 500;
+    private const EMULATOR_SIGNAL_TICKS = 2; // 500ms × 2 = 1秒
     private const EMULATOR_NAME = "北５条通り札幌駅前交差点";
     private const EMULATOR_LAT = 43.066768f;
     private const EMULATOR_LON = 141.350582f;
@@ -60,9 +56,9 @@ class PicsBleApp extends Application.AppBase {
 
     //! フォアグラウンド起動時
     function onStart(state as Lang.Dictionary or Null) as Void {
-        if (EMULATOR_UI_ONLY) {
+        if (EMULATOR_UI_ONLY && !_emulatorModeActive) {
             startEmulatorUiOnlyMode();
-        } else {
+        } else if (!_emulatorModeActive) {
             startBleScanning();
         }
         startBlinkTimer();
@@ -122,6 +118,13 @@ class PicsBleApp extends Application.AppBase {
     private function startEmulatorUiOnlyMode() as Void {
         if (_view == null) { return; }
 
+        if (_emulatorModeActive && _emulatorFrame != null) {
+            _view.setEmulatorMode(true);
+            _view.setScanningState(false);
+            publishEmulatorFrame();
+            return;
+        }
+
         _emulatorModeActive = true;
         _emulatorTickCounter = 0;
         _emulatorRxCount = 0l;
@@ -148,23 +151,19 @@ class PicsBleApp extends Application.AppBase {
             _emulatorRxCount = 0l;
             if (_view != null) {
                 _view.setEmulatorMode(false);
-                var db = (_delegate != null) ? _delegate.getIntersectionDb() : new PicsIntersectionDB();
-                _view.setDb(db);
-                _view.setScanningState(true);
             }
             startBleScanning();
         }
     }
 
     // ----------------------------------------------------------
-    //  100ms タイマー（リアルタイム表示更新 + 青点滅アニメーション用）
+    //  500ms タイマー（状態更新 + 青点滅アニメーション用）
     // ----------------------------------------------------------
 
     private function startBlinkTimer() as Void {
         if (_timer != null) { return; }
 
         _timer = new Timer.Timer();
-        _timerTickCount = 0;
         _timer.start(method(:onUiPollTick), UI_POLL_INTERVAL_MS, true);
     }
 
@@ -178,13 +177,7 @@ class PicsBleApp extends Application.AppBase {
     function onUiPollTick() as Void {
         if (_view == null) { return; }
 
-        _timerTickCount++;
-        if (_timerTickCount >= BLINK_INTERVAL_TICKS) {
-            _timerTickCount = 0;
-            _view.toggleBlinkPhase();
-        } else {
-            _view.refreshRealtime();
-        }
+        _view.toggleBlinkPhase();
 
         if (_emulatorModeActive && _emulatorFrame != null) {
             _emulatorTickCounter++;
@@ -323,7 +316,7 @@ class PicsInputDelegate extends WatchUi.BehaviorDelegate {
         return true;
     }
 
-    //! ENTER キーでスキャン ON/OFF トグル（将来拡張用）
+    //! ENTER キーでシミュレータ確認モードをトグル
     function onSelect() as Lang.Boolean {
         var app = Application.getApp() as PicsBleApp;
         app.toggleEmulatorMode();

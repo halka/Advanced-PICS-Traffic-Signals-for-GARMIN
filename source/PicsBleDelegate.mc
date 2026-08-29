@@ -47,6 +47,7 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
     //! 古いType 1を別時点の信号へ関連付けないための有効期間
     private const LOCATION_CACHE_TTL_MS = 15000;
     private const MAX_LOCATION_CACHE_ENTRIES = 16;
+    private const INTERSECTION_MATCH_RADIUS_M = 1000.0f;
 
     function initialize(callback as PicsCallback or Null) {
         BleDelegate.initialize();
@@ -112,7 +113,7 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
                 break;
             case PICS_MSG_TYPE_SIGNAL:
                 var sigStr = "";
-                for (var i = 0; i < 6; i++) {
+                for (var i = 0; i < PICS_SIGNAL_COUNT && (10 + i) < payload.size(); i++) {
                     var s = frame.signals[i] as PicsSignal;
                     sigStr += "[" + s.state + "," + s.remaining + "]";
                 }
@@ -138,6 +139,9 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
         var entry = (_intersectionDb as PicsIntersectionDB)
             .findNearestEntry(frame.latitude, frame.longitude);
         if (entry == null) { return; }
+        var distance = calcDistBrg(frame.latitude, frame.longitude,
+                                   entry[0].toFloat(), entry[1].toFloat())[0] as Lang.Float;
+        if (distance > INTERSECTION_MATCH_RADIUS_M) { return; }
 
         evictOldestLocationIfFull(frame.intersectionId);
         _locationByIntersection[frame.intersectionId] = {
@@ -182,6 +186,7 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
         var cachedTick = cached["tick"] as Lang.Number;
         var age = receiveTick - cachedTick;
         if (age < 0 || age > LOCATION_CACHE_TTL_MS) {
+            _locationByIntersection.remove(frame.intersectionId);
             return false;
         }
 
@@ -217,11 +222,14 @@ class PicsBleDelegate extends BluetoothLowEnergy.BleDelegate {
         var coords = (posInfo.position as Position.Location).toDegrees();
         var entry = (_intersectionDb as PicsIntersectionDB)
             .findNearestEntry(coords[0].toFloat(), coords[1].toFloat());
-        if (entry != null) {
-            currentIntersectionLat  = entry[0].toFloat();
-            currentIntersectionLon  = entry[1].toFloat();
-            currentIntersectionName = entry[2] as Lang.String;
-        }
+        if (entry == null) { return; }
+        var distance = calcDistBrg(coords[0].toFloat(), coords[1].toFloat(),
+                                   entry[0].toFloat(), entry[1].toFloat())[0] as Lang.Float;
+        if (distance > INTERSECTION_MATCH_RADIUS_M) { return; }
+
+        currentIntersectionLat  = entry[0].toFloat();
+        currentIntersectionLon  = entry[1].toFloat();
+        currentIntersectionName = entry[2] as Lang.String;
     }
 
     //! 交差点 DB を返す

@@ -131,14 +131,6 @@ def find_source_patterns(source_dir: Path, patterns):
     return matches
 
 
-def format_sdk_summary(sdk_list):
-    if not sdk_list:
-        return "Connect IQ SDK が見つかりません。"
-
-    rows = [f"- {item['name']} (version: {item['version']})" for item in sdk_list]
-    return "Installed SDKs:\n" + "\n".join(rows)
-
-
 def report_manifest():
     manifest_path = ROOT / "manifest.xml"
     info = parse_manifest(manifest_path)
