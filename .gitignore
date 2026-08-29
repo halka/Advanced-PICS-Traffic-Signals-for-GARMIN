@@ -58,6 +58,7 @@ dkms.conf
 # Build artifacts
 *.prg
 *.prg.debug.xml
+build/
 gen/
 mir/
 internal-mir/

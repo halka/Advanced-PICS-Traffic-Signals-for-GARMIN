@@ -14,6 +14,7 @@ A Connect IQ application that receives and displays BLE advertisements from Japa
 - Shows the Type 1 transmitter/device ID (for example `SAPPORO_STN001`) under the resolved intersection name when available
 - Resolves intersection name from GPS coordinates using a pre-built national intersection database (596 intersections)
 - Displays device GPS coordinates, nearest intersection coordinates, and calculated distance + bearing
+- Keeps nearby intersection names and addresses clear of the right-aligned distance and bearing using pixel-aware truncation, including for wide Japanese glyphs
 - Works standalone on the GPSMAP H1i Plus without any companion app
 - SD Card logging: Record raw BLE payloads and packet data directly to the device's internal storage
 
@@ -43,6 +44,8 @@ Advanced-PICS-Traffic-Signals-for-GARMIN/
 │   ├── clean_intersections.py       ← Address cleanup helper
 │   ├── csv_to_resource.py           ← CSV → JSON resource converter
 │   ├── debug_project.py             ← Project diagnostics & API flag generator
+│   ├── ble_pics_advertiser.py       ← macOS BLE test advertiser
+│   ├── make_ble_advertiser_app.sh   ← Builds the macOS app bundle for the advertiser
 │   └── BlePicsAdvertiser.cs         ← Windows BLE test advertiser source
 └── tests/
     └── test_csv_to_resource.py       ← CSV converter regression tests
@@ -150,13 +153,86 @@ The app automatically logs every received PICS packet with a wall-clock timestam
 2. In the `GARMIN/APPS/LOGS/` directory, create an empty text file named **exactly** the same as your app executable but with a `.txt` extension (e.g. `pics-viewer.txt`).
 3. Launch the app. All BLE traffic logs will be continuously appended to that text file.
 
+### BLE Test Advertiser (macOS)
+
+`tools/ble_pics_advertiser.py` broadcasts a sample PICS packet (company ID `0x01CE`, Type 2, intersection ID `DEADBEEF`) for 15 seconds, so the Connect IQ app can be exercised without real traffic-signal hardware. The Windows equivalent is `tools/BlePicsAdvertiser.cs`.
+
+#### Dependencies
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install pyobjc-framework-CoreBluetooth
+```
+
+Create the virtual environment with the Python installation you intend to keep. A venv whose base interpreter is later removed (for example after switching from Intel to Apple Silicon Homebrew) leaves broken shebangs; `pip3` then falls through to the system Python and fails with `externally-managed-environment`. Recreate the venv in that case.
+
+#### macOS Bluetooth permission limitation
+
+macOS refuses CoreBluetooth access unless the **responsible application** declares `NSBluetoothAlwaysUsageDescription` in its `Info.plist`. When a script is started from a shell, the responsible application is the terminal emulator — not Python and not the script. Terminal.app and Warp do not declare that key, so the interpreter is killed by TCC before it can advertise:
+
+```
+This app has crashed because it attempted to access privacy-sensitive data
+without a usage description. The app's Info.plist must contain an
+NSBluetoothAlwaysUsageDescription key ...
+```
+
+The process aborts with exit code `134` and writes a crash report to `~/Library/Logs/DiagnosticReports/`. This is platform policy, not a bug in the script: no Python-side change can bypass it, including patching `NSBundle.mainBundle()` at runtime.
+
+#### Option 1 — Run via the bundled application (recommended)
+
+Build a small app bundle that declares the usage description and embeds the framework interpreter:
+
+```bash
+tools/make_ble_advertiser_app.sh          # build only
+tools/make_ble_advertiser_app.sh --run    # build, launch, and print the log
+```
+
+Launch it again at any time with:
+
+```bash
+open -a build/PICSBLEAdvertiser.app
+```
+
+Launching through `open` makes the bundle its own responsible application, so its `Info.plist` satisfies the check. macOS shows the Bluetooth permission prompt on first launch, and the grant appears under **System Settings → Privacy & Security → Bluetooth** as *PICS BLE Advertiser*. The bundle runs without a terminal, so output goes to `build/ble-advertiser.log`:
+
+```
+Publisher status: Started
+Broadcasting CompanyId=0x01CE ID=DEADBEEF Type=2 for 15 seconds
+Final status: Stopped
+```
+
+The bundle is a local build artifact (ignored by git). Rebuild it after upgrading Python or recreating the virtual environment.
+
+#### Option 2 — Run from a terminal that declares the usage description
+
+Running the script directly works only from a terminal application that declares the key **and** has been granted Bluetooth access:
+
+```bash
+.venv/bin/python tools/ble_pics_advertiser.py
+```
+
+Check a terminal before relying on it:
+
+```bash
+/usr/libexec/PlistBuddy -c "Print :NSBluetoothAlwaysUsageDescription" \
+  "/Applications/Visual Studio Code.app/Contents/Info.plist"
+```
+
+Visual Studio Code declares the key, so its integrated terminal works once Bluetooth access is granted to VS Code. Terminal.app and Warp do not declare it and cannot run the advertiser directly — use Option 1 there. Editing Homebrew's own `Python.app/Contents/Info.plist` also works, but is not recommended: it affects every Python process, invalidates the framework signature, and is reverted by each `brew upgrade`.
+
+#### Implementation note
+
+The delegate class must call `objc.super(...)`, not the built-in `super()`. PyObjC subclasses of `NSObject` raise `AttributeError: 'super' object has no attribute 'init'` with the plain built-in.
+
 ### Notes & Limitations
 
 - **BLE**: Central (scan-only) mode. No GATT connection is established.
+- **macOS test advertiser**: Requires an application bundle that declares `NSBluetoothAlwaysUsageDescription`; see [BLE Test Advertiser (macOS)](#ble-test-advertiser-macos).
 - **Widget type**: The app runs as a Connect IQ widget, accessible via the PAGE button on the device. BLE scanning runs continuously while the widget is active.
 - **Widget vs watch-app**: As a `widget`, the app is launched directly from the widget glance view (PAGE button) rather than navigating to Main Menu → Connect IQ → Apps.
 - **UI verification mode**: Press MENU to toggle a mock-data display mode for checking rendering on hardware when BLE/simulator behavior is unreliable.
 - **Screen layout**: The footer is removed; receive metadata is shown in the compact header and cards use the remaining screen height.
+- **Nearby rows**: Intersection names and addresses are truncated by rendered pixel width, leaving a fixed gap before distance and bearing values instead of wrapping or overlapping them.
 - **Intersection database**: Built from the [e-Gov national intersection list](https://data.e-gov.go.jp/data/dataset/npa_20221124_0054/resource/6f7e83e1-be28-4030-961f-3b489c9f6ad8) (596 intersections). Re-run `csv_to_resource.py` to update.
 - **Identification of traffic signs**: Need to dump network telemetry of NIPPON SIGNAL's App. [ref.](https://qiita.com/kitazaki/items/ef2d8710d1656705f307)
 - **String resources**: Status and empty-state labels are defined in `resources/strings/strings.xml`. To add a language translation, create a locale-specific strings file (e.g. `resources-eng/strings/strings.xml`).
@@ -210,6 +286,8 @@ Advanced-PICS-Traffic-Signals-for-GARMIN/
 │   ├── clean_intersections.py       ← 住所データの整形補助
 │   ├── csv_to_resource.py           ← CSV → JSON リソース変換スクリプト
 │   ├── debug_project.py             ← プロジェクト診断・APIフラグ生成
+│   ├── ble_pics_advertiser.py       ← macOS BLEテスト送信ツール
+│   ├── make_ble_advertiser_app.sh   ← 上記を実行する macOS アプリバンドルの生成
 │   └── BlePicsAdvertiser.cs         ← Windows BLEテスト送信ツールのソース
 └── tests/
     └── test_csv_to_resource.py       ← CSV変換ツールの回帰テスト
@@ -311,6 +389,77 @@ python3 -m unittest discover -s tests -v
 3. アプリの実行ファイル名と同じ名前を持つ、空のテキストファイル（例: `pics-viewer.txt`）を作成します。
 4. アプリを起動すると、このテキストファイルに受信ログが追記され続けます（長時間の連続記録によるファイル容量肥大化にご注意ください）。
 
+### BLEテスト送信ツール (macOS)
+
+`tools/ble_pics_advertiser.py` は、company ID `0x01CE`・Type 2・交差点ID `DEADBEEF` のサンプルPICSパケットを15秒間送信します。実際の信号機がなくても Connect IQ アプリの受信動作を確認できます（Windows版は `tools/BlePicsAdvertiser.cs`）。
+
+#### 依存パッケージ
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install pyobjc-framework-CoreBluetooth
+```
+
+仮想環境は、今後も使い続ける Python で作成してください。ベースとなる Python が後から削除されると（例: Homebrew を Intel 版から Apple Silicon 版へ移行した場合）venv の shebang が壊れ、`pip3` がシステム Python にフォールバックして `externally-managed-environment` エラーになります。その場合は venv を作り直してください。
+
+#### macOS の Bluetooth 権限による制約
+
+macOS では、**責任アプリケーション (responsible application)** の `Info.plist` に `NSBluetoothAlwaysUsageDescription` が宣言されていない限り、CoreBluetooth の利用が拒否されます。シェルからスクリプトを起動した場合、責任アプリケーションは Python でもスクリプトでもなく**ターミナルアプリ**です。Terminal.app や Warp はこのキーを宣言していないため、送信を開始する前に TCC によってプロセスが強制終了されます。
+
+```
+This app has crashed because it attempted to access privacy-sensitive data
+without a usage description. The app's Info.plist must contain an
+NSBluetoothAlwaysUsageDescription key ...
+```
+
+プロセスは終了コード `134` で異常終了し、クラッシュレポートが `~/Library/Logs/DiagnosticReports/` に出力されます。これはスクリプトの不具合ではなく OS のポリシーです。実行時に `NSBundle.mainBundle()` を書き換える等の Python 側の回避策では解決できません。
+
+#### 方法1 — アプリバンドル経由で実行（推奨）
+
+使用目的の説明を宣言し、フレームワーク版インタプリタを内包した小さなアプリバンドルを生成します。
+
+```bash
+tools/make_ble_advertiser_app.sh          # 生成のみ
+tools/make_ble_advertiser_app.sh --run    # 生成・起動してログを表示
+```
+
+2回目以降は次のコマンドで起動できます。
+
+```bash
+open -a build/PICSBLEAdvertiser.app
+```
+
+`open` で起動するとバンドル自身が責任アプリケーションになるため、そのバンドルの `Info.plist` で権限チェックを満たせます。初回起動時に Bluetooth の許可ダイアログが表示され、**システム設定 → プライバシーとセキュリティ → Bluetooth** に *PICS BLE Advertiser* として登録されます。ターミナルを介さずに動作するため、出力は `build/ble-advertiser.log` に記録されます。
+
+```
+Publisher status: Started
+Broadcasting CompanyId=0x01CE ID=DEADBEEF Type=2 for 15 seconds
+Final status: Stopped
+```
+
+このバンドルはローカルのビルド成果物です（git 管理外）。Python の更新や venv の作り直し後は再生成してください。
+
+#### 方法2 — 使用目的を宣言しているターミナルから実行
+
+スクリプトを直接実行できるのは、当該キーを宣言し、かつ Bluetooth へのアクセスを許可されたターミナルアプリのみです。
+
+```bash
+.venv/bin/python tools/ble_pics_advertiser.py
+```
+
+事前確認:
+
+```bash
+/usr/libexec/PlistBuddy -c "Print :NSBluetoothAlwaysUsageDescription" \
+  "/Applications/Visual Studio Code.app/Contents/Info.plist"
+```
+
+Visual Studio Code はこのキーを宣言しているため、VS Code に Bluetooth 権限を許可すれば統合ターミナルから実行できます。Terminal.app と Warp は宣言していないため直接実行できません（方法1を使用してください）。Homebrew の `Python.app/Contents/Info.plist` を編集する方法も動作しますが、すべての Python プロセスに影響し、フレームワークの署名が無効化され、`brew upgrade` のたびに元へ戻るため推奨しません。
+
+#### 実装上の注意
+
+デリゲートクラスでは組み込みの `super()` ではなく `objc.super(...)` を使用する必要があります。PyObjC の `NSObject` サブクラスで組み込みの `super()` を使うと `AttributeError: 'super' object has no attribute 'init'` が発生します。
+
 ---
 
 ## 注意事項・制約
@@ -323,6 +472,7 @@ python3 -m unittest discover -s tests -v
 - **SDK 8.x/9.x 対応**：`ScanResult.getManufacturerSpecificData()` はcompany IDを引数で指定し `ByteArray` を直接返す（旧APIは `Dictionary` を返していたが廃止）
 - **エミュレータ確認モード**：BLEやシミュレーターが不安定な場合でも、MENUボタンでモックデータ表示に切り替えてUI描画を確認できます。
 - **画面レイアウト**：フッターは削除し、受信情報はコンパクトなヘッダーへ集約しています。
+- **周辺信号の表示**：交差点名と住所は、文字数ではなく実際の描画幅に合わせて省略されます。日本語の全角文字を含む場合も、右寄せの距離・方角と重なったり折り返したりしません。
 
 ### 交差点名称について
 実測ログ上の PICS Type0 パケットには、交差点名称ではなく `UTMS_PICS0001` のような ASCII の発信器識別子が入っています。交差点名は Type1 パケット（緯度経度）とバンドルされた全国交差点DBを使って、GPS座標マッチングで名称解決します。

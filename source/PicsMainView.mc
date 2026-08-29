@@ -483,19 +483,31 @@ class PicsMainView extends WatchUi.View {
             dc.fillRectangle(x, y, 3, 50);
         }
 
+        var distanceText = formatDistance(dist);
+        var bearingText = formatBearing(brg);
+        var leftX = x + 12;
+        var rightX = x + w - 12;
+        var textGap = 8;
+        var nameWidth = rightX - leftX - textGap
+                      - dc.getTextWidthInPixels(distanceText, Graphics.FONT_SMALL);
+        var addrWidth = rightX - leftX - textGap
+                      - dc.getTextWidthInPixels(bearingText, Graphics.FONT_XTINY);
+
         dc.setColor(COLOR_TEXT_MAIN, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x + 12, y + 6, Graphics.FONT_SMALL,
-                    shortText(name, 18), Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(leftX, y + 6, Graphics.FONT_SMALL,
+                    fitText(dc, name, Graphics.FONT_SMALL, nameWidth),
+                    Graphics.TEXT_JUSTIFY_LEFT);
         dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x + 12, y + 27, Graphics.FONT_XTINY,
-                    shortText(addr, 23), Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(leftX, y + 27, Graphics.FONT_XTINY,
+                    fitText(dc, addr, Graphics.FONT_XTINY, addrWidth),
+                    Graphics.TEXT_JUSTIFY_LEFT);
 
         dc.setColor(COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x + w - 12, y + 6, Graphics.FONT_SMALL,
-                    formatDistance(dist), Graphics.TEXT_JUSTIFY_RIGHT);
+        dc.drawText(rightX, y + 6, Graphics.FONT_SMALL,
+                    distanceText, Graphics.TEXT_JUSTIFY_RIGHT);
         dc.setColor(COLOR_TEXT_SUB, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x + w - 12, y + 27, Graphics.FONT_XTINY,
-                    formatBearing(brg), Graphics.TEXT_JUSTIFY_RIGHT);
+        dc.drawText(rightX, y + 27, Graphics.FONT_XTINY,
+                    bearingText, Graphics.TEXT_JUSTIFY_RIGHT);
     }
 
     private function signalColor(state as Lang.Number) as Lang.Number {
@@ -531,6 +543,24 @@ class PicsMainView extends WatchUi.View {
         if (text.length() <= maxChars) { return text; }
         if (maxChars <= 3) { return text.substring(0, maxChars); }
         return text.substring(0, maxChars - 3) + "...";
+    }
+
+    private function fitText(dc as Graphics.Dc, text as Lang.String,
+                             font as Graphics.FontType,
+                             maxWidth as Lang.Number) as Lang.String {
+        if (maxWidth <= 0) { return ""; }
+        if (dc.getTextWidthInPixels(text, font) <= maxWidth) { return text; }
+
+        var suffix = "...";
+        var end = text.length();
+        while (end > 0) {
+            var candidate = text.substring(0, end) + suffix;
+            if (dc.getTextWidthInPixels(candidate, font) <= maxWidth) {
+                return candidate;
+            }
+            end -= 1;
+        }
+        return "";
     }
 
     private function shouldShowTx(tx as Lang.String) as Lang.Boolean {
